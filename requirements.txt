@@ -1,0 +1,9 @@
+jupyter
+pandas
+matplotlib
+seaborn
+wordcloud
+datasets
+huggingface_hub
+pyarrow
+ipykernel

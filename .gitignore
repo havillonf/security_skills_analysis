@@ -1,0 +1,54 @@
+# =========================
+# Python / Jupyter Notebook
+# =========================
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IPython profile
+profile_default/
+ipython_config.py
+
+# =========================
+# Data (arquivos grandes)
+# =========================
+
+# Dataset local (cada pesquisador baixa via `make download`)
+data/
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# =========================
+# Environment / Secrets
+# =========================
+.env
+.env.local
+*.key
