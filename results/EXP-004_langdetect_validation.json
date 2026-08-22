@@ -1,0 +1,103 @@
+{
+  "generated_at": "2026-08-22T17:22:38.125353+00:00",
+  "seed": 20260822,
+  "pool": 6000,
+  "per_stratum": {
+    "S_cauda": {
+      "n": 18,
+      "agree": 12,
+      "agreement": 0.667
+    },
+    "S_cjk": {
+      "n": 10,
+      "agree": 10,
+      "agreement": 1.0
+    },
+    "S_en": {
+      "n": 18,
+      "agree": 18,
+      "agreement": 1.0
+    },
+    "S_latino": {
+      "n": 18,
+      "agree": 18,
+      "agreement": 1.0
+    },
+    "S_muito_codigo": {
+      "n": 18,
+      "agree": 17,
+      "agreement": 0.944
+    },
+    "S_multilingue": {
+      "n": 18,
+      "agree": 17,
+      "agreement": 0.944
+    },
+    "S_texto_curto": {
+      "n": 18,
+      "agree": 16,
+      "agreement": 0.889
+    }
+  },
+  "detectors": {
+    "a": "py3langid LanguageIdentifier(norm_probs=True), limiar 0.90",
+    "b": "lingua-language-detector, high accuracy mode"
+  },
+  "stratum_pool_sizes": {
+    "S_en": 4381,
+    "S_multilingue": 621,
+    "S_latino": 240,
+    "S_muito_codigo": 538,
+    "S_texto_curto": 172,
+    "S_cauda": 38,
+    "S_cjk": 10
+  },
+  "overall": {
+    "n": 118,
+    "agree": 108,
+    "agreement": 0.9153
+  },
+  "top_confusions": [
+    {
+      "langid": "la",
+      "lingua": "en",
+      "n": 4
+    },
+    {
+      "langid": "vi",
+      "lingua": "en",
+      "n": 1
+    },
+    {
+      "langid": "km",
+      "lingua": "en",
+      "n": 1
+    },
+    {
+      "langid": "ko",
+      "lingua": "en",
+      "n": 1
+    },
+    {
+      "langid": "ja",
+      "lingua": "en",
+      "n": 1
+    },
+    {
+      "langid": "und",
+      "lingua": "la",
+      "n": 1
+    },
+    {
+      "langid": "und",
+      "lingua": "en",
+      "n": 1
+    }
+  ],
+  "langid_confidence_when_disagreeing": {
+    "n": 10,
+    "mean": 0.9693,
+    "min": 0.8362,
+    "max": 1.0
+  }
+}
