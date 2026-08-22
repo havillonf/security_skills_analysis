@@ -71,3 +71,8 @@ results/*_sample_preview.md
 
 # Anotacao humana em andamento (promover a results/ quando virar gold set)
 results/annotation_wip/
+
+# Reading pack do piloto: reproduz texto de skills de terceiros, regeneravel
+# por scripts/build_pilot_sample.py. O formulario CSV (metadados + campos
+# humanos vazios) permanece versionado.
+results/*_reading_pack.md
