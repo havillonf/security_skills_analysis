@@ -180,20 +180,21 @@ pronto. Ver §Ordem proposta.
 
 ## Impacto no Desenho C — estratos linguísticos
 
-[[EXP-004]] mostrou que a detecção é confiável onde há massa e ruim na cauda.
-Estratos revisados:
+[[EXP-004]] **v2** (a v1 estava errada — ver a própria nota) mede concordância entre
+detectores por grupo real:
 
 ```text
-L1  en                       ~84,6%   detecção confiável (concordância 1,00)
-L2  zh                        ~6,0%   confiável
-L3  ja + ko                   ~3,0%   confiável
-L4  de + es + pt + fr + it    ~4,0%   confiável (concordância 1,00)
-L5  cauda + und + mixed       ~2,4%   NÃO estratificar internamente
+L1  en                       ~85%     concordância 0,967
+L2  zh                        ~6%     1,000
+L3  ja + ko                   ~3%     1,000
+L4  de + es + pt + fr + it    ~4%     1,000
+L5  cauda + und           ~1,6-2,4%   0,967  -> não subdividir
 ```
 
-Mudança em relação à proposta anterior: **L5 passa a absorver `mixed` e a cauda
-inteira**, porque a concordância de 0,667 naquele estrato não sustenta separação por
-idioma. `la` entra em L5, não como idioma.
+**L5 não subdivide por falta de suporte amostral** (~2% em mais de dez idiomas), não
+por falha de detecção. `mixed` **não** é grupo: é atributo transversal — tratá-lo
+como grupo mandava todo o CJK para L5 e corromperia os pesos `N_h/N`. `la` entra em
+L5 como artefato, nunca como idioma.
 
 Estratificação final = **classe prevista × {L1…L5}**, com oversampling de L2–L5
 corrigido pelos pesos `N_h/N`.
@@ -213,6 +214,87 @@ Ordem revisada: `E-5 (piloto) → E-6 (gold set) → E-4 (retrieval, com recall 
 → E-7 …`
 
 Requer aprovação — ver [[Decision Log]].
+
+
+---
+
+## Evidência para o desenho do gold set (E-6)
+
+Segunda rodada de busca, focada em tamanho de gold set, dupla anotação, adjudicação
+e confiabilidade. Mesma ressalva de escopo: revisão focada, não sistemática.
+
+| Decisão | Trabalho | O que o trabalho fez (números) | Fonte | Verificação |
+|---|---|---|---|---|
+| **Anotador único no corpus + 2º passe cego só no estrato positivo** | Herzig, Just, Zeller — **ICSE 2013** | 7.401 issues. 1º autor anotou todos sozinho; 2º autor re-anotou **cego** apenas os 3.093 candidatos positivos; 340 conflitos (94% concordância bruta) resolvidos em par. 10.884 inspeções, ~4 min/item, **725 horas**. Declaram os resultados como **limite inferior** porque não verificaram falsos negativos do 1º passe | [10.1109/ICSE.2013.6606585](https://doi.org/10.1109/ICSE.2013.6606585) | texto completo |
+| **Proporção de dupla anotação quando parcial** | Díaz, Pérez, Gallardo, González-Prieto — **JSS 2022** | Mapeamento de 49 estudos de ES. Só **8 declaram** o corpus de IRR; valores **25%, 20%, ~30%, 10%, ~10%, 26%, 10%, 20%** → faixa **10–30%, moda 20%**. Só **5 de 49** declaram limiar mínimo. **33 de 49** dizem "IRR" quando medem IRA | [10.1016/j.jss.2022.111520](https://doi.org/10.1016/j.jss.2022.111520) | preprint arXiv |
+| **Regra de consenso + categoria "sem consenso" + anti-ancoragem** | Herbold et al. — **EMSE** (aceito) | 3.498 commits / 289.904 linhas, **4 anotadores por linha**, consenso = **≥3/4**, senão "sem consenso" (**14,3%** das linhas). Fleiss' κ = 0,67. Modelo binomial pré-registrado para separar ambiguidade real de ruído. Pré-rótulos heurísticos exibidos **com instrução explícita de ceticismo**, e testaram se funcionou | [arXiv:2011.06244](https://arxiv.org/abs/2011.06244) | texto completo |
+| **Adjudicação por discordância humano-máquina** | Yu, Theisen, Williams, Menzies (HARMLESS) — **TSE 2021** | Firefox: 28.750 arquivos, **271 vulneráveis (0,94%)**. Hipótese: erros humanos concentram-se onde humano e máquina discordam. Dupla checagem de **50% dos inspecionados recuperou 96%** das vulnerabilidades perdidas | [arXiv:1803.06545](https://arxiv.org/abs/1803.06545) | texto completo |
+| **LLM como apoio, nunca ground truth** | Ahmed, Devanbu, Treude, Pradel — **MSR 2025** (Distinguished Paper) | 6 LLMs × 10 tarefas. Krippendorff's α humano-humano vs humano-máquina: Goals 0,83 vs 0,77; **Static Analysis Warnings 0,80 vs 0,15**. Regra proposta: medir **concordância modelo-modelo**; se >0,5, substituir **um** rating humano por item. Conclusão: "não podemos substituir todos os humanos" | [10.1109/MSR66628.2025.00086](https://doi.org/10.1109/MSR66628.2025.00086) | texto completo |
+| **Estratificação com FPC em MSR** | Gorostidi, Ait, Cabot, Cánovas Izquierdo — **ESEM 2024** | Estimador = média ponderada dos estratos; variância **com correção de população finita** `(1 − n_h/N_h)`. Alocação **proporcional**. Categórica com p=0,5, e=0,05: **n = 385**. Recomendam ≤4–6 variáveis de estratificação. Amostragem estratificada aparece em **apenas 3,2%** dos trabalhos de MSR | [10.1145/3674805.3690747](https://doi.org/10.1145/3674805.3690747) | texto completo |
+| **Dimensionar para prevalência rara** | McGrath & Burke — *The American Statistician* **2024** | Margem de erro **relativa** `R = ε/p`, recomendada em [0,1; 0,5]. Com R=0,4 e 95%: **p=10⁻¹ → n≈220**; **p=10⁻² → n≈2.400–3.300**; **p=10⁻³ → n≈24.000–34.000** | [10.1080/00031305.2024.2350445](https://doi.org/10.1080/00031305.2024.2350445) | texto completo |
+| **Anotação multilíngue por falante nativo** | Katzy et al. — arXiv 2605.05902 (**preprint**) | 12.500 comentários × 5 línguas, 6 autores, 500 pessoa-horas. **Ao menos um autor falante nativo por língua**; critérios de codificação deliberadamente *language-agnostic*. Escala ordinal → **κ com pesos quadráticos** | [arXiv:2605.05902](https://arxiv.org/abs/2605.05902) | completo, **não revisado por pares** |
+| **Gold sets em LLM4MSR são pequenos** | De Martino et al. — arXiv 2508.02233 (**preprint**) | Rapid review de 31 artigos + survey com 22 respondentes. Conjuntos de validação de **"algumas dezenas"** (31 incidentes; 50 model cards) a 10 projetos | [arXiv:2508.02233](https://arxiv.org/abs/2508.02233) | completo, **não revisado por pares** |
+
+### O que isso muda no desenho de E-6
+
+1. **O tamanho não pode sair de conveniência.** Se a prevalência for da ordem de 1%,
+   McGrath & Burke implicam **n ≈ 2.400–3.300** para amostra aleatória simples com
+   margem relativa de 40%. Esse número é o argumento quantitativo a favor do
+   Desenho C — e precisa ser apresentado como cálculo, não como justificativa
+   post-hoc.
+2. **Dupla anotação parcial de ~20%** é a prática defensável em ES quando total é
+   inviável (Díaz et al.). Definida **antes** de ver resultados
+   ([[Decision Log#D-019]]).
+3. **Anotador único é aceito em MSR** — mas nenhum trabalho encontrado o aceita *sem*
+   segundo passe. Herzig et al. mostram a forma honesta: 2º passe cego no estrato
+   positivo + declarar o resultado como **limite inferior**.
+4. **`AMBIGUOUS` tem precedente forte.** Herbold et al. modelam "sem consenso" como
+   categoria de primeira classe (14,3% dos itens) — valida a escolha do [[Codebook]]
+   como decisão metodológica, não como falha.
+5. **Adjudicação dirigida por discordância** (HARMLESS) é mais eficiente que 20%
+   aleatórios: mandar para 2ª anotação onde LLM e humano divergem.
+6. **Critério pré-registrável para confiar na triagem** (Ahmed et al.): medir
+   concordância modelo-modelo antes. O caso Static-Analysis (α 0,80 → 0,15) mostra
+   que o fracasso é **específico da tarefa** e precisa ser medido, não presumido.
+7. **Gorostidi et al. dá respaldo peer-reviewed em venue de ES** ao estimador
+   `Σ_h (N_h/N)·p̂_h` **com FPC** — exatamente o de [[Decision Log#D-014]].
+   **Divergência:** eles prescrevem alocação **proporcional**; classes raras exigem
+   alocação **desproporcional** com oversampling. Nenhum trabalho de ES encontrado
+   reconcilia os dois.
+
+### Lacunas desta rodada
+
+- **Nenhuma regra em MSR/ES para tamanho de gold set** em função da precisão desejada
+  nas métricas do classificador — que é o que E-6 precisa.
+- **Nenhum trabalho de ES** dimensiona amostra para prevalência rara com margem
+  relativa; foi preciso sair da área.
+- **Nenhum trabalho de ES combina** triagem por LLM + anotação humana como desfecho +
+  estimador estratificado com FPC. **É o gap que a QI-1 ocupa.**
+- **Nenhuma orientação em ES sobre α/κ para multi-label** aplicada empiricamente.
+- **Nenhum protocolo em MSR para anotação em línguas que o anotador não domina.** As
+  duas saídas documentadas são *excluir* (Prana et al., 48 repos) ou *ter um nativo
+  por língua* (Katzy et al., preprint fora de MSR).
+- **Nenhum estudo em MSR mede o efeito de ancoragem** de rótulos de LLM sobre
+  anotadores.
+
+### Artigos a verificar manualmente antes de E-6
+
+1. **Herzig et al. ICSE 2013, §III + Fig. 1** — prioridade máxima. Verificar se a
+   assimetria (só o estrato positivo re-anotado) é aceitável: produz **limite
+   inferior**. Se a QI-1 precisa de estimativa não enviesada, os falsos negativos do
+   classificador exigem amostragem própria.
+2. **Herbold et al. EMSE, §3.5–3.6 e Threats** — consenso e anti-ancoragem;
+   comparação útil mesmo com o cegamento de [[Decision Log#D-021]].
+3. **Ahmed et al. MSR 2025, §IV-B e Fig. 11** — verificar se o limiar >0,5 vale para
+   classificação de documentos.
+4. **McGrath & Burke 2024, Tab. 1 e 3** — decide o tamanho do gold set.
+5. **Yu et al. TSE 2021, §3.3.5–3.3.6 e RQ4** — verificar se a validação é por
+   simulação (erro injetado) ou por erro humano real.
+6. **Díaz et al. JSS 2022, §4** — confirmar na versão publicada os percentuais.
+
+> **Ressalvas:** Katzy et al. e De Martino et al. são **preprints não revisados por
+> pares**. McHugh (2012), fonte dos limiares de κ, **não foi verificada em texto
+> completo** — verificar antes de citar valores.
 
 ## Ameaças à validade que permanecem
 
