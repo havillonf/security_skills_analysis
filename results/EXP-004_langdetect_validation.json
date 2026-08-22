@@ -1,103 +1,90 @@
 {
-  "generated_at": "2026-08-22T17:22:38.125353+00:00",
+  "generated_at": "2026-08-22T18:20:40.606242+00:00",
+  "version": 2,
   "seed": 20260822,
-  "pool": 6000,
+  "pool": 12000,
   "per_stratum": {
-    "S_cauda": {
-      "n": 18,
-      "agree": 12,
-      "agreement": 0.667
+    "L1": {
+      "n": 30,
+      "agree": 29,
+      "pool": 10296,
+      "agreement": 0.967
     },
-    "S_cjk": {
-      "n": 10,
-      "agree": 10,
+    "L2": {
+      "n": 30,
+      "agree": 30,
+      "pool": 699,
       "agreement": 1.0
     },
-    "S_en": {
-      "n": 18,
-      "agree": 18,
+    "L3": {
+      "n": 30,
+      "agree": 30,
+      "pool": 335,
       "agreement": 1.0
     },
-    "S_latino": {
-      "n": 18,
-      "agree": 18,
+    "L4": {
+      "n": 30,
+      "agree": 30,
+      "pool": 481,
       "agreement": 1.0
     },
-    "S_muito_codigo": {
-      "n": 18,
-      "agree": 17,
-      "agreement": 0.944
-    },
-    "S_multilingue": {
-      "n": 18,
-      "agree": 17,
-      "agreement": 0.944
-    },
-    "S_texto_curto": {
-      "n": 18,
-      "agree": 16,
-      "agreement": 0.889
+    "L5": {
+      "n": 30,
+      "agree": 29,
+      "pool": 189,
+      "agreement": 0.967
     }
   },
   "detectors": {
-    "a": "py3langid LanguageIdentifier(norm_probs=True), limiar 0.90",
-    "b": "lingua-language-detector, high accuracy mode"
+    "primary": "lingua-language-detector, high accuracy mode",
+    "secondary": "py3langid LanguageIdentifier(norm_probs=True), limiar 0.90"
   },
+  "nota": "estratos = grupos L1-L5 definidos pelo detector PRIMARIO; curto/codigo/multi-script sao atributos transversais, nao estratos",
   "stratum_pool_sizes": {
-    "S_en": 4381,
-    "S_multilingue": 621,
-    "S_latino": 240,
-    "S_muito_codigo": 538,
-    "S_texto_curto": 172,
-    "S_cauda": 38,
-    "S_cjk": 10
+    "L1": 10296,
+    "L2": 699,
+    "L4": 481,
+    "L5": 189,
+    "L3": 335
+  },
+  "por_atributo": {
+    "code_heavy": {
+      "n": 34,
+      "agree": 33,
+      "agreement": 0.971
+    },
+    "multi_script": {
+      "n": 69,
+      "agree": 68,
+      "agreement": 0.986
+    },
+    "short": {
+      "n": 18,
+      "agree": 18,
+      "agreement": 1.0
+    }
   },
   "overall": {
-    "n": 118,
-    "agree": 108,
-    "agreement": 0.9153
+    "n": 150,
+    "agree": 148,
+    "agreement": 0.9867
   },
   "top_confusions": [
     {
-      "langid": "la",
       "lingua": "en",
-      "n": 4
+      "langid": "zh",
+      "n": 1
     },
     {
+      "lingua": "tl",
       "langid": "vi",
-      "lingua": "en",
-      "n": 1
-    },
-    {
-      "langid": "km",
-      "lingua": "en",
-      "n": 1
-    },
-    {
-      "langid": "ko",
-      "lingua": "en",
-      "n": 1
-    },
-    {
-      "langid": "ja",
-      "lingua": "en",
-      "n": 1
-    },
-    {
-      "langid": "und",
-      "lingua": "la",
-      "n": 1
-    },
-    {
-      "langid": "und",
-      "lingua": "en",
       "n": 1
     }
   ],
   "langid_confidence_when_disagreeing": {
-    "n": 10,
-    "mean": 0.9693,
-    "min": 0.8362,
+    "n": 2,
+    "mean": 1.0,
+    "min": 1.0,
     "max": 1.0
   }
 }

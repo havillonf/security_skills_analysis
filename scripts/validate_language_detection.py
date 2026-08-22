@@ -7,8 +7,20 @@ implausivel. Antes de usar idioma como variavel de estratificacao do Desenho C
 (D-014), e preciso ter alguma medida da confiabilidade do rotulo.
 
 Desenho: dois detectores INDEPENDENTES sobre a mesma amostra estratificada.
-  - py3langid (Lui & Baldwin 2012; fork py3langid), norm_probs=True
-  - lingua-language-detector, high accuracy mode
+  - lingua-language-detector, high accuracy mode  -> detector PRIMARIO
+  - py3langid (Lui & Baldwin 2012), norm_probs=True -> segunda opiniao
+
+v2 (2026-08-22) - CORRECAO. A v1 estratificava por 7 categorias auxiliares
+(S_en, S_cjk, S_multilingue, ...) numa cadeia if/elif em que a checagem de
+script vinha ANTES da de idioma. Como praticamente todo texto CJK contem alguma
+palavra ASCII, o CJK inteiro caiu em S_multilingue e S_cjk ficou com 10 casos de
+6.000 - um residuo atipico. As concordancias daquela particao foram entao
+transplantadas para L1-L5, e "1,00" foi atribuido a L2 e L3 SEM QUE TIVESSEM
+SIDO MEDIDOS.
+
+v2 estratifica pelos grupos L1-L5 REAIS, definidos pelo detector primario, e
+trata texto curto / muito codigo / multi-script como ATRIBUTOS transversais,
+nao como estratos concorrentes.
 
 Concordancia entre detectores NAO e acuracia. E um limite superior grosseiro da
 confiabilidade: onde discordam, ao menos um esta errado. Os casos de discordancia
@@ -43,34 +55,42 @@ from detect_languages import clean_prose, split_frontmatter, SCRIPTS  # noqa: E4
 SEED = 20260822
 
 
-def build_strata(rows, langid_label):
-    """Estratos desenhados para expor onde a deteccao falha, nao para representar."""
+def lang_group(lang):
+    """Grupos L1-L5 conforme notes/Methodology/Multilingual Strategy.md."""
+    if lang == "en":
+        return "L1"
+    if lang == "zh":
+        return "L2"
+    if lang in ("ja", "ko"):
+        return "L3"
+    if lang in ("de", "es", "pt", "fr", "it"):
+        return "L4"
+    return "L5"
+
+
+def build_strata(rows, label_primary, label_secondary):
+    """Estratos = L1..L5 pelo detector PRIMARIO. Atributos sao transversais."""
     strata = defaultdict(list)
     for sha, content in rows:
         _fm, body = split_frontmatter(content)
         prose = clean_prose(body)
-        lang, prob = langid_label(prose)
 
-        # sinais estruturais independentes do idioma previsto
+        la = label_primary(prose)      # lingua  -> define o grupo
+        lb, prob = label_secondary(prose)  # py3langid -> segunda opiniao
+
         code_ratio = 1 - (len(prose) / max(len(content), 1))
         n_scripts = sum(1 for n, p in SCRIPTS.items()
                         if n != "latin_ext" and re.search(p, prose))
         has_ascii = bool(re.search(r"[A-Za-z]{4,}", prose))
 
-        if len(prose) < 200:
-            strata["S_texto_curto"].append((sha, prose, lang, prob))
-        elif code_ratio > 0.7:
-            strata["S_muito_codigo"].append((sha, prose, lang, prob))
-        elif n_scripts >= 1 and has_ascii:
-            strata["S_multilingue"].append((sha, prose, lang, prob))
-        elif lang in ("en",):
-            strata["S_en"].append((sha, prose, lang, prob))
-        elif lang in ("zh", "ja", "ko"):
-            strata["S_cjk"].append((sha, prose, lang, prob))
-        elif lang in ("de", "es", "pt", "fr", "it"):
-            strata["S_latino"].append((sha, prose, lang, prob))
-        else:
-            strata["S_cauda"].append((sha, prose, lang, prob))
+        item = {
+            "sha": sha, "prose": prose,
+            "primary": la, "secondary": lb, "secondary_conf": prob,
+            "short": len(prose) < 200,
+            "code_heavy": code_ratio > 0.7,
+            "multi_script": bool(n_scripts >= 1 and has_ascii),
+        }
+        strata[lang_group(la)].append(item)
     return strata
 
 
@@ -98,7 +118,13 @@ def main() -> int:
     ident = LanguageIdentifier.from_pickled_model(MODEL_FILE, norm_probs=True)
     lingua = LanguageDetectorBuilder.from_all_languages().build()
 
-    def langid_label(prose):
+    def label_primary(prose):
+        if len(prose) < 20:
+            return "und"
+        lg = lingua.detect_language_of(prose)
+        return lg.iso_code_639_1.name.lower() if lg else "und"
+
+    def label_secondary(prose):
         if len(prose) < 40:
             return "und", 0.0
         lang, prob = ident.classify(prose)
@@ -113,54 +139,76 @@ def main() -> int:
         ORDER BY hash(file_sha) LIMIT {args.pool}
     """).fetchall()
 
-    strata = build_strata(rows, langid_label)
+    strata = build_strata(rows, label_primary, label_secondary)
     rng = random.Random(SEED)
 
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "version": 2,
         "seed": SEED,
         "pool": args.pool,
         "per_stratum": args.per_stratum,
         "detectors": {
-            "a": "py3langid LanguageIdentifier(norm_probs=True), limiar 0.90",
-            "b": "lingua-language-detector, high accuracy mode",
+            "primary": "lingua-language-detector, high accuracy mode",
+            "secondary": "py3langid LanguageIdentifier(norm_probs=True), limiar 0.90",
         },
+        "nota": ("estratos = grupos L1-L5 definidos pelo detector PRIMARIO; "
+                 "curto/codigo/multi-script sao atributos transversais, nao estratos"),
         "stratum_pool_sizes": {k: len(v) for k, v in strata.items()},
     }
 
     per_stratum, disagreements, conf_when_wrong = {}, [], []
     confusion = Counter()
+    attr_stats = defaultdict(lambda: {"n": 0, "agree": 0})
 
-    for name, items in sorted(strata.items()):
+    for name in ["L1", "L2", "L3", "L4", "L5"]:
+        items = strata.get(name, [])
+        if not items:
+            per_stratum[name] = {"n": 0, "agree": 0, "agreement": None,
+                                 "pool": 0}
+            print(f"  {name:4s} POOL VAZIO - sem suporte amostral")
+            continue
         picked = rng.sample(items, min(args.per_stratum, len(items)))
         agree = 0
-        for sha, prose, la, prob in picked:
-            lb_obj = lingua.detect_language_of(prose) if prose else None
-            lb = lb_obj.iso_code_639_1.name.lower() if lb_obj else "und"
-            ok = (la == lb)
+        for it in picked:
+            ok = (it["primary"] == it["secondary"])
             agree += ok
+            for a in ("short", "code_heavy", "multi_script"):
+                if it[a]:
+                    attr_stats[a]["n"] += 1
+                    attr_stats[a]["agree"] += ok
             if not ok:
-                confusion[(la, lb)] += 1
-                conf_when_wrong.append(prob)
+                confusion[(it["primary"], it["secondary"])] += 1
+                conf_when_wrong.append(it["secondary_conf"])
                 disagreements.append({
-                    "stratum": name, "file_sha": sha,
-                    "langid": la, "langid_conf": round(prob, 4), "lingua": lb,
-                    "prose_len": len(prose),
-                    "excerpt": prose[:200],
+                    "stratum": name, "file_sha": it["sha"],
+                    "lingua": it["primary"], "langid": it["secondary"],
+                    "langid_conf": round(it["secondary_conf"], 4),
+                    "short": it["short"], "code_heavy": it["code_heavy"],
+                    "multi_script": it["multi_script"],
+                    "prose_len": len(it["prose"]),
+                    "excerpt": it["prose"][:200],
                 })
         per_stratum[name] = {
-            "n": len(picked), "agree": agree,
-            "agreement": round(agree / len(picked), 3) if picked else None,
+            "n": len(picked), "agree": agree, "pool": len(items),
+            "agreement": round(agree / len(picked), 3),
         }
-        print(f"  {name:18s} n={len(picked):>3}  concordancia={per_stratum[name]['agreement']}")
+        print(f"  {name:4s} pool={len(items):>5} n={len(picked):>3}  "
+              f"concordancia={per_stratum[name]['agreement']}")
+
+    out["per_stratum"] = per_stratum
+    out["por_atributo"] = {
+        a: {"n": v["n"], "agree": v["agree"],
+            "agreement": round(v["agree"] / v["n"], 3) if v["n"] else None}
+        for a, v in attr_stats.items()
+    }
 
     tot_n = sum(v["n"] for v in per_stratum.values())
     tot_a = sum(v["agree"] for v in per_stratum.values())
-    out["per_stratum"] = per_stratum
     out["overall"] = {"n": tot_n, "agree": tot_a,
                       "agreement": round(tot_a / tot_n, 4) if tot_n else None}
     out["top_confusions"] = [
-        {"langid": a, "lingua": b, "n": n} for (a, b), n in confusion.most_common(15)
+        {"lingua": a, "langid": b, "n": n} for (a, b), n in confusion.most_common(15)
     ]
     out["langid_confidence_when_disagreeing"] = {
         "n": len(conf_when_wrong),

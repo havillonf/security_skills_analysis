@@ -1,92 +1,26 @@
 [
   {
-    "stratum": "S_cauda",
-    "file_sha": "8be7473f7927b0e71e3fd5e47ec3d5b0e79321e4",
+    "stratum": "L1",
+    "file_sha": "a51932b9ce96ef57bbad97105ed792259fc6e58c",
+    "lingua": "en",
+    "langid": "zh",
+    "langid_conf": 1.0,
+    "short": false,
+    "code_heavy": true,
+    "multi_script": true,
+    "prose_len": 1001,
+    "excerpt": "# Async Task Delegation - 后台任务执行系统 借鉴 DeerFlow 2.0 的 Background Task Storage + ThreadPoolExecutor。 ## Why Async Tasks 长任务会阻塞主线程： - 文件迁移（数小时） - 数据分析（大量计算） - 批量处理（成千上万文件） **问题**: 主线程阻塞 → 用户无响应 **解决方案**:"
+  },
+  {
+    "stratum": "L5",
+    "file_sha": "8225e8d714dde6cd60539a9d3afbcad45f880926",
+    "lingua": "tl",
     "langid": "vi",
     "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 2804,
-    "excerpt": "# React architect & PM (planning-only) ## When to apply - User provides specs, user stories, Figma, screenshots, or asks for “thiết kế / kiến trúc / breakdown task” before coding. - User wants Feature"
-  },
-  {
-    "stratum": "S_cauda",
-    "file_sha": "0ebadeb75fa2fb190267767ecd7af098e430d2d5",
-    "langid": "la",
-    "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 2420,
-    "excerpt": "# Common Delegation Patterns ## Full Stack Feature **Workflow**: Research → Analyzer → react-engineer + Engineer → Ops (deploy) → Ops (VERIFY) → api-qa + web-qa → Docs **When**: Complete feature requi"
-  },
-  {
-    "stratum": "S_cauda",
-    "file_sha": "07dcb8128abb9ec332034dd728ab46a07912532c",
-    "langid": "km",
-    "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 3217,
-    "excerpt": "# Post to X (Twitter) Posts text, images, videos, and long-form articles to X via real Chrome browser (bypasses anti-bot detection). ## Script Directory **Important**: All scripts are located in the s"
-  },
-  {
-    "stratum": "S_cauda",
-    "file_sha": "5bfdce6f6ee2a6cce2da025a25ea7c02a5d5d20f",
-    "langid": "la",
-    "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 7638,
-    "excerpt": ":new-project Initialize a new project with deep context gathering and workflow configuration. This is the most leveraged moment in any project. Deep questioning here means better plans, better executi"
-  },
-  {
-    "stratum": "S_cauda",
-    "file_sha": "8b1b5ac1b93ff9c154c41013a9591fd699df3522",
-    "langid": "la",
-    "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 1148,
-    "excerpt": "# 🎯 Arbitrage Hunter **K.I.T.'s Money Printer - Find FREE MONEY across exchanges!** ## Features ### 💰 Cross-Exchange Arbitrage - Monitor price differences across 10+ exchanges - Instant spread detecti"
-  },
-  {
-    "stratum": "S_cauda",
-    "file_sha": "f8e0034655a0c4a7ed74e278d3765294dfe74e76",
-    "langid": "la",
-    "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 4018,
-    "excerpt": "## When to Use This Skill Activate this skill when: - Integrating Opik with LLM model providers (OpenAI, Anthropic, Bedrock, Cohere, Gemini, etc.) - Building observability into agent frameworks (LangC"
-  },
-  {
-    "stratum": "S_muito_codigo",
-    "file_sha": "bd4e5d91ce60e2d190f3f28a3229d3cb54c7a170",
-    "langid": "ko",
-    "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 1353,
-    "excerpt": "# WPF Data Validation > **MVVM Framework Rule**: 설정에 따라 코드 스타일이 결정됩니다. > Prism 9 사용 시 → 참조 ## 1. Validation Approaches | Approach | Location | Pros | Cons | |----------|----------|------|------| | | X"
-  },
-  {
-    "stratum": "S_multilingue",
-    "file_sha": "a54ed215dfda5f86b488eb15003255df383f9ef3",
-    "langid": "ja",
-    "langid_conf": 1.0,
-    "lingua": "en",
-    "prose_len": 7079,
-    "excerpt": "# elidex-plan-review — pre-impl plan-memo review の **pre-impl 対**。Plan-memo writeup 直後 / user approval 前に走らせて、implementation で発覚する architectural drift を plan 段階で潰す。 - **Axis SSoT**: - **Workflow SSoT*"
-  },
-  {
-    "stratum": "S_texto_curto",
-    "file_sha": "9935d9309b8f578dc20b9e28950807360ba0f47f",
-    "langid": "und",
-    "langid_conf": 0.8362,
-    "lingua": "la",
-    "prose_len": 166,
-    "excerpt": "# graphql-schema-gen Stub skill — implementation pending. ## Description Stub skill: graphql-schema-gen ## Status - [ ] Implementation - [ ] Tests - [ ] Documentation"
-  },
-  {
-    "stratum": "S_texto_curto",
-    "file_sha": "bafa7148a73c7cf781da442e5f56276be066e196",
-    "langid": "und",
-    "langid_conf": 0.8572,
-    "lingua": "en",
-    "prose_len": 98,
-    "excerpt": "---\\nname: pyenv\\ndescription: Python version manager\\n---\\n# pyenv Plugin\\nPython version manager"
+    "short": false,
+    "code_heavy": false,
+    "multi_script": false,
+    "prose_len": 674,
+    "excerpt": "Đọc → Tạo GitHub Issues → Update issue number vào file **Steps:** 1. Verify MCP: 2. Find files to sync (CẢ HAI điều kiện): - Has: - Has: (no number yet) 3. For each file: - Parse title, labels (phase-"
   }
 ]
