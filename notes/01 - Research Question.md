@@ -1,10 +1,20 @@
 ---
 tipo: questões
 atualizado: 2026-08-22
-status: não operacionalizada
+status: QI-1 adotada como questão central
 ---
 
 # Research Questions
+
+> [!important] Questão central: **QI-1** (desde 2026-08-22)
+> **Qual a prevalência de skills de segurança na população pública de Agent Skills?**
+>
+> Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.1), com as
+> duas classes **sempre reportadas separadamente** além do agregado.
+> População: **todos os idiomas** ([[Decision Log#D-012]]).
+> Decisão: [[Decision Log#D-011]] · Metodologia: [[QI-1 Methodology]]
+>
+> **QI-2 e QI-3 permanecem documentadas como extensões futuras** — ver §Extensões.
 
 > [!important] Procedência
 > Separado por origem. **Nada abaixo de "Inferidas" ou "Propostas" foi definido
@@ -35,12 +45,18 @@ skills de segurança por keywords. Essa tentativa produziu resultado inválido
 
 Leituras minhas do README, do notebook e do paper do GitSkills.
 
-**QI-1. Qual a prevalência de skills de segurança na população pública de agent
-skills?** Objetivo direto do notebook. O critério já está definido
-([[Decision Log#D-004]], [[Codebook]]): Security Skill = `SEC-PRIMARY` +
-`SEC-SECONDARY`. **A resposta ainda não é obtível** - depende de classificador
-validado contra padrão-ouro. E deve ser reportada com PRIMARY e SECONDARY
-desagregados, já que SECONDARY tende a dominar.
+**QI-1. Qual a prevalência de skills de segurança na população pública de Agent
+Skills?** ⭐ **Questão central adotada** ([[Decision Log#D-011]]).
+
+Critério definido ([[Decision Log#D-004]], [[Codebook]] v2.1): Security Skill =
+`SEC-PRIMARY` + `SEC-SECONDARY`. **A resposta ainda não é obtível** — exige
+estimativa com incerteza estatística a partir de amostra anotada e classificador
+validado contra padrão-ouro, não contagem de keyword. Desenho completo em
+[[QI-1 Methodology]].
+
+Reportada sempre com `PRIMARY` e `SECONDARY` desagregados (SECONDARY tende a
+dominar), por conteúdo distinto e por ocorrência, e com a taxa de `AMBIGUOUS` à
+parte.
 
 **QI-2. Que tipos de preocupação de segurança as skills expressam, e como se
 distribuem?** Implícita em "identificar padrões". **Metodologia definida em
@@ -90,21 +106,48 @@ possivelmente original.
 
 ---
 
-## Avaliação
+## Extensões futuras
 
-QI-1 e a mais óbvia e a mais fragil: vira exercicio de definição, e a resposta e
-determinada pelo critério mais do que pelo dado.
+Preservadas, com dependências registradas. Nenhuma é caminho crítico da QI-1, e o
+trabalho já feito nelas é reaproveitável.
 
-QP-1, QP-2 e QP-5 medem **propriedades declaradas ou estruturais** das skills. Não
-dependem de julgar se uma skill "e de segurança" - o ponto fraco de QI-1/QI-2/QI-3.
-São mais defensáveis num TCC e mais originais.
+| Questão | Estado | Depende de |
+|---|---|---|
+| **QI-2** — tipos de preocupação e distribuição | metodologia escrita; candidate retrieval medido; [[Security Taxonomy]] v0.1 não validada | classificação validada da QI-1 fornece a base; taxonomia precisa de open coding humano |
+| **QI-3** — lacunas de cobertura | metodologia escrita; não iniciada | QI-2 estabilizada + [[Decision Log#D-009]] |
+| **QP-1** — permissões declaradas (`allowed-tools`) | não iniciada | independente; instrumentação própria |
+| **QP-2** — skills com scripts empacotados | não iniciada | independente |
+| **QP-3** — divergência entre cópias | não iniciada | limitada por MNAR do histórico |
+| **QP-4** — manutenção de skills de segurança | não iniciada | classificação da QI-1 + histórico (MNAR) |
+| **QP-5** — convenções emergentes (`risk`, `disable-model-invocation`) | não iniciada | independente; barata |
 
-QP-3 e a de maior impacto potencial e maior risco metodológico. Só vale a pena com
-a restrição temporal explícita, e o resultado provável e descritivo ("cópias
-divergem em X% dos casos; em Y% a divergência envolve execução"), não causal.
+QP-4 é a extensão mais natural depois da QI-1: reusa exatamente a mesma
+classificação, só acrescenta as variáveis de histórico.
 
-**Recomendação:** uma questão central de QP-1/QP-2 mais QI-1 como caracterização
-descritiva de contexto. Decisão do pesquisador.
+## Avaliação (registro histórico, anterior a D-011)
+
+> [!note] Superada pela decisão do pesquisador
+> Este parágrafo é mantido por rastreabilidade. Ele recomendava QP-1/QP-2 como eixo
+> central, com QI-1 apenas como caracterização de contexto. O pesquisador decidiu
+> pela **QI-1 como questão central** ([[Decision Log#D-011]]).
+
+A objeção registrada na época era: *"QI-1 é a mais óbvia e a mais frágil: vira
+exercício de definição, e a resposta é determinada pelo critério mais do que pelo
+dado."*
+
+**Como a objeção fica endereçada.** A fragilidade é real e não desaparece — mas é
+mitigável, e o desenho de [[QI-1 Methodology]] a ataca de frente:
+
+1. O critério está **fixado por escrito e antes da medição** ([[Codebook]] v2.1), o
+   que impede ajustá-lo depois de ver o resultado.
+2. `PRIMARY` e `SECONDARY` são reportados **separadamente**, então o leitor vê o
+   efeito da escolha de agregação em vez de recebê-la embutida.
+3. `AMBIGUOUS` é reportado com **limites inferior e superior**, tornando explícita a
+   parcela da estimativa que depende de julgamento.
+4. Sensibilidade a definições alternativas entra como **robustness check**.
+
+Continua valendo o alerta: se a estimativa mudar muito sob critérios plausíveis
+alternativos, **isso é o achado** e deve ser reportado como tal.
 
 ## Ligações
 

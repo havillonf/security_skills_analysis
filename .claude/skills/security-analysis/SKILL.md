@@ -1,14 +1,26 @@
 ---
 name: security-analysis
-description: O que "segurança" significa no projeto security_skills_analysis e como identificar, classificar e analisar Security Skills com validade. Opera em três modos - DISCOVERY (QI-2, open coding), CLASSIFICATION (aplicar o codebook) e COVERAGE (QI-3, crosswalk com frameworks externos). Use ao definir critérios de inclusão, construir ou aplicar taxonomia, escrever regras de detecção, anotar amostras, ou interpretar qualquer resultado sobre skills de segurança no GitSkills.
+description: O que "segurança" significa no projeto security_skills_analysis e como identificar, classificar e estimar a prevalência de Security Skills com validade. Questão central é a QI-1 (prevalência); a skill opera em três modos - CLASSIFICATION (aplicar o codebook, caminho crítico da QI-1), DISCOVERY (QI-2, open coding) e COVERAGE (QI-3, crosswalk). Cobre a população multilíngue. Use ao definir critérios de inclusão, anotar amostras, desenhar amostragem, validar classificador, ou interpretar qualquer resultado sobre skills de segurança no GitSkills.
 ---
 
 # Análise de segurança em GitSkills
 
 Pré-requisitos: `project-context`, `data-analysis`.
 
-Instrumento canônico: **`notes/Decisions/Codebook.md` v2.0**. Esta skill orienta
+Instrumento canônico: **`notes/Decisions/Codebook.md` v2.1**. Esta skill orienta
 *como operar*; o codebook define *o que vale*. Em divergência, o codebook manda.
+
+> [!important] Questão central: **QI-1 — prevalência** (D-011, 2026-08-22)
+> O objetivo é uma **estimativa com incerteza**, não uma contagem. Desenho em
+> `notes/Methodology/QI-1 Methodology.md`; plano em `notes/03 - Methodology.md`.
+> QI-2 e QI-3 seguem documentadas como extensões, fora do caminho crítico.
+
+> [!danger] A população inclui **todos os idiomas** (D-012)
+> A língua em que uma skill foi escrita **não determina** se ela entra na pesquisa.
+> Não descarte por idioma. Não classifique conteúdo não inglês como `NONE` ou
+> `AMBIGUOUS` por não entendê-lo — isso é problema de processo (R-9), não de classe.
+> Ausência de termos ingleses **não é** ausência de preocupação de segurança.
+> Estratégia completa: `notes/Methodology/Multilingual Strategy.md`.
 
 ---
 
@@ -29,7 +41,7 @@ artefatos associados.
 | `SECONDARY` | capacidade ou etapa substancial de um objetivo maior |
 | `MENTION` | recomendação ou preocupação incidental |
 | `NONE` | sem preocupação de segurança relevante |
-| `AMBIGUOUS` | evidência insuficiente — **nunca force outra classe** |
+| `AMBIGUOUS` | evidência insuficiente — **nunca force outra classe**, e **nunca por idioma** |
 
 **Security Skill = `PRIMARY` + `SECONDARY`.** `AMBIGUOUS` fica fora do numerador
 **e** do denominador, com contagem sempre reportada.
@@ -37,7 +49,7 @@ artefatos associados.
 Dimensões independentes registradas em paralelo — `security_focus`,
 `operational_security`, `operation_level`, `security_functions`,
 `security_concerns`, `operational_capability`, `evidence`, `confidence`. Definições
-e regras R-1..R-8 no codebook.
+e regras R-1..R-9 no codebook (R-9 = idioma).
 
 ### A distinção central
 
@@ -78,17 +90,24 @@ mudança. Não buscar taxonomia perfeita na primeira iteração.
 
 Saída: [[Security Taxonomy]], versionada. Processo: `notes/Methodology/QI-2 Methodology.md`.
 
-### `CLASSIFICATION` — aplicar o codebook
+### `CLASSIFICATION` — aplicar o codebook ⭐ caminho crítico da QI-1
 
 Só depois do codebook estabilizado.
 
-Como operar: aplicar R-1..R-8 em ordem, parando na primeira que decide; registrar
+Como operar: aplicar R-1..R-9 em ordem, parando na primeira que decide; registrar
 `evidence` (description / body / bundled_artifacts) e `confidence`; multi-label onde
 previsto; usar `AMBIGUOUS` sem hesitação quando a evidência não sustenta; anotar a
 regra que decidiu.
 
 Nunca classifique sem citar a evidência textual. "Parece de segurança" não é
 anotação.
+
+Registrar sempre `language` (ISO 639-1, ou `mixed`, ou `und`) e `used_translation`.
+Se precisar de tradução para decidir, o original é preservado e a tradução é apoio
+marcado — nunca substituição (D-013).
+
+**A contagem de positivos do classificador não é a prevalência.** Ela forma os
+estratos; a estimativa vem do estimador estratificado (QI-1 Methodology §3).
 
 ### `COVERAGE` — QI-3, crosswalk
 
@@ -125,11 +144,15 @@ Evidência empírica, não suposição:
 
 Keyword serve para **candidate retrieval**, jamais como classificador.
 
-> [!warning] O retrieval quase não filtra
+> [!warning] O retrieval em inglês quase não filtra
 > Recuperação ampla com 58 termos devolve **78,69% dos representantes**
 > (1.477.763 de 1.877.981) — [[EXP-002]]. Não existe atalho por keyword: a redução
 > real acontece na classificação. Ao escolher um retrieval mais estrito, o critério
 > é **recall contra o gold set**, nunca tamanho do pool.
+>
+> E esse retrieval é **só em inglês** — inadequado como desenho final sob D-012.
+> Substituto em `notes/Methodology/Multilingual Strategy.md` §3. Traduzir a lista de
+> keywords **não** produz retrieval multilíngue confiável.
 
 > [!warning] `code-review` não é "segurança incidental"
 > É **`SECONDARY`**: tem seção dedicada e acionável (OWASP Top 10, injection, XSS,
@@ -217,8 +240,11 @@ pesquisa, não pressuposto.
 ## Ameaças à validade
 
 - **Multilinguismo — confirmado.** 48 casos de [[EXP-002]] trouxeram francês,
-  chinês, russo, coreano, italiano e japonês. Retrieval e codebook em inglês perdem
-  essas skills e as empurram para `AMBIGUOUS`. Quantificar.
+  chinês, russo, coreano, italiano e japonês. A população inclui todos os idiomas
+  (D-012); [[EXP-003]] mede a distribuição. Risco real: léxico e âncoras enviesados
+  para inglês reduzem o recall em outros idiomas e **subestimam a prevalência**
+  neles. Avaliar desempenho **por idioma** — F1 global bom não é evidência de
+  uniformidade.
 - **Concentração por autor.** Existem pacotes publicados por fornecedor ("Anthropic
   Cybersecurity Skills"). Se replicarem muito, poucos autores dominam a distribuição
   de concerns — confundir **difusão** com **preocupação**.

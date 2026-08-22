@@ -6,16 +6,22 @@ status: exploração inicial concluída
 
 # Research Overview
 
-> [!warning] Estado
-> **[[Decision Log#D-004|D-004]]** decidida e **[[Decision Log#D-006|revisada por
-> D-006]]** (2026-08-22): existe definição de Security Skill, cinco classes
-> (`PRIMARY`/`SECONDARY`/`MENTION`/`NONE`/`AMBIGUOUS`) e dimensões independentes,
-> operacionalizadas no [[Codebook]] v2.0.
-> A **questão central ainda não está escolhida** — [[QI-2 Methodology|QI-2]] é a
-> candidata preferida do pesquisador, a alinhar com o orientador
-> ([[2026-08-22 - Pauta para o Orientador]]). O codebook ainda **não passou pelo
-> piloto**. Nenhum número deve ser apresentado como achado enquanto não houver
-> métricas contra padrão-ouro anotado.
+> [!important] Questão central: **QI-1** ([[Decision Log#D-011]], 2026-08-22)
+> **Qual a prevalência de skills de segurança na população pública de Agent Skills?**
+>
+> Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY` ([[Codebook]] v2.1), sempre
+> desagregados. População: **todos os idiomas** ([[Decision Log#D-012]]).
+> Desenho: [[QI-1 Methodology]] · Idiomas: [[Multilingual Strategy]] ·
+> Plano: [[03 - Methodology]]
+>
+> QI-2 e QI-3 preservadas como extensões futuras
+> ([[01 - Research Question]]§Extensões).
+
+> [!warning] Nenhum resultado ainda
+> O codebook **não passou pelo piloto** e não existe padrão-ouro. Nenhum número deste
+> projeto é resposta à QI-1. Em particular, **52,93%** (keyword) e **78,69%**
+> (candidate retrieval) são números exploratórios — **não são prevalência**
+> ([[QI-1 Methodology]] §7).
 
 ## Tema
 
@@ -52,8 +58,10 @@ Candidatas, com consequências diferentes:
 | Repositório | 282.200 | ecossistema de projetos |
 | Conta/dono | 195.841 | ecossistema de autores |
 
-Recomendação atual: **conteúdo distinto** como unidade primária, com contagem por
-ocorrência reportada em paralelo como medida de difusão. Ver [[Decision Log#D-001]].
+Recomendação vigente: **conteúdo distinto** como unidade primária, com contagem por
+ocorrência reportada em paralelo como medida de difusão. Ver [[Decision Log#D-001]] —
+inclusive a ressalva sobre near-duplicates, que enfraquece a premissa "1 voto por
+texto" sem invalidar a escolha.
 
 ## O que já se sabe (verificado)
 
@@ -70,6 +78,8 @@ notebook legado.
 - 78,69% dos representantes citam algum termo de segurança: recuperação por keyword
   não é filtro útil.
 - 59,3% dos repositórios tem zero stars.
+- **14,21% ± 0,48 pp da população não é escrita em inglês** (≈ 267 mil conteúdos);
+  chinês sozinho é 5,99%. Ver [[EXP-003]].
 
 ## O que foi invalidado
 
@@ -79,19 +89,29 @@ Valor correto com as mesmas keywords: 52,93%.
 
 ## Contribuição potencial
 
-Ainda não é reivindicação, e hipótese de contribuição: o paper do GitSkills lista
-usos pretendidos mas não os executa. A lacuna mais promissora é **segurança da
-própria skill como artefato** - permissões declaradas (`allowed-tools`), scripts
-empacotados, e divergência entre cópias num ecossistema sem registro. Ver a skill
-`security-analysis`.
+Ainda hipótese, não reivindicação. O paper do GitSkills lista usos pretendidos e não
+executa nenhum.
+
+Sob a QI-1, a contribuição plausível é **uma estimativa de prevalência defensável e
+reproduzível** onde hoje só existem contagens de keyword — com critério fixado antes
+da medição, incerteza quantificada, e cobertura multilíngue explícita. O contraste
+com os números exploratórios é o próprio ponto: 52,93% por keyword contra uma
+estimativa validada mostram o tamanho do erro que a abordagem ingênua comete.
+
+Preservadas como extensões: segurança **da própria skill** como artefato
+(`allowed-tools`, scripts empacotados, divergência entre cópias) — ver
+[[01 - Research Question]]§Extensões e a skill `security-analysis`.
 
 ## Mapa
 
-- [[Codebook]] - definição de Security Skill, classes, dimensões, regras R-1..R-8
+- [[QI-1 Methodology]] - **questão central**: desenho amostral e estimador
+- [[Multilingual Strategy]] - população multilíngue, detecção, gold set, riscos
+- [[Codebook]] - definição de Security Skill, classes, dimensões, regras R-1..R-9
 - [[QI-2 Methodology]] - open coding bottom-up, amostragem, denominadores
 - [[QI-3 Coverage Methodology]] - crosswalk, aplicabilidade, níveis de cobertura
 - [[Security Taxonomy]] - taxonomia emergente (v0.1, preliminar)
 - [[EXP-002]] - candidate retrieval, amostra de descoberta, near-duplicates
+- [[EXP-003]] - distribuição de idiomas da população
 - [[01 - Research Question]] - questões, separadas por procedência
 - [[02 - Hypotheses]] - hipóteses candidatas, nenhuma testada
 - [[03 - Methodology]] - plano de pesquisa em etapas

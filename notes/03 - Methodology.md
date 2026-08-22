@@ -1,243 +1,172 @@
 ---
 tipo: metodologia
 atualizado: 2026-08-22
-status: proposta
+status: reorganizado em torno da QI-1
 ---
 
-# Plano de pesquisa
+# Plano de pesquisa — QI-1
 
-Incremental. Cada etapa tem critério de conclusão verificável. **E-0 está concluída;
-E-1 está parcialmente concluída** - [[Decision Log#D-004]] foi decidida em
-2026-08-22; falta escolher a questão central. **Próximo passo: E-3 (piloto do
-[[Codebook]]).**
+> **Questão central: QI-1.** Qual a prevalência de skills de segurança na população
+> pública de Agent Skills? ([[Decision Log#D-011]])
+>
+> Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY`, sempre desagregados.
+> População: **todos os idiomas** ([[Decision Log#D-012]]).
+> Desenho estatístico: [[QI-1 Methodology]] · Idiomas: [[Multilingual Strategy]]
+
+Reorganizado em 2026-08-22. O plano anterior servia a três questões em paralelo;
+agora só as etapas necessárias à QI-1 são caminho crítico. Nada foi descartado —
+QI-2, QI-3 e QP-* estão preservadas em [[01 - Research Question]]§Extensões.
 
 Não avance uma etapa cujo critério de conclusão não tenha sido atingido.
 
 ---
 
-## E-0 - Reconhecimento e auditoria ✅
+## Concluído e reaproveitado
 
-**Objetivo.** Verdade estrutural do dataset; auditar o que já existia.
-**Saídas.** `scripts/profile_dataset.py`, `results/EXP-001_profile.json`,
-[[EXP-001]], [[GitSkills]], [[Decision Log]], 3 skills em `.claude/skills/`.
-**Concluída.** Integridade verificada; resultado anterior invalidado.
+| Etapa | Resultado | Uso na QI-1 |
+|---|---|---|
+| **E-0** ✅ Auditoria estrutural | [[EXP-001]] · integridade verificada, denominadores fixados, resultado anterior invalidado | define a população e as unidades |
+| **E-1** ✅ Definição e instrumento | [[Codebook]] v2.1 · [[Decision Log#D-004]], [[Decision Log#D-006\|D-006]] | é o instrumento de anotação |
+| **E-2b** ✅ Candidate retrieval (inglês) | [[EXP-002]] · pool de 78,69% | baseline a superar; mostra que keyword não filtra |
 
----
-
-## E-1 - Definir a questão e o critério de segurança 🟡 parcial
-
-**Objetivo.** Fechar [[Decision Log#D-004]] e escolher a questão central de
-[[01 - Research Question]].
-**Feito.** ✅ D-004 `aceita` em 2026-08-22: definição de Security Skill e as classes
-`SEC-PRIMARY`/`SEC-SECONDARY`/`SEC-MENTION`/`NON-SEC`, operacionalizadas no
-[[Codebook]] v1.0.
-**Pendente.** ⬜ A **questão central ainda não foi escolhida** entre QI-1..QI-3 e
-QP-1..QP-5. A definição diz *o que conta como Security Skill*; não diz *o que se
-pergunta sobre elas*.
-**Conclusão quando.** A questão tiver população, variável e critério de resposta
-definidos por escrito.
+Produzido para a QI-2 e **preservado sem estar no caminho crítico**:
+[[QI-2 Methodology]], [[QI-3 Coverage Methodology]], [[Security Taxonomy]] v0.1.
 
 ---
 
-## E-2 - Testar a validade de keywords (H-2)
+## Caminho crítico da QI-1
 
-**Objetivo.** Descobrir se keyword matching serve sequer como triagem.
-**Entradas.** representantes; keywords de [[EXP-001]].
-**Método.** Amostra aleatória determinística de ~100 ocorrências por keyword de alta
-frequência (`token`, `audit`, `permission`, `security`); anotação manual do sentido;
-precisão por keyword.
-**Saídas.** `results/EXP-002_*`, [[02 - Hypotheses|H-2]] testada, lista de keywords
-com precisão conhecida.
-**Risco.** Anotador único = viés. Declarar como ameaça a validade.
-**Conclusão quando.** Cada keyword tiver precisão estimada com intervalo de
-confiança.
-**Nota (revisada em 2026-08-22).** Com D-004 decidida, esta etapa **deixa de ser
-prioritária** e muda de propósito: não serve mais para escolher a definição, e sim
-para calibrar a **triagem** que alimenta a anotação. O critério que importa agora e
-**recall** (não perder Security Skills antes da anotação), não precisão. Roda depois
-do piloto E-3. Calibração já medida: o conjunto restrito de 17 keywords cobre 32,59%
-dos representantes contra 52,93% do conjunto com keywords ruidosas.
+### E-3 — Distribuição de idiomas ✅
 
----
+**Objetivo.** Saber quais idiomas existem na população e em que proporção.
+**Por que primeiro.** Sem isso não é possível desenhar léxico multilíngue, estratos
+de amostragem nem gold set representativo ([[Decision Log#D-012]]).
+**Método.** Duas camadas — script Unicode sobre a população inteira; identificação de
+idioma sobre amostra aleatória determinística, com remoção de código, front matter,
+URLs e caminhos antes de detectar. Ver [[Multilingual Strategy]] §2.
+**Saída.** `scripts/detect_languages.py` · `results/EXP-003_languages.json` ·
+[[EXP-003]].
+**Resultado.** ✅ **Não inglês = 14,21% ± 0,48 pp (≈ 267 mil conteúdos)**; zh 5,99%,
+ja 1,73%, de 1,61%, ko 1,25%, es 0,97%, pt 0,95%. Front matter diverge do corpo em
+4,17%; 11,71% do conteúdo é multi-script. Estratos linguísticos propostos em
+[[Multilingual Strategy]] §8.
+**Pendência.** O detector **não foi validado** contra rótulos humanos — fazer antes
+de usar idioma como variável de estratificação.
 
-## E-3 - Piloto do codebook e padrão-ouro
+### E-4 — Candidate retrieval multilíngue
 
-**Objetivo.** Levar o [[Codebook]] de v1.0 a instrumento com validade conhecida.
-**Feito.** ✅ [[Codebook]] v1.0 escrito **antes** da anotação, com regras R-1..R-7 e
-âncoras reais do dataset.
-**Método.**
-1. **Piloto (~50 casos)** amostrados deterministicamente, **estratificado para
-   sobre-amostrar a fronteira SEC-SECONDARY / SEC-MENTION** - e ali que o
-   instrumento falha, não nos extremos. Incluir casos `code-review`.
-2. Revisar para v1.1 se necessário, com motivo registrado.
-3. Padrão-ouro sobre amostra maior; **kappa ponderado** (classes são ordinais) e
-   concordância na dicotomia PRIMARY+SECONDARY vs resto.
-**Saídas.** `results/EXP-003_goldset.parquet`; [[Codebook]] v1.1 se revisado.
-**Riscos.** Codebook ajustado depois de ver o resultado vira racionalização -
-revisão só entre piloto e anotação definitiva, nunca durante. Anotador único e
-ameaça a validade a declarar.
-**Conclusão quando.** Existir padrão-ouro anotado, codebook estável e concordância
-reportada.
+**Objetivo.** Triagem que não penalize idiomas.
+**Entradas.** E-3.
+**Método.** Terminologia de segurança nos idiomas efetivamente presentes; variantes
+morfológicas; termos ingleses embutidos; textos multilíngues.
+**Critério de escolha.** **Recall por idioma** contra o gold set — nunca tamanho do
+pool. Se a via lexical falhar, avaliar embeddings multilíngues ou classificador
+multilíngue direto. Ver [[Multilingual Strategy]] §3.
+**Risco.** Traduzir a lista inglesa e achar que resolveu.
+**Nota.** Dado o pool de 78,69% e o Desenho C, o retrieval provavelmente **não é o
+gargalo**: serve para estratificar, e estratificação imperfeita custa precisão, não
+validade.
 
----
+### E-5 — Piloto de anotação
 
-## E-4 - Dataset analítico
+**Objetivo.** Testar o [[Codebook]] v2.1 antes de investir na anotação grande.
+**Método.** ~50 casos, sobre-amostrando a fronteira `SECONDARY`/`MENTION` (é onde o
+instrumento falha, não nos extremos) **e** conteúdo não inglês. Incluir casos
+`code-review`.
+**Saída.** [[Codebook]] v2.2 se revisado, com motivo datado.
+**Conclusão quando.** R-2 se mostrar aplicável na prática; custo por item medido;
+regras ambíguas identificadas.
+**Risco.** Ajustar o codebook depois de ver resultado vira racionalização — revisão
+só entre piloto e anotação definitiva, nunca durante.
 
-**Objetivo.** Tabela por representante com as variáveis operacionalizadas.
-**Entradas.** `artifacts` + `artifact_siblings` + `repos`; codebook.
-**Método.** Script versionado; join validado por contagem antes/depois; variáveis de
-[[01 - Research Question|QP-1/QP-2]] (`allowed-tools` parseado, presença de script,
-padrões de execução/rede, métricas de tamanho e histórico).
-**Saídas.** `results/analytic_dataset.parquet` + dicionário de dados.
-**Risco.** Join com `artifact_siblings` infla linhas (`sibling_count` max 79.940).
-Agregar antes de juntar.
-**Conclusão quando.** Contagem de linhas bater com o denominador declarado em D-001
-e o dicionário estiver escrito.
+### E-6 — Gold set e concordância
 
----
+**Objetivo.** Padrão-ouro humano com confiabilidade conhecida.
+**Método.** Amostra estratificada por idioma/grupo linguístico. Dois anotadores
+quando viável; adjudicação registrada. Métricas do [[Codebook]] §9 — kappa ponderado
+nos quatro ordinais (excluindo `AMBIGUOUS`), kappa/α na dicotomia.
+**Conclusão quando.** Gold set versionado em `results/` e concordância reportada,
+incluindo por idioma quando houver suporte.
 
-## E-5 - Análise exploratória
+### E-7 — Classificador validado
 
-**Objetivo.** Distribuições, cauda, concentração.
-**Método.** Mediana/quantis (nunca média em `stars` ou `sibling_count`);
-concentração por repo e por dono; detecção de dominância por poucos atores.
-**Saídas.** `results/EXP-005_*`, nota em `notes/Results/`.
-**Risco.** **P-hacking.** Rotular tudo aqui como exploratório; nenhum p-valor desta
-etapa vira evidência confirmatória.
-**Conclusão quando.** Toda variável do dataset analítico tiver distribuição descrita.
+**Objetivo.** Classificador com desempenho medido, para formar estratos.
+**Método.** Validação contra o gold set: precisão, recall, F1 **por classe** e para a
+dicotomia, com IC e matriz de confusão completa; **desempenho por idioma**.
+**Análise de erro exigida.** `SECONDARY` ↔ `MENTION` é a confusão que altera a
+prevalência; `PRIMARY` ↔ `SECONDARY` não altera o agregado. Reportar separadamente
+([[QI-1 Methodology]] §5).
+**Conclusão quando.** Métricas por classe e por idioma reportadas com IC.
+**Regra.** LLM não é ground truth ([[Decision Log#D-008]]).
 
----
+### E-8 — Classificação da população
 
-## E-6 - Análise confirmatória
+**Objetivo.** Atribuir classe prevista a cada conteúdo, formando os estratos.
+**Atenção.** A contagem de positivos **não é a resposta**. Serve só para `N_h`.
+**Conclusão quando.** Tamanhos de estrato (classe prevista × grupo linguístico)
+conhecidos.
 
-**Objetivo.** Testar as hipóteses declaradas a priori em [[02 - Hypotheses]].
-**Método.** Escolher **antes** quais são confirmatórias; testes não paramétricos
-(distribuições pesadas); tamanho de efeito sempre; correção para múltiplas
-comparações; deduplicar por `file_sha` e verificar que não há dominância por poucos
-repos.
-**Saídas.** `results/EXP-006_*`, `notes/Results/`.
-**Risco.** Dependência entre observações (60,8% de cópias) inválida testes que
-assumam independência.
-**Conclusão quando.** Cada hipótese confirmatória tiver resultado com efeito e IC.
+### E-9 — Estimativa de prevalência
 
----
+**Objetivo.** Responder à QI-1.
+**Método.** Estimador estratificado do Desenho C ([[QI-1 Methodology]] §3), com IC.
+**Saídas obrigatórias:**
+- prevalência agregada com IC95%;
+- `PRIMARY` e `SECONDARY` desagregados;
+- por conteúdo distinto **e** por ocorrência (difusão);
+- taxa de `AMBIGUOUS` e limites inferior/superior;
+- concentração por repositório **e** por dono;
+- prevalência por idioma quando houver suporte amostral (secundária).
+**Conclusão quando.** Todos os itens acima produzidos por script versionado.
 
-## E-7 - Robustez e sensibilidade
+### E-10 — Robustez e revisão adversarial
 
-**Objetivo.** Descobrir se as conclusões dependem de uma única escolha.
-**Método.** Repetir E-6 sob: (a) denominador alternativo (ocorrência vs conteúdo);
-(b) critério alternativo de segurança; (c) exclusão dos 10 maiores repos e dos 10
-maiores donos; (d) só repos com >= 1 star; (e) thresholds deslocados.
-**Saídas.** tabela de sensibilidade.
-**Conclusão quando.** Cada conclusão principal tiver o intervalo de variação
-reportado sob as alternativas.
-**Nota.** Se uma conclusão só vale sob uma configuração, **isso é o achado** - e
-deve ser reportado como tal, não escondido.
+**Método.** Repetir E-9 sob: denominador alternativo (ocorrência vs conteúdo);
+exclusão dos 10 maiores repos e donos; deduplicação por similaridade
+([[Decision Log#D-010]]); definição alternativa de Security Skill; `AMBIGUOUS` nos
+dois extremos.
+Depois, revisão adversarial: explicação alternativa? viés de seleção ou
+sobrevivência? a conclusão depende de uma decisão só? frequência lida como
+importância? outro pesquisador reproduz?
+**Conclusão quando.** Cada conclusão tiver intervalo de variação reportado. Se uma
+conclusão só vale sob uma configuração, **isso é o achado**.
 
----
+### E-11 — Literatura e consolidação
 
-## E-8 - Revisão adversarial
-
-**Objetivo.** Tentar derrubar as próprias conclusões.
-**Método.** Para cada achado: explicação alternativa? viés de seleção ou
-sobrevivência? leakage? depende de uma decisão? o resultado e frequência sendo lida
-como importância? ausência de evidência lida como evidência de ausência? a
-interpretação vai além do dado? outro pesquisador reproduz?
-**Saídas.** `notes/Results/Adversarial Review.md`.
-**Conclusão quando.** Cada achado tiver sobrevivido ou sido rebaixado a observação.
+Fontes primárias em `notes/Literature/`; ameaças à validade (construto, interna,
+externa, conclusão); rastro dado → transformação → código → output → análise →
+conclusão verificado ponta a ponta. Todo número com um `EXP-XXX` e um script.
+Literatura pode correr em paralelo desde já.
 
 ---
 
-## E-9 - Literatura
+## Ordem
 
-**Objetivo.** Situar contra trabalho existente.
-**Método.** Fontes primárias (papers, spec oficial da Anthropic, OWASP Top 10 for
-LLM Applications). Blog não sustenta afirmação científica quando há literatura
-primária. Não inventar referência.
-**Saídas.** `notes/Literature/`.
-**Nota.** Pode correr em paralelo desde E-1. **Começar cedo** - a literatura pode
-mudar a taxonomia de E-3.
-
----
-
-## E-10 - Consolidação
-
-**Objetivo.** Material pronto para escrita.
-**Saídas.** `notes/Results/` consolidado; ameaças a validade (construto, interna,
-externa, conclusão); figuras geradas a partir de `results/`; rastro
-dado → transformação → código → output → análise → conclusão verificado ponta a
-ponta.
-**Conclusão quando.** Todo número do texto tiver um `EXP-XXX` e um script.
-
----
-
-## Ordem recomendada
-
+```text
+E-0 ✅  E-1 ✅  E-2b ✅
+   |
+E-3  idiomas ✅         14,21% não inglês
+   |
+E-4  retrieval multilíngue   <- próxima etapa
+   |
+E-5  piloto de anotação
+   |
+E-6  gold set + concordância
+   |
+E-7  classificador validado
+   |
+E-8  classificação da população (estratos)
+   |
+E-9  estimativa de prevalência com IC
+   |
+E-10 robustez + adversarial
+   |
+E-11 consolidação          (literatura em paralelo desde já)
 ```
-E-0 ✅ → E-1 🟡 (D-004 + D-006 ✅ / questão central pendente)
-      → E-2b ✅ candidate retrieval e amostra de descoberta (EXP-002)
-      → E-3  piloto de anotação humana   ← PRÓXIMO PASSO
-      → E-3b open coding humano iterativo → taxonomia estabilizada
-      → E-3c gold set + concordância + classificador validado
-      → E-11 QI-2 em escala
-      → E-12 QI-3 (crosswalk, aplicabilidade, cobertura)
-      → E-4 → E-5 → E-6 → E-7 → E-8 → E-10
-E-9 em paralelo desde já
-```
-
-**Mudança de ordem em 2026-08-22.** E-2 vinha antes de E-3 para informar a decisão
-D-004. Com D-004 decidida, a prioridade inverte: o piloto (E-3) passa a ser o próximo
-passo, e E-2 vira pergunta subordinada — "que triagem alimenta a anotação com bom
-recall", não mais "keyword serve como definição".
-
----
-
-## Etapas acrescentadas em 2026-08-22
-
-### E-2b — Candidate retrieval ✅
-
-Feito em [[EXP-002]]. Pool = **78,69%** dos representantes; amostra de descoberta de
-48 casos em 4 estratos. Conclusão: keyword não é filtro útil; o desenho tem de ser
-amostra anotada → classificador validado → escala.
-
-### E-3b — Open coding humano iterativo
-
-**Objetivo.** Levar [[Security Taxonomy]] de v0.1 (semeada por LLM, **não validada**)
-a taxonomia estabilizada.
-**Método.** [[QI-2 Methodology]] §4. Iterar amostra → códigos → agrupamento →
-refinamento, datando cada mudança.
-**Conclusão quando.** Uma iteração completa não produzir código novo relevante.
-
-### E-3c — Gold set, concordância e classificador
-
-**Objetivo.** Instrumento com validade conhecida.
-**Método.** [[Codebook]] §9 — kappa ponderado nos quatro ordinais (excluindo
-`AMBIGUOUS`), kappa/α na dicotomia, Krippendorff's α nas dimensões multi-label.
-Classificador validado contra o gold set.
-**Conclusão quando.** Precisão/recall/F1 com IC reportados **por classe** e para a
-dicotomia, com matriz de confusão.
-
-### E-11 — QI-2 em escala
-
-**Objetivo.** Responder QI-2 com evidência.
-**Método.** Distribuições nas quatro camadas de denominador (A/B/C/D,
-[[QI-2 Methodology]] §5), sempre com concentração por repositório **e por dono**
-([[Decision Log#D-001]], [[Decision Log#D-010]]).
-**Conclusão quando.** As oito perguntas de saída da QI-2 tiverem resposta sustentada
-por classificação validada.
-
-### E-12 — QI-3
-
-**Objetivo.** Responder QI-3.
-**Dependências.** E-11 concluída **e** [[Decision Log#D-009]] aprovada.
-**Método.** [[QI-3 Coverage Methodology]] — escolha justificada de frameworks,
-aplicabilidade antes de cobertura, crosswalk com relações 1:1/1:N/N:1/sem
-correspondência, seis níveis de cobertura, sensitivity analysis em todo limiar.
-**Conclusão quando.** Toda ausência observada tiver as cinco explicações
-concorrentes examinadas e registradas.
 
 ## Ligações
 
-[[00 - Research Overview]] · [[01 - Research Question]] · [[02 - Hypotheses]] ·
-[[Decision Log]] · [[Codebook]] · [[QI-2 Methodology]] ·
-[[QI-3 Coverage Methodology]] · [[Security Taxonomy]] · [[EXP-001]] · [[EXP-002]]
+[[00 - Research Overview]] · [[01 - Research Question]] · [[QI-1 Methodology]] ·
+[[Multilingual Strategy]] · [[Codebook]] · [[Decision Log]] · [[02 - Hypotheses]] ·
+[[EXP-001]] · [[EXP-002]] · [[EXP-003]] · [[QI-2 Methodology]] ·
+[[QI-3 Coverage Methodology]]

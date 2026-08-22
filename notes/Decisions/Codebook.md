@@ -1,9 +1,9 @@
 ---
 tipo: codebook
-version: 2.0
+version: 2.1
 data: 2026-08-22
-substitui: v1.0 (2026-08-22)
-decisoes: D-004, D-006
+substitui: v2.0 (2026-08-22)
+decisoes: D-004, D-006, D-012, D-013
 status: proposto para teste piloto
 ---
 	
@@ -12,12 +12,16 @@ status: proposto para teste piloto
 Instrumento canônico de anotação. Definição, classes e dimensões fornecidas pelo
 pesquisador; operacionalização e âncoras derivadas dos dados.
 
-> [!warning] v2.0 — ainda não validada
+> [!warning] v2.1 — ainda não validada
 > Escrita **antes** da anotação definitiva, conforme [[03 - Methodology|E-3]].
-> Revisa a v1.0 (ver [[Decision Log#D-006]]): renomeia `NON-SEC` → `NONE`,
-> acrescenta `AMBIGUOUS` e separa dimensões que a v1.0 colapsava numa única classe.
-> Nenhuma anotação foi feita sob a v1.0, então não há retrabalho.
+> Nenhuma anotação foi feita sob v1.0 ou v2.0, então não há retrabalho.
 > **Não alterar em silêncio depois que a anotação começar.**
+>
+> **v2.0** ([[Decision Log#D-006]]): renomeou `NON-SEC` → `NONE`, acrescentou
+> `AMBIGUOUS`, separou dimensões colapsadas na v1.0.
+> **v2.1** ([[Decision Log#D-012]]): corrige o tratamento de idioma — barreira
+> linguística do anotador **deixa de ser** caso de `AMBIGUOUS`; acrescenta a regra
+> R-9 e os campos `language` e `used_translation`.
 
 ---
 
@@ -80,9 +84,15 @@ distinção central da pesquisa: *falar sobre* segurança versus *fazer* seguran
 
 **`AMBIGUOUS` não é lixo nem categoria de descarte.** É um resultado. Nunca force
 uma das outras quatro quando a evidência não sustenta. Casos frequentes observados:
-skill sem front matter e corpo genérico; skill em idioma que o anotador não domina;
-skill cuja capacidade real depende de script não recuperado
-(`composition_truncated = 1`, 13,4% dos representantes).
+skill sem front matter e corpo genérico; skill cuja capacidade real depende de script
+não recuperado (`composition_truncated = 1`, 13,4% dos representantes); skill cujo
+texto é genérico demais para revelar comportamento.
+
+> [!danger] Idioma **nunca** é motivo de `AMBIGUOUS`
+> Não dominar o idioma do texto é limitação **do anotador**, não do dado. Resolve-se
+> por processo (R-9), não por classe. Marcar conteúdo não inglês como `AMBIGUOUS`
+> enviesaria a estimativa de prevalência contra idiomas sub-representados — ver
+> [[Decision Log#D-012]].
 
 `PRIMARY` + `SECONDARY` = **Security Skill**. `AMBIGUOUS` fica **fora** do
 numerador e **fora** do denominador em qualquer prevalência — e sua contagem é
@@ -160,6 +170,13 @@ operacional conjunto** — a definição fala de comportamento, não de texto. M
 **R-7 — Objeto protegido não restringe.** Vale para código produzido, agente/harness
 ou a própria skill. Registrar como `security_concern`, não na classe.
 
+**R-9 — Idioma.** A skill é elegível qualquer que seja o idioma. Se o anotador não
+domina o idioma do texto: (a) rotear para anotador competente, ou (b) usar tradução
+como apoio, **preservando o original** e marcando `used_translation: true`
+([[Decision Log#D-013]]). Nunca classificar por idioma. Atenção a termos técnicos de
+segurança em inglês embutidos em texto de outro idioma — são evidência válida.
+Registrar `language` sempre, e `mixed` quando o conteúdo combinar idiomas.
+
 **R-8 — Dúvida.** Se a evidência é insuficiente → `AMBIGUOUS` com `confidence: low`.
 Se há evidência mas o limite entre duas classes é discutível → classe **mais baixa**,
 `confidence: low`, e o caso vai para adjudicação.
@@ -214,6 +231,8 @@ security_concerns: [malware, ioc_extraction]
 operational_capability: [static_analysis, command_execution]
 evidence: [description, body, bundled_artifacts]
 confidence: high
+language: en              # ISO 639-1, ou "mixed", ou "und" se indeterminado
+used_translation: false
 regra: R-1
 nota: ""
 ```
@@ -274,9 +293,12 @@ truth — ver [[QI-2 Methodology]].
 
 - **"Substancial" continua sendo julgamento.** R-2 operacionaliza, não elimina. O
   piloto deve estressar exatamente a fronteira SECONDARY/MENTION.
-- **Multilinguismo confirmado empiricamente.** A amostra de 48 trouxe francês,
-  chinês, russo e coreano. Retrieval e codebook em inglês perdem e classificam mal
-  essas skills. Quantificar no piloto e declarar como ameaça à validade.
+- **Multilinguismo.** A população inclui todos os idiomas ([[Decision Log#D-012]]).
+  A amostra de 48 de [[EXP-002]] trouxe francês, chinês, russo, coreano, italiano e
+  japonês. As âncoras deste codebook são hoje **majoritariamente em inglês** — é uma
+  limitação real do instrumento, a corrigir acrescentando âncoras nos idiomas mais
+  frequentes assim que [[EXP-003]] medir a distribuição. Concordância e desempenho
+  devem ser avaliados **por idioma**, não só no agregado.
 - **Sem front matter:** 252.280 representantes não têm `name`+`description`; tendem a
   `AMBIGUOUS`.
 - **Não mede a segurança *da* skill.** Uma skill `NONE` que declara

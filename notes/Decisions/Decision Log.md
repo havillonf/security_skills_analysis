@@ -383,6 +383,105 @@ resultados precisam ser recomputados, não ajustados.
 
 ---
 
+## D-011 — QI-1 como questão central da pesquisa
+
+**Data:** 2026-08-22 · **Status:** `aceita` (decidida pelo pesquisador)
+
+**Decisão.** A questão central passa a ser:
+
+> **QI-1. Qual a prevalência de skills de segurança na população pública de
+> Agent Skills?**
+
+Definição vigente de Security Skill: **`SEC-PRIMARY` + `SEC-SECONDARY`**
+([[Decision Log#D-004|D-004]], revisada por [[Decision Log#D-006|D-006]];
+operacionalização no [[Codebook]] v2.0).
+
+`SEC-PRIMARY` e `SEC-SECONDARY` são **sempre reportados separadamente**, além da
+prevalência agregada. Motivo empírico: `code-review` classifica como `SECONDARY` e é
+o nome mais frequente do conjunto (1.292 conteúdos distintos) — a agregação sozinha
+seria carregada por revisão genérica de código.
+
+**Contexto.** [[QI-2 Methodology|QI-2]] havia sido a candidata preferida. O
+pesquisador optou pela QI-1 após [[2026-08-22 - Pauta para o Orientador|alinhamento]].
+
+**Consequências.**
+- QI-2 e QI-3 permanecem **documentadas como extensões futuras**, com dependências
+  registradas. Nenhum trabalho já feito é descartado: o [[Codebook]], a definição, o
+  candidate retrieval de [[EXP-002]] e a [[Security Taxonomy]] v0.1 são reutilizados.
+- A QI-1 exige **estimativa com incerteza estatística**, não uma contagem. Isso muda
+  o desenho: ver [[QI-1 Methodology]].
+- A [[Security Taxonomy]] deixa de ser caminho crítico; a taxonomia de `concerns` não
+  é necessária para responder à QI-1.
+
+**Limitações.** A QI-1 é descritiva. Responde "quanto", não "por quê" nem "o quê".
+O valor científico depende de a estimativa ser defensável — daí o rigor do desenho
+amostral.
+
+---
+
+## D-012 — População-alvo inclui skills de todos os idiomas
+
+**Data:** 2026-08-22 · **Status:** `aceita` (decidida pelo pesquisador)
+
+**Decisão.** A população-alvo da QI-1 é **toda a população pública analisável**, sem
+recorte por idioma. Regras vinculantes:
+
+1. **Não descartar** registros por idioma.
+2. **Não classificar** conteúdo não inglês automaticamente como `NONE`, `AMBIGUOUS`
+   ou irrelevante.
+3. **Não usar** candidate retrieval que dependa exclusivamente de keywords inglesas.
+4. **Não tratar** inglês como idioma padrão para determinar relevância.
+5. **Não interpretar** ausência de termos ingleses como ausência de preocupação de
+   segurança.
+
+**Contexto.** [[EXP-002]] observou francês, chinês, russo, coreano, italiano e
+japonês numa amostra de 48 casos. A distribuição real de idiomas da população é
+**desconhecida** — medi-la é pré-requisito ([[EXP-003]]).
+
+**Consequências.**
+- O candidate retrieval de [[EXP-002]] (58 termos, só inglês) fica **inadequado como
+  desenho final**. Permanece válido como medição já feita, não como pipeline.
+- O gold set precisa representar a diversidade linguística; estratificação por idioma
+  ou grupo linguístico quando houver suporte amostral.
+- Desempenho do classificador avaliado **por idioma**, não só global. F1 global bom
+  não é evidência de desempenho uniforme.
+- Queda relevante de desempenho num idioma é **ameaça à validade da estimativa de
+  prevalência**, a declarar.
+
+**Correção que esta decisão força.** O [[Codebook]] v2.0 listava "skill em idioma que
+o anotador não domina" como caso típico de `AMBIGUOUS`. Isso **contraria a regra 2** e
+foi corrigido na v2.1: barreira de idioma do anotador é problema de **processo**
+(roteamento para anotador competente ou tradução auxiliar registrada), nunca
+justificativa de classe.
+
+**Limitações.** "Tecnicamente possível" tem limite: idiomas com pouquíssimos casos não
+terão suporte amostral para avaliação separada. Isso se declara, não se resolve
+descartando.
+
+---
+
+## D-013 — Tradução é representação auxiliar, nunca substituição
+
+**Data:** 2026-08-22 · **Status:** `aceita`
+
+**Decisão.** Quando tradução for necessária para apoiar anotação ou classificação:
+o **texto original é preservado sempre**; a tradução é representação auxiliar e
+**nunca sobrescreve** o dado original; registra-se quando uma decisão classificatória
+dependeu de tradução (campo `used_translation`).
+
+**Preferência técnica.** Quando viável, usar modelo capaz de raciocinar **diretamente
+sobre o idioma original**, em vez de traduzir o corpus inteiro antecipadamente.
+
+**Justificativa.** Terminologia técnica de segurança sofre perda semântica em
+tradução automática — falsos amigos e termos ingleses embutidos em texto de outro
+idioma são casos comuns. Traduzir antes de classificar introduz um erro que não é
+possível separar do erro do classificador.
+
+**Consequências.** A anotação registra se dependeu de tradução, permitindo medir se
+esses casos têm concordância pior.
+
+---
+
 ## Ligações
 
 [[00 - Research Overview]] · [[EXP-001]] · [[EXP-002]] · [[GitSkills]] ·
