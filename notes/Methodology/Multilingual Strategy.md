@@ -189,27 +189,42 @@ Dois fatos que mudam o desenho:
   tratar idioma como partição limpa. O rótulo `mixed` do [[Codebook]] R-9 é
   necessário, não decorativo.
 
-### Estratos linguísticos propostos
+### Estratos linguísticos — versão pós-validação ([[EXP-004]])
 
 Para o gold set e para o estimador do Desenho C ([[QI-1 Methodology]] §3):
 
 ```text
-L1  en                      ~84,6%
-L2  zh                       ~6,0%
-L3  ja + ko                  ~3,0%
-L4  de + es + pt + fr + it   ~4,0%
-L5  demais + und             ~2,4%
+L1  en                       ~84,6%   concordância entre detectores 1,00
+L2  zh                        ~6,0%   1,00
+L3  ja + ko                   ~3,0%   1,00
+L4  de + es + pt + fr + it    ~4,0%   1,00
+L5  cauda + und + mixed       ~2,4%   0,667  -> NÃO estratificar internamente
 ```
 
-Agrupar a cauda evita estratos sem suporte amostral. Sobre-amostrar L2–L5 é legítimo
-— os pesos `N_h / N` corrigem no estimador.
+Mudança em relação à proposta inicial: **L5 absorve `mixed` e a cauda inteira**. A
+concordância de 0,667 naquele estrato não sustenta separação por idioma. `la` entra
+em L5 como artefato, nunca como idioma.
 
-> [!warning] O detector ainda não foi validado
-> `langid` reportou confiança média de 1,000, o que é implausível — é um detector
-> conhecidamente superconfiante. A acurácia real neste corpus **não foi verificada
-> contra rótulos humanos**. Validar numa amostra pequena **antes** de usar idioma
-> como variável de estratificação; caso contrário o erro de detecção entra silencioso
-> nos pesos do estimador.
+Sobre-amostrar L2–L5 é legítimo — os pesos `N_h / N` corrigem no estimador.
+
+### Detector: o que a validação mostrou
+
+[[EXP-004]] mediu concordância entre `py3langid` e `lingua` em 118 casos:
+
+- **A confiança do `langid` é inútil como filtro.** Quando os dois detectores
+  discordam, a confiança do langid tem média **0,969** e chega a **1,000**. A
+  superconfiança deixou de ser suspeita e passou a ser medida.
+- **`lingua` passa a detector primário**, `py3langid` como segunda opinião. Onde
+  discordam, o registro fica marcado — não se escolhe em silêncio.
+- **Direção do viés é conhecida:** o langid inventa idiomas raros (`la`, `km`, `vi`)
+  para texto inglês, então o não inglês de [[EXP-003]] está provavelmente
+  **superestimado** (14,21% → perto de 13,5% se `la` e `vi` forem inglês).
+
+> [!warning] Ainda não há acurácia real
+> Concordância entre detectores **não é acurácia**, e a inspeção das discordâncias em
+> [[EXP-004]] foi feita por LLM, não por anotador humano. A primeira medida de
+> acurácia verdadeira deve sair do piloto [[03 - Methodology|E-5]], aproveitando o
+> julgamento humano que já estará ocorrendo.
 
 ## Ligações
 

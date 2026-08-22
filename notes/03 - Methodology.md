@@ -11,7 +11,12 @@ status: reorganizado em torno da QI-1
 >
 > Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY`, sempre desagregados.
 > População: **todos os idiomas** ([[Decision Log#D-012]]).
-> Desenho estatístico: [[QI-1 Methodology]] · Idiomas: [[Multilingual Strategy]]
+> **Desenho C** — amostragem estratificada com classificador de triagem
+> ([[Decision Log#D-014]]).
+> Desenho estatístico: [[QI-1 Methodology]] · Idiomas: [[Multilingual Strategy]] ·
+> Literatura: [[Multilingual Methodology Review]]
+>
+> Trabalho isolado na branch `Q1`.
 
 Reorganizado em 2026-08-22. O plano anterior servia a três questões em paralelo;
 agora só as etapas necessárias à QI-1 são caminho crítico. Nada foi descartado —
@@ -53,29 +58,59 @@ ja 1,73%, de 1,61%, ko 1,25%, es 0,97%, pt 0,95%. Front matter diverge do corpo 
 **Pendência.** O detector **não foi validado** contra rótulos humanos — fazer antes
 de usar idioma como variável de estratificação.
 
-### E-4 — Candidate retrieval multilíngue
+### E-3b — Validação do detector de idioma ✅
 
-**Objetivo.** Triagem que não penalize idiomas.
-**Entradas.** E-3.
-**Método.** Terminologia de segurança nos idiomas efetivamente presentes; variantes
-morfológicas; termos ingleses embutidos; textos multilíngues.
-**Critério de escolha.** **Recall por idioma** contra o gold set — nunca tamanho do
-pool. Se a via lexical falhar, avaliar embeddings multilíngues ou classificador
-multilíngue direto. Ver [[Multilingual Strategy]] §3.
-**Risco.** Traduzir a lista inglesa e achar que resolveu.
-**Nota.** Dado o pool de 78,69% e o Desenho C, o retrieval provavelmente **não é o
-gargalo**: serve para estratificar, e estratificação imperfeita custa precisão, não
-validade.
+**Objetivo.** Saber se o rótulo de idioma sustenta estratificação.
+**Método.** Dois detectores independentes (`py3langid`, `lingua`) sobre 118 casos em
+7 estratos desenhados para expor falhas; inspeção das discordâncias.
+**Resultado.** Concordância global 0,915 — **1,00 em en, latinos e CJK**, mas
+**0,667 na cauda**. Confiança do `langid` quando erra: média 0,969, máximo 1,000 —
+inútil como filtro. `lingua` passa a primário. `la` é artefato para texto inglês.
+**Consequência.** Estratos L1–L5 com a **cauda colapsada**
+([[Multilingual Strategy]] §8). O viés de [[EXP-003]] tem direção conhecida: não
+inglês provavelmente superestimado.
+**Saída.** `scripts/validate_language_detection.py` · [[EXP-004]].
+**Pendência.** Não há acurácia real — a primeira sai do piloto E-5.
 
-### E-5 — Piloto de anotação
+### E-4 — Candidate retrieval (rebaixado e reordenado)
+
+**Mudança de ordem em 2026-08-22**, fundamentada em
+[[Multilingual Methodology Review]]. Sob o Desenho C o retrieval **estratifica** e
+não determina elegibilidade — nenhuma skill é descartada por não ser recuperada. O
+critério para escolher entre retrieval lexical e semântico é **recall medido contra o
+gold set**, que não existe antes do piloto. Construir o léxico antes seria decidir sem
+o dado que decide.
+
+E-4 passa a ser executado **depois de E-6** e muda de escopo:
+
+1. manter o retrieval inglês de [[EXP-002]] como **um sinal entre outros**;
+2. acrescentar sinais independentes de léxico: `domain:`/`category:` no front matter,
+   presença de script, `has_scripts`;
+3. testar a hipótese de que `name`/`description` dá recall melhor em skills não
+   inglesas (4,17% divergem, [[EXP-003]]);
+4. medir **recall por idioma** contra o gold set; só então decidir entre lexical e
+   semântico.
+
+### E-5 — Piloto de anotação  ← PRÓXIMA ETAPA
 
 **Objetivo.** Testar o [[Codebook]] v2.1 antes de investir na anotação grande.
-**Método.** ~50 casos, sobre-amostrando a fronteira `SECONDARY`/`MENTION` (é onde o
-instrumento falha, não nos extremos) **e** conteúdo não inglês. Incluir casos
-`code-review`.
-**Saída.** [[Codebook]] v2.2 se revisado, com motivo datado.
-**Conclusão quando.** R-2 se mostrar aplicável na prática; custo por item medido;
-regras ambíguas identificadas.
+**Método.** ~50 casos, estratificados por **classe prevista × grupo linguístico**
+(L1–L5), sobre-amostrando:
+
+- a fronteira `SECONDARY`/`MENTION` — onde o instrumento falha;
+- conteúdo **não inglês**, obrigatoriamente presente desde o piloto;
+- casos **`mixed`** e de cauda;
+- casos de **GRC** ([[Decision Log#D-016]]), com concordância reportada à parte;
+- casos `code-review`.
+
+Dois anotadores independentes quando viável. Registrar `used_translation`, o idioma
+julgado por humano (fecha a lacuna de [[EXP-004]]) e o **tempo por item por idioma** —
+se anotar em chinês custar três vezes mais, isso muda o dimensionamento do gold set.
+
+**Saída.** [[Codebook]] v2.2 se revisado, com motivo datado; primeira medida real de
+acurácia de detecção de idioma.
+**Conclusão quando.** R-2 se mostrar aplicável; custo por item medido por idioma;
+regras ambíguas identificadas; concordância preliminar em GRC conhecida.
 **Risco.** Ajustar o codebook depois de ver resultado vira racionalização — revisão
 só entre piloto e anotação definitiva, nunca durante.
 
@@ -145,24 +180,28 @@ Literatura pode correr em paralelo desde já.
 ```text
 E-0 ✅  E-1 ✅  E-2b ✅
    |
-E-3  idiomas ✅         14,21% não inglês
+E-3  idiomas ✅                 14,21% não inglês
+E-3b validação do detector ✅   lingua primário; cauda colapsada
    |
-E-4  retrieval multilíngue   <- próxima etapa
-   |
-E-5  piloto de anotação
+E-5  piloto de anotação          <- PRÓXIMA ETAPA
    |
 E-6  gold set + concordância
    |
-E-7  classificador validado
+E-4  retrieval, escolhido por recall medido   (rebaixado e reordenado)
    |
-E-8  classificação da população (estratos)
+E-7  classificador validado (por classe e por idioma)
+   |
+E-8  classificação da população -> N_h
    |
 E-9  estimativa de prevalência com IC
    |
-E-10 robustez + adversarial
+E-10 robustez (near-duplicates, D-017) + adversarial
    |
 E-11 consolidação          (literatura em paralelo desde já)
 ```
+
+**Reordenação de 2026-08-22:** E-4 saiu de antes de E-5 para depois de E-6.
+Fundamentação em [[Multilingual Methodology Review]].
 
 ## Ligações
 

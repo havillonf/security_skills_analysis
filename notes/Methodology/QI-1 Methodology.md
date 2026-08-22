@@ -2,7 +2,7 @@
 tipo: metodologia
 questao: QI-1
 data: 2026-08-22
-status: proposta - desenho amostral aguarda aprovacao
+status: Desenho C adotado (D-014); estratos linguisticos definidos
 ---
 
 # QI-1 — Metodologia
@@ -46,13 +46,17 @@ Inclui **todos os idiomas** ([[Decision Log#D-012]]).
 > Near-duplicates sobrevivem à deduplicação por hash ([[EXP-002]]). Um pacote
 > replicado entre donos com variações mínimas gera `file_sha` distintos e infla
 > qualquer contagem. Toda estimativa reporta concentração por repositório **e por
-> dono**; deduplicação por similaridade é [[Decision Log#D-010|D-010]], em aberto.
+> dono**. A deduplicação exata permanece o desenho principal; a semântica fica como
+> **análise de robustez** ([[Decision Log#D-017]]).
 
 ---
 
 ## 3. Desenho amostral proposto
 
-> [!important] Requer aprovação — muda materialmente a estimativa
+> [!done] Decidido: **Desenho C** ([[Decision Log#D-014]], 2026-08-22)
+> As alternativas ficam registradas abaixo por rastreabilidade. Detalhes formais —
+> estimador com correção para população finita, seis condições de validade, papel
+> limitado do classificador — estão em [[Decision Log#D-014]].
 
 ### Desenho A — Amostragem aleatória simples
 
@@ -90,25 +94,42 @@ estimativa, é output de modelo.
 ```text
 p̂   = Σ_h (N_h / N) · p̂_h
 
-Var = Σ_h (N_h / N)² · p̂_h · (1 − p̂_h) / n_h
+Var = Σ_h (N_h / N)² · (1 − n_h/N_h) · p̂_h · (1 − p̂_h) / (n_h − 1)
 ```
 
-onde `N_h` é o tamanho do estrato na população e `p̂_h` a proporção de Security
-Skill observada na amostra daquele estrato.
+onde `N_h` é o tamanho do estrato na população, `n_h` o tamanho da amostra no estrato
+e `p̂_h` a proporção de Security Skill observada **na anotação humana** daquele
+estrato. O fator `(1 − n_h/N_h)` é a **correção para população finita** — desprezível
+na maioria dos estratos, relevante nos pequenos com oversampling forte. Forma
+completa e justificativa em [[Decision Log#D-014]].
 
-**A propriedade que torna este desenho defensável:** o estimador é **não enviesado
-por construção, mesmo que o classificador seja ruim**. Um classificador fraco só
-alarga o intervalo de confiança — não desloca a estimativa. O classificador afeta a
-**eficiência**, nunca a **validade**.
+**A propriedade que torna este desenho defensável:** desde que as seis condições de
+[[Decision Log#D-014]] valham, o desfecho usado na estimação é a **anotação humana**
+sobre uma amostra probabilística. Erro do classificador afeta **principalmente a
+eficiência da estratificação** — estratos menos puros exigem amostras maiores para a
+mesma precisão.
+
+Isso **não é** garantia absoluta: erro do classificador pode comprometer a validade
+se quebrar alguma condição — `N_h` errado, unidade em mais de um estrato, estrato
+não amostrado, ou falha correlacionada com o desfecho **e** com a chance de seleção.
+
+**Apoio na literatura.** Egami et al. (NeurIPS 2023, *Design-based Supervised
+Learning*) mostram que o uso direto de rótulos de surrogate em análise posterior
+produz **viés substancial e intervalos de confiança inválidos, mesmo com acurácia de
+80–90%** do surrogate, e que a correção depende de **amostragem probabilística** dos
+rótulos gold. É a justificativa publicada mais forte para rejeitar o Desenho B. Ver
+[[Multilingual Methodology Review]].
 
 *Prós:* muito mais preciso por hora de anotação; permite sobre-amostrar estratos
 raros (`PRIMARY`) e idiomas minoritários sem enviesar o total.
 *Contras:* exige `N_h` exato (classificar a população inteira) e disciplina para não
 confundir contagem prevista com estimativa.
 
-**Recomendação: Desenho C.** Se rodar o classificador em 1,88M for proibitivo, a
-alternativa é aplicá-lo a uma sub-amostra aleatória grande (ex. 100k) e tratar essa
-sub-amostra como a população do estimador — continua válido, com `N` menor.
+**Adotado: Desenho C.** Se rodar o classificador em 1,88 M for proibitivo, **não**
+basta tratar uma sub-amostra como se fosse a população — isso ignora a variância do
+primeiro estágio. A alternativa correta é o desenho em **dois estágios** de
+[[Decision Log#D-015]], em que `N_h` passa a ser *estimado* e essa incerteza se
+propaga para `Var(p̂)`. Comparar custo antes de adotar.
 
 ---
 
@@ -161,7 +182,10 @@ Reportar essas taxas separadamente, não só o F1 global.
 
 Detalhes em [[Multilingual Strategy]]. O que a QI-1 exige:
 
-- distribuição de idiomas medida **antes** de desenhar a amostra ([[EXP-003]]);
+- distribuição de idiomas medida **antes** de desenhar a amostra ([[EXP-003]]) e
+  detector validado por concordância ([[EXP-004]]);
+- estratos linguísticos **L1–L5** de [[Multilingual Strategy]] §8, com a cauda
+  colapsada porque a detecção ali não sustenta separação;
 - gold set estratificado por idioma / grupo linguístico;
 - desempenho avaliado por idioma — F1 global bom **não** é evidência de
   uniformidade;
@@ -191,24 +215,37 @@ nem como aproximação dela.
 ## 8. Caminho
 
 ```text
-EXP-003  distribuição de idiomas da população        <- etapa atual
+EXP-003  distribuição de idiomas                    ✅ 14,21% não inglês
    |
-EXP-004  candidate retrieval multilíngue + recall por idioma
+EXP-004  validação do detector de idioma            ✅ lingua primário; cauda colapsada
    |
-EXP-005  piloto de anotação (~50), fronteira SECONDARY/MENTION, multilíngue
+EXP-005  piloto de anotação  <- PRÓXIMA ETAPA
+         estratificado por classe prevista × grupo linguístico;
+         fronteira SECONDARY/MENTION; casos GRC; casos mixed
    |
 EXP-006  gold set estratificado + concordância
    |
-EXP-007  classificador validado (métricas por classe e por idioma)
+EXP-007  candidate retrieval, escolhido por recall medido contra o gold set
    |
-EXP-008  classificação da população -> estratos
+EXP-008  classificador validado (métricas por classe e por idioma)
    |
-EXP-009  estimativa de prevalência com IC, desagregada
+EXP-009  classificação da população -> estratos (N_h)
+   |
+EXP-010  estimativa de prevalência com IC, desagregada
+   |
+EXP-011  robustez: near-duplicates ([[Decision Log#D-017]]), denominadores,
+         concentração por dono, definições alternativas
 ```
+
+**Mudança de ordem** proposta em [[Multilingual Methodology Review]] e adotada aqui:
+o piloto vem **antes** do retrieval multilíngue. Sob o Desenho C o retrieval
+estratifica e não determina elegibilidade, e o critério para escolhê-lo é recall
+contra o gold set — que não existe antes do piloto.
 
 ## 9. Estado atual
 
-⬜ Nenhuma etapa concluída. `EXP-003` em execução.
+✅ `EXP-003` e `EXP-004` concluídos. Desenho C adotado. Estratos linguísticos
+definidos. ⬜ `EXP-005` (piloto) é a próxima etapa.
 
 Reaproveitado da fase anterior: [[Codebook]] (instrumento), a definição
 ([[Decision Log#D-004]]), o candidate retrieval de [[EXP-002]] (baseline inglês a

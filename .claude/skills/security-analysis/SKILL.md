@@ -7,12 +7,24 @@ description: O que "segurança" significa no projeto security_skills_analysis e 
 
 Pré-requisitos: `project-context`, `data-analysis`.
 
-Instrumento canônico: **`notes/Decisions/Codebook.md` v2.1**. Esta skill orienta
+Instrumento canônico: **`notes/Decisions/Codebook.md` v2.2**. Esta skill orienta
 *como operar*; o codebook define *o que vale*. Em divergência, o codebook manda.
 
-> [!important] Questão central: **QI-1 — prevalência** (D-011, 2026-08-22)
-> O objetivo é uma **estimativa com incerteza**, não uma contagem. Desenho em
-> `notes/Methodology/QI-1 Methodology.md`; plano em `notes/03 - Methodology.md`.
+> [!important] Questão central: **QI-1 — prevalência** (D-011). Desenho C (D-014).
+> O objetivo é uma **estimativa com incerteza**, não uma contagem.
+>
+> **Desenho C — amostragem estratificada com classificador de triagem.** O
+> classificador atribui classe prevista à população e isso **forma estratos**; o
+> desfecho da estimação é a **anotação humana** sobre amostra probabilística dentro
+> de cada estrato. Estimador `p̂ = Σ_h (N_h/N)·p̂_h`, com correção para população
+> finita.
+>
+> Três números que **não** podem ser confundidos:
+> contagem prevista pelo modelo · proporção observada na amostra humana ·
+> estimativa estratificada. **Só a terceira é prevalência.**
+>
+> Desenho em `notes/Methodology/QI-1 Methodology.md`; plano em
+> `notes/03 - Methodology.md`. Trabalho na branch `Q1`.
 > QI-2 e QI-3 seguem documentadas como extensões, fora do caminho crítico.
 
 > [!danger] A população inclui **todos os idiomas** (D-012)
@@ -20,7 +32,18 @@ Instrumento canônico: **`notes/Decisions/Codebook.md` v2.1**. Esta skill orient
 > Não descarte por idioma. Não classifique conteúdo não inglês como `NONE` ou
 > `AMBIGUOUS` por não entendê-lo — isso é problema de processo (R-9), não de classe.
 > Ausência de termos ingleses **não é** ausência de preocupação de segurança.
+>
+> Medido: **14,21% ± 0,48 pp não é inglês** (~267 mil conteúdos); zh 5,99%.
+> Estratos **L1** en · **L2** zh · **L3** ja+ko · **L4** de/es/pt/fr/it ·
+> **L5** cauda+und+mixed (não subdividir — a detecção ali tem concordância 0,667).
+> `la` é artefato do detector para texto inglês, nunca um idioma.
 > Estratégia completa: `notes/Methodology/Multilingual Strategy.md`.
+
+> [!note] Escopo de GRC (R-10, D-016 — proposta)
+> Governança, risco e conformidade entram **só quando a atividade incide sobre
+> propriedades de segurança de sistemas computacionais**. Auditoria de IAM entra;
+> questionário contratual de fornecedor não. GRC organizacional puro é `NONE`, não
+> `MENTION`. Aguarda aprovação do pesquisador.
 
 ---
 
@@ -102,12 +125,16 @@ regra que decidiu.
 Nunca classifique sem citar a evidência textual. "Parece de segurança" não é
 anotação.
 
-Registrar sempre `language` (ISO 639-1, ou `mixed`, ou `und`) e `used_translation`.
-Se precisar de tradução para decidir, o original é preservado e a tradução é apoio
-marcado — nunca substituição (D-013).
+Registrar sempre `language` (ISO 639-1, ou `mixed`, ou `und` — nunca `la`),
+`language_detector_agreement` e `used_translation`. Se precisar de tradução para
+decidir, o original é preservado e a tradução é apoio marcado — nunca substituição
+(D-013). Preferir classificar **no idioma original** a traduzir antes: traduzir
+introduz um erro que depois não se separa do erro do classificador.
 
 **A contagem de positivos do classificador não é a prevalência.** Ela forma os
 estratos; a estimativa vem do estimador estratificado (QI-1 Methodology §3).
+Egami et al. (NeurIPS 2023) mostram que usar rótulos de surrogate diretamente produz
+viés substancial e IC inválidos **mesmo com acurácia de 80–90%**.
 
 ### `COVERAGE` — QI-3, crosswalk
 
