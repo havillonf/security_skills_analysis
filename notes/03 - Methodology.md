@@ -31,7 +31,7 @@ Não avance uma etapa cujo critério de conclusão não tenha sido atingido.
 | Etapa | Resultado | Uso na QI-1 |
 |---|---|---|
 | **E-0** ✅ Auditoria estrutural | [[EXP-001]] · integridade verificada, denominadores fixados, resultado anterior invalidado | define a população e as unidades |
-| **E-1** ✅ Definição e instrumento | [[Codebook]] v2.1 · [[Decision Log#D-004]], [[Decision Log#D-006\|D-006]] | é o instrumento de anotação |
+| **E-1** ✅ Definição e instrumento | [[Codebook]] v2.3 · [[Decision Log#D-004]], [[Decision Log#D-006\|D-006]] | é o instrumento de anotação |
 | **E-2b** ✅ Candidate retrieval (inglês) | [[EXP-002]] · pool de 78,69% | baseline a superar; mostra que keyword não filtra |
 
 Produzido para a QI-2 e **preservado sem estar no caminho crítico**:
@@ -58,28 +58,34 @@ ja 1,73%, de 1,61%, ko 1,25%, es 0,97%, pt 0,95%. Front matter diverge do corpo 
 **Pendência.** O detector **não foi validado** contra rótulos humanos — fazer antes
 de usar idioma como variável de estratificação.
 
-### E-3b — Validação do detector de idioma ✅
+### E-3b — Concordância entre detectores de idioma 🟡 (acurácia pendente)
 
 **Objetivo.** Saber se o rótulo de idioma sustenta estratificação.
-**Método.** Dois detectores independentes (`py3langid`, `lingua`) sobre 118 casos em
-7 estratos desenhados para expor falhas; inspeção das discordâncias.
-**Resultado.** Concordância global 0,915 — **1,00 em en, latinos e CJK**, mas
-**0,667 na cauda**. Confiança do `langid` quando erra: média 0,969, máximo 1,000 —
-inútil como filtro. `lingua` passa a primário. `la` é artefato para texto inglês.
-**Consequência.** Estratos L1–L5 com a **cauda colapsada**
-([[Multilingual Strategy]] §8). O viés de [[EXP-003]] tem direção conhecida: não
-inglês provavelmente superestimado.
+**Atenção.** Mede **concordância**, não acurácia. Não há ground truth humano; a
+primeira medida de acurácia sai de E-5 (campo `human_language`).
+**Método (v2).** Dois detectores independentes (`lingua` primário, `py3langid`
+segunda opinião) sobre **150 casos, 30 por grupo L1-L5**, pool de 12.000.
+**Resultado.** Concordância global **0,987** — L1 0,967 · L2 1,000 · L3 1,000 ·
+L4 1,000 · L5 0,967. Confiança do `langid` quando erra: 1,000 — inútil como filtro.
+**Correção.** A **v1 estava errada**: estratificava por uma partição auxiliar em que
+a checagem de script vinha antes da de idioma, o CJK inteiro caiu em `S_multilingue`
+e `S_cjk` ficou com 10 casos de 6.000. Os "1,00" de L2/L3 e o "0,667" da cauda eram
+transplantados de outra partição. Achado C-1 da auditoria adversarial.
+**Consequência.** L5 permanece colapsado — mas por **falta de suporte amostral**
+(~2% da população em mais de dez idiomas), não por falha de detecção. O viés de
+[[EXP-003]] tem direção conhecida: não inglês provavelmente superestimado.
 **Saída.** `scripts/validate_language_detection.py` · [[EXP-004]].
 **Pendência.** Não há acurácia real — a primeira sai do piloto E-5.
 
-### E-4 — Candidate retrieval (rebaixado e reordenado)
+### E-4 — Candidate retrieval (executado **depois de E-6**)
 
-**Mudança de ordem em 2026-08-22**, fundamentada em
-[[Multilingual Methodology Review]]. Sob o Desenho C o retrieval **estratifica** e
-não determina elegibilidade — nenhuma skill é descartada por não ser recuperada. O
-critério para escolher entre retrieval lexical e semântico é **recall medido contra o
-gold set**, que não existe antes do piloto. Construir o léxico antes seria decidir sem
-o dado que decide.
+**Ordem definitiva** — [[Decision Log#D-018]], aprovada em 2026-08-22. Não é mais
+provisória. Sob o Desenho C o retrieval **estratifica** e não determina
+elegibilidade: nenhuma skill é descartada por não ser recuperada. O critério para
+escolher entre retrieval lexical e semântico é **recall contra um gold set humano
+independente**, que não existe antes do piloto. Fixar o retrieval antes do gold set
+criaria circularidade — o instrumento de recuperação passaria a definir aquilo contra
+o que ele próprio seria avaliado.
 
 E-4 passa a ser executado **depois de E-6** e muda de escopo:
 
@@ -93,7 +99,7 @@ E-4 passa a ser executado **depois de E-6** e muda de escopo:
 
 ### E-5 — Piloto de anotação  ← PRÓXIMA ETAPA
 
-**Objetivo.** Testar o [[Codebook]] v2.1 antes de investir na anotação grande.
+**Objetivo.** Testar o [[Codebook]] v2.3 antes de investir na anotação grande.
 **Método.** ~50 casos, estratificados por **classe prevista × grupo linguístico**
 (L1–L5), sobre-amostrando:
 
@@ -107,7 +113,7 @@ Dois anotadores independentes quando viável. Registrar `used_translation`, o id
 julgado por humano (fecha a lacuna de [[EXP-004]]) e o **tempo por item por idioma** —
 se anotar em chinês custar três vezes mais, isso muda o dimensionamento do gold set.
 
-**Saída.** [[Codebook]] v2.2 se revisado, com motivo datado; primeira medida real de
+**Saída.** [[Codebook]] v2.3 se revisado, com motivo datado; primeira medida real de
 acurácia de detecção de idioma.
 **Conclusão quando.** R-2 se mostrar aplicável; custo por item medido por idioma;
 regras ambíguas identificadas; concordância preliminar em GRC conhecida.
@@ -200,8 +206,8 @@ E-10 robustez (near-duplicates, D-017) + adversarial
 E-11 consolidação          (literatura em paralelo desde já)
 ```
 
-**Reordenação de 2026-08-22:** E-4 saiu de antes de E-5 para depois de E-6.
-Fundamentação em [[Multilingual Methodology Review]].
+**Reordenação definitiva** ([[Decision Log#D-018]]): E-4 saiu de antes de E-5 para
+depois de E-6. Fundamentação em [[Multilingual Methodology Review]].
 
 ## Ligações
 

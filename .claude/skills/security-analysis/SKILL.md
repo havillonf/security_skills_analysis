@@ -7,7 +7,7 @@ description: O que "segurança" significa no projeto security_skills_analysis e 
 
 Pré-requisitos: `project-context`, `data-analysis`.
 
-Instrumento canônico: **`notes/Decisions/Codebook.md` v2.2**. Esta skill orienta
+Instrumento canônico: **`notes/Decisions/Codebook.md` v2.3**. Esta skill orienta
 *como operar*; o codebook define *o que vale*. Em divergência, o codebook manda.
 
 > [!important] Questão central: **QI-1 — prevalência** (D-011). Desenho C (D-014).
@@ -35,8 +35,11 @@ Instrumento canônico: **`notes/Decisions/Codebook.md` v2.2**. Esta skill orient
 >
 > Medido: **14,21% ± 0,48 pp não é inglês** (~267 mil conteúdos); zh 5,99%.
 > Estratos **L1** en · **L2** zh · **L3** ja+ko · **L4** de/es/pt/fr/it ·
-> **L5** cauda+und+mixed (não subdividir — a detecção ali tem concordância 0,667).
-> `la` é artefato do detector para texto inglês, nunca um idioma.
+> **L5** cauda+und (não subdividir — ~2% da população em mais de dez idiomas, sem
+> suporte amostral). `mixed` é **atributo transversal**, não grupo: skill em chinês
+> com termos ingleses continua em L2. `la` é artefato do detector para texto inglês,
+> nunca um idioma. Concordância entre detectores (EXP-004 v2): 0,987 global,
+> 0,967–1,000 por grupo — **concordância, não acurácia**.
 > Estratégia completa: `notes/Methodology/Multilingual Strategy.md`.
 
 > [!note] Escopo de GRC (R-10, D-016 — proposta)
@@ -157,12 +160,19 @@ Denominador **condicional**, sempre:
 
 ## Por que keyword sozinha não serve
 
-Evidência empírica, não suposição:
+Medido ([[EXP-001]]) — as frequências são fato; o *sentido* predominante é
+**hipótese não testada** ([[02 - Hypotheses|H-2]]):
 
-- `token` aparece em 20,69% dos representantes — na maioria, *token de LLM*.
-- `audit` em 16,24%, frequentemente "audit log" ou revisão genérica. *Caso real:*
-  `meta-ads-audit` é auditoria de anúncios — `NONE` (regra R-5).
-- `permission` (10,07%) costuma ser permissão de arquivo ou de ferramenta.
+- `token` aparece em **20,69%** dos representantes. *Hipótese:* na maioria, token de
+  LLM, não de autenticação. **Não verificada.**
+- `audit` em **16,24%**. *Hipótese:* frequentemente "audit log" ou revisão genérica.
+  *Caso real observado:* `meta-ads-audit` é auditoria de anúncios — `NONE` (R-5).
+- `permission` em **10,07%**. *Hipótese:* permissão de arquivo ou de ferramenta.
+
+H-2 é barata de testar (~20 ocorrências anotadas quanto ao sentido) e está marcada
+como "fazer cedo". O léxico estrito do piloto exclui esses termos **com base na
+hipótese** — se ela estiver errada, T0 concentrará Security Skills e a
+estratificação perderá eficiência.
 - Casamento apenas em `tags`/`category` não conta. *Caso real:* `go-playwright-v2`
   traz `category: testing-security` e é automação de browser — `NONE` (R-4).
 - **Densidade de keyword não separa as classes.** Com ≥6 keywords distintas aparecem
@@ -172,7 +182,7 @@ Evidência empírica, não suposição:
 Keyword serve para **candidate retrieval**, jamais como classificador.
 
 > [!warning] O retrieval em inglês quase não filtra
-> Recuperação ampla com 58 termos devolve **78,69% dos representantes**
+> Recuperação ampla com 60 termos devolve **78,69% dos representantes**
 > (1.477.763 de 1.877.981) — [[EXP-002]]. Não existe atalho por keyword: a redução
 > real acontece na classificação. Ao escolher um retrieval mais estrito, o critério
 > é **recall contra o gold set**, nunca tamanho do pool.
@@ -200,10 +210,14 @@ preciso. Ver [[EXP-002]] para a medição.
 Aplicam-se **apenas** a `PRIMARY` e `SECONDARY`, e são ortogonais à classe.
 
 **Objeto protegido** — código produzido · agente/harness (prompt injection,
-jailbreak, guardrails; sinal em ~4,98% dos representantes) · a própria skill.
+jailbreak, guardrails) · a própria skill.
 
-**Postura** — defensivo (~3,47% por padrão textual) · ofensivo (~2,30%) · ambos ·
-educacional.
+**Postura** — defensivo (revisão, hardening, threat modeling) · ofensivo (pentest,
+exploit dev, red team, CTF) · ambos · educacional.
+
+> Percentuais que antes apareciam aqui (~4,98%, ~3,47%, ~2,30%) foram **removidos**:
+> vinham de uma consulta exploratória avulsa, nunca salva em `results/` nem
+> registrada num `EXP-XXX`. Todo número citado precisa de script e artefato.
 
 Ofensivo não é ilegítimo: pentest e CTF são trabalho autorizado e pesquisa legítima.
 Categoria descritiva, jamais juízo de malícia. Se alguma análise sugerir conteúdo

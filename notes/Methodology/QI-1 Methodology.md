@@ -12,7 +12,7 @@ status: Desenho C adotado (D-014); estratos linguisticos definidos
 
 Questão central desde 2026-08-22 ([[Decision Log#D-011]]).
 
-Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.1).
+Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.3).
 `PRIMARY` e `SECONDARY` **sempre reportados separadamente**, além do agregado.
 
 ---
@@ -135,14 +135,37 @@ propaga para `Var(p̂)`. Comparar custo antes de adotar.
 
 ## 4. Tratamento de `AMBIGUOUS`
 
-Fica fora do numerador **e** do denominador. Isso muda a estimativa e precisa ser
-reportado de forma honesta:
+Fica fora do numerador **e** do denominador. Sob o Desenho C isso **não** é uma
+razão simples sobre a amostra: a taxa de `AMBIGUOUS` varia por estrato (será alta em
+L5 e em T0/sem front matter), então o denominador de classificáveis é ele próprio uma
+**quantidade estimada**, com variância que precisa se propagar.
 
-1. **Estimativa pontual** entre os classificáveis:
-   `p̂ = SS / (total − AMB)`
-2. **Limites**, tratando todos os `AMBIGUOUS` como pior e melhor caso:
-   `p_min = SS / total` e `p_max = (SS + AMB) / total`
-3. **Taxa de `AMBIGUOUS`** sempre reportada.
+Estimador correto — **razão de dois estimadores estratificados**, com `w_h = N_h/N`:
+
+```text
+             Σ_h w_h · p̂_h^SS
+p̂  =  ───────────────────────────────
+        Σ_h w_h · (1 − p̂_h^AMB)
+```
+
+onde `p̂_h^SS` é a proporção de Security Skill e `p̂_h^AMB` a de `AMBIGUOUS`, ambas
+observadas na anotação humana do estrato `h`. A variância sai por **método delta**
+ou **bootstrap estratificado** — não pela fórmula de proporção simples.
+
+**Limites**, também por estrato **antes** de ponderar:
+
+```text
+p_min = Σ_h w_h · p̂_h^SS                          (todo AMBIGUOUS = não-Security)
+p_max = Σ_h w_h · (p̂_h^SS + p̂_h^AMB)              (todo AMBIGUOUS = Security)
+```
+
+Os limites ingênuos calculados sobre a amostra bruta **não** são conservadores nem
+corretos: a amostra é sobre-amostrada em T3 e em L2–L5.
+
+**Taxa de `AMBIGUOUS`** sempre reportada, global e por estrato. Fixar de antemão um
+teto acima do qual a estimativa não é reportável — proposta: se
+`Σ_h w_h · p̂_h^AMB > 0,20`, a prevalência não é reportável como número pontual,
+apenas como intervalo `[p_min, p_max]`.
 
 Se os limites forem largos demais para sustentar a conclusão, isso **é** o achado —
 não se resolve escolhendo o número mais conveniente.
@@ -183,7 +206,9 @@ Reportar essas taxas separadamente, não só o F1 global.
 Detalhes em [[Multilingual Strategy]]. O que a QI-1 exige:
 
 - distribuição de idiomas medida **antes** de desenhar a amostra ([[EXP-003]]) e
-  detector validado por concordância ([[EXP-004]]);
+  **concordância entre detectores** medida ([[EXP-004]] v2: 0,987 global, 0,967–1,000
+  por grupo). **Acurácia não medida** — não há ground truth humano; a primeira sai de
+  [[EXP-005]] (campo `human_language`);
 - estratos linguísticos **L1–L5** de [[Multilingual Strategy]] §8, com a cauda
   colapsada porque a detecção ali não sustenta separação;
 - gold set estratificado por idioma / grupo linguístico;

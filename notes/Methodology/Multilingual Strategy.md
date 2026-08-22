@@ -62,7 +62,7 @@ confiança do detector. Baixa confiança → `und`, nunca um palpite.
 
 ## 3. Candidate retrieval multilíngue
 
-O retrieval de [[EXP-002]] (58 termos, só inglês, pool de 78,69%) **não serve como
+O retrieval de [[EXP-002]] (60 termos, só inglês, pool de 78,69%) **não serve como
 desenho final** — permanece só como medição já feita e baseline a superar.
 
 Requisitos para o substituto:
@@ -77,7 +77,7 @@ Requisitos para o substituto:
 - avaliar **recall por idioma** quando houver dados suficientes.
 
 > [!warning] Traduzir a lista de keywords não basta
-> Traduzir 58 termos ingleses para N idiomas produz um léxico que ignora como cada
+> Traduzir 60 termos ingleses para N idiomas produz um léxico que ignora como cada
 > idioma realmente fala de segurança, perde termos sem equivalente direto e erra a
 > morfologia. É ponto de partida, não solução.
 
@@ -175,8 +175,11 @@ Camada 1 (exata, população inteira): 14,06% contêm script não latino.
 |---|---|---|---|
 | Dominante | en 84,61% | ~1,59 M | sim |
 | Massa relevante | **zh 5,99%** · ja 1,73% · de 1,61% · ko 1,25% · es 0,97% · pt 0,95% | ~215 k | sim |
-| Cauda | fr 0,41% · ru 0,26% · vi 0,25% · tr 0,17% · ar 0,10% · it 0,09% | ~24 k | só com amostra dedicada |
+| Cauda | ru 0,26% · vi 0,25% · tr 0,17% · ar 0,10% · demais | ~15 k | só com amostra dedicada |
 | Indeterminado | und 0,82% | ~15 k | — |
+
+Nota: `fr` (0,41%) e `it` (0,09%) ficam em **L4**, junto aos demais latinos, e não na
+cauda — a versão anterior desta nota os listava nos dois lugares.
 
 Dois fatos que mudam o desenho:
 
@@ -194,16 +197,23 @@ Dois fatos que mudam o desenho:
 Para o gold set e para o estimador do Desenho C ([[QI-1 Methodology]] §3):
 
 ```text
-L1  en                       ~84,6%   concordância entre detectores 1,00
-L2  zh                        ~6,0%   1,00
-L3  ja + ko                   ~3,0%   1,00
-L4  de + es + pt + fr + it    ~4,0%   1,00
-L5  cauda + und + mixed       ~2,4%   0,667  -> NÃO estratificar internamente
+L1  en                       ~85%     concordância entre detectores 0,967
+L2  zh                        ~6%     1,000
+L3  ja + ko                   ~3%     1,000
+L4  de + es + pt + fr + it    ~4%     1,000
+L5  cauda + und               ~1,6-2,4%   0,967  -> não subdividir
 ```
 
-Mudança em relação à proposta inicial: **L5 absorve `mixed` e a cauda inteira**. A
-concordância de 0,667 naquele estrato não sustenta separação por idioma. `la` entra
-em L5 como artefato, nunca como idioma.
+Valores de [[EXP-004]] **v2** (n=150, 30 por grupo). A v1 media uma partição
+diferente e atribuía "1,00" a L2 e L3 **sem tê-los medido** — corrigido.
+
+**`mixed` saiu de L5.** É um **atributo transversal**, não um grupo linguístico:
+uma skill em chinês com termos técnicos ingleses continua em L2. Tratá-lo como
+grupo mandava todo o CJK para L5, inflando-o de ~2% para ~12% e esvaziando L2/L3 —
+o que corromperia diretamente os pesos `N_h/N` do estimador.
+
+**L5 permanece colapsado por falta de suporte amostral**, não por falha de detecção:
+são ~2% da população espalhados por mais de dez idiomas.
 
 Sobre-amostrar L2–L5 é legítimo — os pesos `N_h / N` corrigem no estimador.
 
@@ -212,13 +222,16 @@ Sobre-amostrar L2–L5 é legítimo — os pesos `N_h / N` corrigem no estimador
 [[EXP-004]] mediu concordância entre `py3langid` e `lingua` em 118 casos:
 
 - **A confiança do `langid` é inútil como filtro.** Quando os dois detectores
-  discordam, a confiança do langid tem média **0,969** e chega a **1,000**. A
-  superconfiança deixou de ser suspeita e passou a ser medida.
-- **`lingua` passa a detector primário**, `py3langid` como segunda opinião. Onde
-  discordam, o registro fica marcado — não se escolhe em silêncio.
-- **Direção do viés é conhecida:** o langid inventa idiomas raros (`la`, `km`, `vi`)
-  para texto inglês, então o não inglês de [[EXP-003]] está provavelmente
-  **superestimado** (14,21% → perto de 13,5% se `la` e `vi` forem inglês).
+  discordam, a confiança do langid é **1,000**. Superconfiança medida, não suspeitada.
+- **`lingua` é o detector primário**, `py3langid` a segunda opinião. Onde discordam,
+  o registro fica marcado — não se escolhe em silêncio.
+- **Concordância global 0,987** (v2), alta em todos os grupos.
+- **Direção do viés é conhecida:** o langid atribui idiomas raros (`la`, `km`, `vi`)
+  a texto inglês, então o não inglês de [[EXP-003]] está provavelmente
+  **superestimado** (14,21% → perto de 13,5%). O `lingua` dá L5 = 1,57% contra ~2,4%
+  do langid, coerente com essa direção.
+- **Validação cruzada:** a distribuição do pool do EXP-004 v2 (lingua) coincide com a
+  de [[EXP-003]] (langid) — 85,8% vs 84,6% en; 5,8% vs 6,0% zh.
 
 > [!warning] Ainda não há acurácia real
 > Concordância entre detectores **não é acurácia**, e a inspeção das discordâncias em

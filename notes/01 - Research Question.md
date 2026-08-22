@@ -9,7 +9,7 @@ status: QI-1 adotada como questão central
 > [!important] Questão central: **QI-1** (desde 2026-08-22)
 > **Qual a prevalência de skills de segurança na população pública de Agent Skills?**
 >
-> Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.1), com as
+> Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.3), com as
 > duas classes **sempre reportadas separadamente** além do agregado.
 > População: **todos os idiomas** ([[Decision Log#D-012]]).
 > Decisão: [[Decision Log#D-011]] · Metodologia: [[QI-1 Methodology]]
@@ -48,7 +48,7 @@ Leituras minhas do README, do notebook e do paper do GitSkills.
 **QI-1. Qual a prevalência de skills de segurança na população pública de Agent
 Skills?** ⭐ **Questão central adotada** ([[Decision Log#D-011]]).
 
-Critério definido ([[Decision Log#D-004]], [[Codebook]] v2.1): Security Skill =
+Critério definido ([[Decision Log#D-004]], [[Codebook]] v2.3): Security Skill =
 `SEC-PRIMARY` + `SEC-SECONDARY`. **A resposta ainda não é obtível** — exige
 estimativa com incerteza estatística a partir de amostra anotada e classificador
 validado contra padrão-ouro, não contagem de keyword. Desenho completo em
@@ -138,7 +138,7 @@ dado."*
 **Como a objeção fica endereçada.** A fragilidade é real e não desaparece — mas é
 mitigável, e o desenho de [[QI-1 Methodology]] a ataca de frente:
 
-1. O critério está **fixado por escrito e antes da medição** ([[Codebook]] v2.1), o
+1. O critério está **fixado por escrito e antes da medição** ([[Codebook]] v2.3), o
    que impede ajustá-lo depois de ver o resultado.
 2. `PRIMARY` e `SECONDARY` são reportados **separadamente**, então o leitor vê o
    efeito da escolha de agregação em vez de recebê-la embutida.

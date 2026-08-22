@@ -56,7 +56,7 @@ fronteiriços e sobreposições. O histórico de mudanças fica em [[Security Ta
 Keyword matching serve **exclusivamente** para reduzir 1.877.981 representantes a um
 pool revisável. Não classifica nada.
 
-Implementado em `scripts/build_candidate_frame.py` (58 termos, recall-orientado).
+Implementado em `scripts/build_candidate_frame.py` (60 termos, recall-orientado).
 
 > [!warning] Resultado que muda o desenho
 > O pool resultante é de **1.477.763 conteúdos — 78,69% dos representantes**
@@ -99,7 +99,8 @@ existe porque a capacidade real pode estar no script, não no `SKILL.md` (regra 
 
 **Aleatória simples sobre os representantes**, não estratificada, e separada da
 amostra de descoberta. Só ela sustenta afirmação de distribuição. Tamanho calculado
-a partir da precisão desejada, definido em E-3.
+a partir da precisão desejada. (A QI-2 é extensão futura; sob a QI-1 vigente, o
+desenho amostral é o Desenho C de [[QI-1 Methodology]].)
 
 Misturar as duas é erro grave: usar a amostra estratificada para estimar prevalência
 inflaria artificialmente as classes sobre-amostradas.
@@ -172,7 +173,7 @@ ocorrência reportada em paralelo como difusão.
 
 Nada da QI-2 é resultado científico antes disto.
 
-1. Codebook escrito antes da anotação — [[Codebook]] v2.0 ✅
+1. Codebook escrito antes da anotação — [[Codebook]] v2.3 ✅
 2. Amostra anotada manualmente.
 3. **Dois anotadores independentes** quando viável.
 4. Análise de discordâncias, com adjudicação registrada.

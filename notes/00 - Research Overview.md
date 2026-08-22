@@ -9,7 +9,7 @@ status: exploração inicial concluída
 > [!important] Questão central: **QI-1** ([[Decision Log#D-011]], 2026-08-22)
 > **Qual a prevalência de skills de segurança na população pública de Agent Skills?**
 >
-> Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY` ([[Codebook]] v2.1), sempre
+> Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY` ([[Codebook]] v2.3), sempre
 > desagregados. População: **todos os idiomas** ([[Decision Log#D-012]]).
 > Desenho: [[QI-1 Methodology]] · Idiomas: [[Multilingual Strategy]] ·
 > Plano: [[03 - Methodology]]
@@ -78,8 +78,12 @@ notebook legado.
 - 78,69% dos representantes citam algum termo de segurança: recuperação por keyword
   não é filtro útil.
 - 59,3% dos repositórios tem zero stars.
-- **14,21% ± 0,48 pp da população não é escrita em inglês** (≈ 267 mil conteúdos);
-  chinês sozinho é 5,99%. Ver [[EXP-003]].
+- **Cerca de 13,5–14,2% da população não é escrita em inglês** (≈ 255–267 mil
+  conteúdos); chinês sozinho ~6%. O ± 0,48 pp de [[EXP-003]] é IC **de amostragem**
+  e não cobre o erro sistemático do detector, que é maior: [[EXP-004]] mostrou que o
+  `langid` atribui idiomas raros (`la`, `vi`) a texto inglês, então o valor está
+  **superestimado** com direção conhecida. Confirmação cruzada: o `lingua` dá 85,8%
+  de inglês contra 84,6% do `langid`.
 
 ## O que foi invalidado
 
