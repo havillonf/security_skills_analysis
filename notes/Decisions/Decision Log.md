@@ -482,6 +482,145 @@ esses casos têm concordância pior.
 
 ---
 
+## D-014 — Desenho C: amostragem estratificada com classificador de triagem
+
+**Data:** 2026-08-22 · **Status:** `aceita` (decidida pelo pesquisador) ·
+**Branch:** `Q1`
+
+### Decisão
+
+O desenho principal para responder à [[QI-1 Methodology|QI-1]] é a **amostragem
+estratificada com classificador de triagem**:
+
+1. um classificador automático/LLM atribui uma **classe prevista** a toda a
+   população;
+2. essas previsões **não são resultado científico**;
+3. servem exclusivamente para construir estratos;
+4. os estratos combinam **classe prevista × grupo linguístico**, quando
+   metodologicamente apropriado;
+5. sorteia-se uma **amostra probabilística dentro de cada estrato**;
+6. os itens amostrados são **anotados manualmente**;
+7. a prevalência final é estimada por **ponderação estratificada**.
+
+### Estimador
+
+$$\hat{p} = \sum_h \frac{N_h}{N}\,\hat{p}_h$$
+
+com variância
+
+$$\widehat{\mathrm{Var}}(\hat{p}) = \sum_h \left(\frac{N_h}{N}\right)^{2}
+\left(1 - \frac{n_h}{N_h}\right)\frac{\hat{p}_h(1-\hat{p}_h)}{n_h - 1}$$
+
+onde `N_h` é o tamanho do estrato `h`, `N` o tamanho da população, `n_h` o tamanho da
+amostra no estrato e `p̂_h` a proporção de Security Skills observada **na anotação
+humana** daquele estrato.
+
+O fator `(1 − n_h/N_h)` é a **correção para população finita**. Aqui ela é quase
+sempre desprezível (`n_h/N_h` da ordem de 10⁻³ ou menor), mas passa a importar em
+estratos pequenos com oversampling forte — por exemplo, um estrato raro de idioma
+minoritário. Aplicar sempre; o custo é nulo e evita subestimar a precisão onde ela
+de fato existe.
+
+### Condições de validade
+
+O desenho só sustenta a estimativa se **todas** valerem:
+
+1. **Cobertura total** — toda unidade elegível pertence a algum estrato.
+2. **Nada é descartado por previsão** — nenhuma skill sai da população só porque o
+   classificador previu `NONE`. Estratos de baixa prevalência prevista continuam
+   sendo amostrados.
+3. **Seleção probabilística** dentro de cada estrato, com probabilidade conhecida.
+4. **`N_h` conhecido corretamente** para todo estrato usado na estimação.
+5. **Partição** — na etapa de estimação, cada unidade pertence a **exatamente um**
+   estrato.
+6. **O desfecho é a anotação humana**, não a previsão do modelo.
+
+### Papel do classificador
+
+Sob as condições acima, erro do classificador de triagem afeta **principalmente a
+eficiência da estratificação** — estratos menos puros exigem amostras maiores para a
+mesma precisão — e não constitui, por si só, a estimativa.
+
+> [!warning] Isso não é uma garantia absoluta
+> Erro do classificador **pode** afetar a validade se comprometer as condições acima:
+> `N_h` calculado errado, unidade em mais de um estrato, estrato inteiro não
+> amostrado, ou falha correlacionada com o desfecho **e** com a chance de seleção.
+> A frase correta é "afeta principalmente a eficiência", nunca "nunca afeta a
+> validade".
+
+### Três números que não podem ser confundidos
+
+| Número | O que é | Pode ser reportado como prevalência? |
+|---|---|---|
+| Contagem prevista pelo modelo | soma de previsões `PRIMARY`+`SECONDARY` | **não** |
+| Proporção observada na amostra humana | `p̂_h` dentro de cada estrato | **não** (é por estrato) |
+| Estimativa estratificada | `p̂` com IC | **sim** |
+
+**Não reportar a proporção de previsões `PRIMARY + SECONDARY` como prevalência da
+população.** Essa é a confusão que o desenho existe para evitar.
+
+### Alternativas consideradas
+
+- **Desenho A — aleatória simples.** Válido e mais simples, sem classificador. Menos
+  eficiente: com prevalência baixa, quase todo o esforço de anotação cai em `NONE`.
+- **Desenho B — classificar tudo e contar.** **Rejeitado.** Herda o viés do modelo
+  sem quantificá-lo.
+- **Desenho multi-estágio** — se classificar 1,88 M for inviável, ver [[#D-015]].
+
+### Consequências
+
+- Exige `N_h` para toda a população: o classificador roda em escala **ou** adota-se o
+  desenho multi-estágio de [[#D-015]].
+- Exige que idioma seja variável de estratificação confiável — daí a validação
+  pendente do detector ([[EXP-003]] limitações).
+- Permite **oversampling de estratos raros** (`PRIMARY` previsto, idiomas
+  minoritários) sem enviesar o total, porque os pesos `N_h/N` corrigem.
+
+### Limitações
+
+- Estratos por idioma dependem de detecção ainda não validada.
+- Ganho de eficiência é desconhecido até o classificador ter desempenho medido.
+- Se o classificador for muito ruim, o desenho degenera para algo próximo do
+  Desenho A — continua válido, só deixa de compensar o custo.
+
+---
+
+## D-015 — Desenho multi-estágio se a classificação integral for inviável
+
+**Data:** 2026-08-22 · **Status:** `proposta` — decidir só com custo medido
+
+**Contexto.** O Desenho C ([[#D-014]]) pressupõe `N_h` conhecido, o que exige
+classificar os 1.877.981 conteúdos. Se isso for financeira ou computacionalmente
+proibitivo, é preciso um plano alternativo.
+
+**O erro a evitar.** Classificar uma subamostra de 100 mil e **tratá-la como se fosse
+a população** — isso ignora a variância do primeiro estágio e produz IC otimista
+demais.
+
+**Alternativa correta — amostragem em dois estágios:**
+
+```text
+população completa (N = 1.877.981)
+      ↓  estágio 1: amostra probabilística grande (n₁)
+amostra-quadro
+      ↓  classificador -> estratos
+      ↓  estágio 2: subamostra por estrato (n₂ₕ)
+anotação humana
+```
+
+O estágio 1 **entra na inferência e na variância**. `N_h` passa a ser estimado a
+partir da amostra-quadro, não conhecido — e essa incerteza se propaga para
+`Var(p̂)`.
+
+**Comparar antes de adotar.** Custo de classificar 1,88 M contra a perda de precisão
+do desenho em dois estágios. Um classificador barato sobre a população inteira pode
+sair mais em conta que a variância extra.
+
+**Recomendação.** Medir o custo real de classificar a população antes de decidir.
+Preferir a classificação integral se for viável.
+
+---
+
 ## Ligações
 
 [[00 - Research Overview]] · [[EXP-001]] · [[EXP-002]] · [[GitSkills]] ·
