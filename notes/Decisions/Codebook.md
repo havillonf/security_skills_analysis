@@ -1,9 +1,9 @@
 ---
 tipo: codebook
-version: 2.1
+version: 2.2
 data: 2026-08-22
-substitui: v2.0 (2026-08-22)
-decisoes: D-004, D-006, D-012, D-013
+substitui: v2.1 (2026-08-22)
+decisoes: D-004, D-006, D-012, D-013, D-014, D-016
 status: proposto para teste piloto
 ---
 	
@@ -22,6 +22,8 @@ pesquisador; operacionalização e âncoras derivadas dos dados.
 > **v2.1** ([[Decision Log#D-012]]): corrige o tratamento de idioma — barreira
 > linguística do anotador **deixa de ser** caso de `AMBIGUOUS`; acrescenta a regra
 > R-9 e os campos `language` e `used_translation`.
+> **v2.2** ([[Decision Log#D-016]], [[Decision Log#D-014]]): operacionaliza `mixed`,
+> acrescenta a regra R-10 (escopo de GRC) e o campo `language_detector_agreement`.
 
 ---
 
@@ -175,7 +177,28 @@ domina o idioma do texto: (a) rotear para anotador competente, ou (b) usar tradu
 como apoio, **preservando o original** e marcando `used_translation: true`
 ([[Decision Log#D-013]]). Nunca classificar por idioma. Atenção a termos técnicos de
 segurança em inglês embutidos em texto de outro idioma — são evidência válida.
-Registrar `language` sempre, e `mixed` quando o conteúdo combinar idiomas.
+
+*Operacionalização de `language`:*
+- rotular pelo idioma da **prosa** (não do código, caminhos ou nomes de ferramenta);
+- **`mixed`** quando duas ou mais línguas naturais carregam conteúdo substantivo —
+  não basta um termo técnico inglês solto num texto em outro idioma;
+- **`und`** quando a prosa é curta ou técnica demais para decidir;
+- `la` (latim) **não é** rótulo válido neste corpus: é artefato do detector para
+  texto técnico em inglês ([[EXP-004]]). Reclassificar como `en` ou `und`.
+
+**R-10 — Escopo de GRC.** Governança, risco e conformidade entram **apenas quando a
+atividade incide sobre propriedades de segurança de sistemas computacionais**
+([[Decision Log#D-016]], proposta aguardando aprovação).
+
+*Dentro:* auditoria de IAM, revisão de política de acesso, least privilege, mapeamento
+de controles técnicos, avaliação de risco de dependência, conformidade que **inspeciona
+configuração ou código**.
+*Fora:* questionário de fornecedor contratual, conformidade regulatória sem objeto
+computacional, gestão de risco corporativo, política como documento.
+
+GRC organizacional puro é **`NONE`**, não `MENTION` — `MENTION` pressupõe preocupação
+de segurança computacional incidental, e conformidade contratual não é disso que
+trata. Caso misto com parte técnica acionável: `SECONDARY`, `confidence: low`.
 
 **R-8 — Dúvida.** Se a evidência é insuficiente → `AMBIGUOUS` com `confidence: low`.
 Se há evidência mas o limite entre duas classes é discutível → classe **mais baixa**,
@@ -231,7 +254,8 @@ security_concerns: [malware, ioc_extraction]
 operational_capability: [static_analysis, command_execution]
 evidence: [description, body, bundled_artifacts]
 confidence: high
-language: en              # ISO 639-1, ou "mixed", ou "und" se indeterminado
+language: en              # ISO 639-1, ou "mixed", ou "und". Nunca "la".
+language_detector_agreement: true   # lingua e py3langid concordaram?
 used_translation: false
 regra: R-1
 nota: ""
@@ -293,12 +317,17 @@ truth — ver [[QI-2 Methodology]].
 
 - **"Substancial" continua sendo julgamento.** R-2 operacionaliza, não elimina. O
   piloto deve estressar exatamente a fronteira SECONDARY/MENTION.
-- **Multilinguismo.** A população inclui todos os idiomas ([[Decision Log#D-012]]).
-  A amostra de 48 de [[EXP-002]] trouxe francês, chinês, russo, coreano, italiano e
-  japonês. As âncoras deste codebook são hoje **majoritariamente em inglês** — é uma
-  limitação real do instrumento, a corrigir acrescentando âncoras nos idiomas mais
-  frequentes assim que [[EXP-003]] medir a distribuição. Concordância e desempenho
-  devem ser avaliados **por idioma**, não só no agregado.
+- **Multilinguismo.** A população inclui todos os idiomas ([[Decision Log#D-012]]);
+  **14,21% não é inglês** ([[EXP-003]]). As âncoras deste codebook são ainda
+  **majoritariamente em inglês** — limitação real do instrumento, a corrigir
+  acrescentando âncoras em zh, ja, de, ko, es e pt durante o piloto. Concordância e
+  desempenho devem ser avaliados **por idioma**, não só no agregado.
+- **Rótulo de idioma não é confiável na cauda.** Concordância entre detectores é 1,00
+  em en/latinos/CJK e **0,667 na cauda** ([[EXP-004]]). Por isso a cauda é um estrato
+  único (L5), sem separação interna por idioma.
+- **GRC é julgamento na fronteira.** R-10 reduz, não elimina, a ambiguidade. A
+  concordância nesse subconjunto deve ser reportada **à parte** no piloto; se for
+  ruim, reconsiderar excluir GRC por completo ([[Decision Log#D-016]] alternativa b).
 - **Sem front matter:** 252.280 representantes não têm `name`+`description`; tendem a
   `AMBIGUOUS`.
 - **Não mede a segurança *da* skill.** Uma skill `NONE` que declara

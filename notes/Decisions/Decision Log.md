@@ -353,9 +353,10 @@ pesquisa vier a reportar.
 
 ---
 
-## D-010 — Deduplicação por similaridade — EM ABERTO
+## D-010 — Deduplicação por similaridade — ENCERRADA
 
-**Data:** 2026-08-22 · **Status:** `proposta` — **requer aprovação humana**
+**Data:** 2026-08-22 · **Status:** `revisada` — **encerrada por [[#D-017]]**
+(adotada a alternativa (a), com (b) como análise de robustez)
 
 **Contexto.** [[EXP-002]] mostrou que near-duplicates sobrevivem à deduplicação por
 hash: pacotes replicados entre donos com variações mínimas produzem `file_sha`
@@ -618,6 +619,116 @@ sair mais em conta que a variância extra.
 
 **Recomendação.** Medir o custo real de classificar a população antes de decidir.
 Preferir a classificação integral se for viável.
+
+---
+
+## D-016 — Escopo de GRC (governança, risco e conformidade) — PROPOSTA
+
+**Data:** 2026-08-22 · **Status:** `proposta` — **requer aprovação humana**
+· **Branch:** `Q1`
+
+**Contexto.** [[EXP-002]] encontrou `draft-vendor-onboarding-questionnaire` —
+questionário de risco de fornecedor, com conformidade em saúde, áreas de controle e
+exigência de evidência. É segurança como **governança**, não como técnica.
+
+A definição vigente ([[#D-004]]) fala em *"ameaças, vulnerabilidades, violações de
+propriedades de segurança ou controles de acesso em **sistemas computacionais**"*.
+Risco de fornecedor é organizacional. A definição não resolve o caso sozinha.
+
+**Por que importa.** GRC é um domínio grande. Incluir tudo pode inflar a prevalência
+com skills de compliance contratual que ninguém chamaria de segurança; excluir tudo
+descarta auditoria de IAM e gestão de risco técnico, que claramente são.
+
+### Proposta: critério do objeto
+
+> GRC entra como Security Skill **apenas quando a atividade incide sobre
+> propriedades de segurança de sistemas computacionais**. Governança puramente
+> organizacional, contratual ou processual fica fora.
+
+O teste é **sobre o que a skill atua**, não que vocabulário usa.
+
+**Positivos (dentro):**
+- auditoria de IAM, revisão de políticas de acesso, verificação de least privilege;
+- mapeamento de controles técnicos contra um framework (CIS Benchmarks, hardening);
+- avaliação de risco de dependência ou de componente de software;
+- verificação de conformidade que **inspeciona configuração ou código**.
+
+**Negativos (fora):**
+- questionário de onboarding de fornecedor focado em contrato, seguro, sanções,
+  continuidade de negócio organizacional;
+- conformidade regulatória sem objeto computacional (retenção documental, LGPD/HIPAA
+  em nível de política, sem inspecionar sistema);
+- gestão de risco corporativo genérica;
+- política de segurança da informação como documento, sem atividade sobre sistema.
+
+**Casos fronteiriços — anotar e adjudicar, não decidir por regra:**
+- questionário de fornecedor que inclui perguntas técnicas específicas (criptografia
+  em repouso, MFA): **misto**; classificar pela parte dominante, `confidence: low`;
+- checklist de conformidade que às vezes inspeciona configuração;
+- threat modeling organizacional sem sistema concreto;
+- skills de privacidade — LGPD/GDPR como propriedade de sistema (minimização, dados
+  pessoais em log) entram; como processo jurídico, não.
+
+### Impacto nas classes
+
+| Situação | Classe |
+|---|---|
+| GRC técnico com procedimento acionável | `PRIMARY` ou `SECONDARY` conforme R-1/R-3 |
+| GRC organizacional puro | `NONE` — não é MENTION, porque não é sequer preocupação de segurança computacional |
+| Misto, parte técnica acionável | `SECONDARY`, `confidence: low` |
+| Misto, parte técnica só mencionada | `MENTION` |
+| Indeterminável | `AMBIGUOUS` |
+
+Nota: GRC organizacional puro vai para `NONE`, não `MENTION`. `MENTION` pressupõe
+preocupação de segurança computacional incidental; conformidade contratual não é
+disso que trata.
+
+### Alternativas
+
+- **(a) Incluir todo GRC.** Simples e reprodutível; infla a prevalência com
+  compliance não técnico e enfraquece o construto.
+- **(b) Excluir todo GRC.** Também simples; descarta auditoria de IAM e gestão de
+  risco técnico, que são segurança por qualquer definição razoável.
+- **(c) Critério do objeto** (proposto). Alinhado à definição já aceita, ao custo de
+  exigir julgamento na fronteira.
+
+**Recomendação:** (c), com os casos fronteiriços medidos no piloto. Se a
+concordância entre anotadores nesses casos for ruim, reconsiderar (b) — que é
+defensável desde que declarado.
+
+**Consequências.** Acrescenta uma dimensão de julgamento ao codebook. O piloto
+([[03 - Methodology|E-5]]) deve incluir casos de GRC deliberadamente e reportar a
+concordância **nesse subconjunto separadamente**.
+
+**Limitações.** "Incide sobre sistemas computacionais" continua sendo julgamento.
+O critério reduz, não elimina, a ambiguidade.
+
+---
+
+## D-017 — Near-duplicates ficam como análise de robustez
+
+**Data:** 2026-08-22 · **Status:** `aceita` (decidida pelo pesquisador) ·
+**Branch:** `Q1` · **Substitui:** [[#D-010]]
+
+**Decisão.** A **deduplicação exata por `file_sha` permanece o desenho principal**.
+Deduplicação semântica **não** entra no pipeline principal agora.
+
+Near-duplicates viram **análise posterior de robustez**, respondendo:
+
+> A estimativa de prevalência muda materialmente quando conteúdos quase idênticos
+> são agrupados?
+
+**Justificativa.** Deduplicação semântica exige um limiar arbitrário que
+contaminaria a estimativa principal. Como robustez, o limiar é explorado por
+sensitivity analysis sem contaminar o resultado central.
+
+**Consequência.** Toda estimativa continua obrigada a reportar concentração por
+repositório **e por dono** ([[#D-001]] ressalva, [[EXP-002]]). Se a análise de
+robustez mostrar mudança material, isso é achado a reportar, não motivo para
+substituir o resultado principal em silêncio.
+
+**Encerra [[#D-010]]**, que ficava em aberto entre as alternativas (a), (b) e (c);
+adotada a (a) com (b) como robustez.
 
 ---
 
