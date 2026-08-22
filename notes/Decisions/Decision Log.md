@@ -376,8 +376,8 @@ pacote popular cobre, não o que a comunidade se preocupa.
   construção; perde granularidade e muda a pergunta.
 
 **Recomendação.** (a) agora, com concentração sempre reportada; avaliar (b) como
-**robustness check** em [[03 - Methodology|E-7]], não como pipeline principal —
-assim o limiar não contamina o resultado central.
+**robustness check** em [[03 - Methodology|E-10]], não como pipeline principal —
+assim o limiar não contamina o resultado central. **Encerrada por [[#D-017]].**
 
 **Consequências.** Se (b) vier a ser adotado depois de análises feitas sob (a), os
 resultados precisam ser recomputados, não ajustados.
@@ -395,7 +395,7 @@ resultados precisam ser recomputados, não ajustados.
 
 Definição vigente de Security Skill: **`SEC-PRIMARY` + `SEC-SECONDARY`**
 ([[Decision Log#D-004|D-004]], revisada por [[Decision Log#D-006|D-006]];
-operacionalização no [[Codebook]] v2.0).
+operacionalização no [[Codebook]] v2.3).
 
 `SEC-PRIMARY` e `SEC-SECONDARY` são **sempre reportados separadamente**, além da
 prevalência agregada. Motivo empírico: `code-review` classifica como `SECONDARY` e é
@@ -440,7 +440,7 @@ japonês numa amostra de 48 casos. A distribuição real de idiomas da populaç�
 **desconhecida** — medi-la é pré-requisito ([[EXP-003]]).
 
 **Consequências.**
-- O candidate retrieval de [[EXP-002]] (58 termos, só inglês) fica **inadequado como
+- O candidate retrieval de [[EXP-002]] (60 termos, só inglês) fica **inadequado como
   desenho final**. Permanece válido como medição já feita, não como pipeline.
 - O gold set precisa representar a diversidade linguística; estratificação por idioma
   ou grupo linguístico quando houver suporte amostral.
@@ -449,7 +449,7 @@ japonês numa amostra de 48 casos. A distribuição real de idiomas da populaç�
 - Queda relevante de desempenho num idioma é **ameaça à validade da estimativa de
   prevalência**, a declarar.
 
-**Correção que esta decisão força.** O [[Codebook]] v2.0 listava "skill em idioma que
+**Correção que esta decisão força.** O [[Codebook]] v2.3 listava "skill em idioma que
 o anotador não domina" como caso típico de `AMBIGUOUS`. Isso **contraria a regra 2** e
 foi corrigido na v2.1: barreira de idioma do anotador é problema de **processo**
 (roteamento para anotador competente ou tradução auxiliar registrada), nunca
@@ -620,11 +620,17 @@ sair mais em conta que a variância extra.
 **Recomendação.** Medir o custo real de classificar a população antes de decidir.
 Preferir a classificação integral se for viável.
 
+> [!important] Mantida PENDENTE por decisão do pesquisador (2026-08-22)
+> A escolha entre classificação integral e dois estágios **só deve ser feita depois
+> que [[EXP-005]] fornecer dados reais** sobre: tempo por item, dificuldade,
+> custo, distribuição de casos, necessidade de tradução e frequência de casos
+> fronteiriços. Decidir antes disso seria estimar custo sem medi-lo.
+
 ---
 
-## D-016 — Escopo de GRC (governança, risco e conformidade) — PROPOSTA
+## D-016 — Escopo de GRC (governança, risco e conformidade)
 
-**Data:** 2026-08-22 · **Status:** `proposta` — **requer aprovação humana**
+**Data:** 2026-08-22 · **Status:** `aceita` (aprovada pelo pesquisador)
 · **Branch:** `Q1`
 
 **Contexto.** [[EXP-002]] encontrou `draft-vendor-onboarding-questionnaire` —
@@ -639,7 +645,7 @@ Risco de fornecedor é organizacional. A definição não resolve o caso sozinha
 com skills de compliance contratual que ninguém chamaria de segurança; excluir tudo
 descarta auditoria de IAM e gestão de risco técnico, que claramente são.
 
-### Proposta: critério do objeto
+### Critério aprovado: o objeto da atividade
 
 > GRC entra como Security Skill **apenas quando a atividade incide sobre
 > propriedades de segurança de sistemas computacionais**. Governança puramente
@@ -692,9 +698,13 @@ disso que trata.
 - **(c) Critério do objeto** (proposto). Alinhado à definição já aceita, ao custo de
   exigir julgamento na fronteira.
 
-**Recomendação:** (c), com os casos fronteiriços medidos no piloto. Se a
-concordância entre anotadores nesses casos for ruim, reconsiderar (b) — que é
-defensável desde que declarado.
+**Aprovada: (c).** Os casos fronteiriços são medidos no piloto. Se a concordância
+nesses casos for ruim, reconsiderar (b) numa revisão datada — que é defensável desde
+que declarada.
+
+A lista de objetos que qualificam, na formulação do pesquisador: sistemas
+computacionais, código, aplicação, infraestrutura, configuração, IAM, identidade,
+dependências, agentes, modelos e artefatos computacionais equivalentes.
 
 **Consequências.** Acrescenta uma dimensão de julgamento ao codebook. O piloto
 ([[03 - Methodology|E-5]]) deve incluir casos de GRC deliberadamente e reportar a
@@ -729,6 +739,179 @@ substituir o resultado principal em silêncio.
 
 **Encerra [[#D-010]]**, que ficava em aberto entre as alternativas (a), (b) e (c);
 adotada a (a) com (b) como robustez.
+
+---
+
+## D-018 — E-4 depois de E-6 (reordenação definitiva)
+
+**Data:** 2026-08-22 · **Status:** `aceita` (aprovada pelo pesquisador)
+· **Branch:** `Q1`
+
+**Decisão.** O candidate retrieval (**E-4**) ocorre **depois** do gold set (**E-6**).
+Deixa de ser provisória: os documentos não devem mais apresentá-la como proposta.
+
+**Justificativa.**
+- Candidate retrieval **não determina elegibilidade** — nenhuma skill é descartada
+  por não ser recuperada.
+- Retrieval é apenas sinal, ou mecanismo de formação de estratos.
+- A escolha entre retrieval lexical e semântico deve ser decidida por **recall contra
+  um gold set humano independente**.
+- Escolher o retrieval definitivo **antes** do gold set cria risco de circularidade:
+  o instrumento de recuperação passaria a definir aquilo contra o que ele próprio
+  seria avaliado.
+
+**Consequências.** Ordem vigente: `E-5 → E-6 → E-4 → E-7 → E-8 → E-9 → E-10`.
+O retrieval inglês de [[EXP-002]] permanece como **um sinal entre outros**, nunca
+como filtro de população.
+
+---
+
+## D-019 — Anotador único não bloqueia E-5
+
+**Data:** 2026-08-22 · **Status:** `aceita` (aprovada pelo pesquisador)
+· **Branch:** `Q1`
+
+**Decisão.** A ausência de um segundo anotador **não bloqueia** o piloto E-5.
+
+- Se um segundo humano estiver disponível depois, define-se **previamente** uma
+  subamostra de dupla anotação — nunca escolhida após ver os resultados.
+- Se não houver, assume-se explicitamente a limitação de **single annotator** como
+  ameaça à validade, declarada no texto final.
+
+> [!danger] Restrição inegociável
+> **LLM, ou consenso entre agentes, não pode ser usado como segundo anotador humano
+> nem como ground truth.** Concordância entre modelos não substitui confiabilidade
+> interavaliadores. Ver [[#D-008]].
+
+**Consequências.** Sem segundo anotador, não há kappa interavaliadores; a
+confiabilidade do instrumento passa a depender de consistência intra-anotador e da
+qualidade das âncoras. Isso enfraquece a validação e precisa ser dito com todas as
+letras — não compensado com números de concordância entre modelos.
+
+---
+
+## D-020 — Sinal preliminar de segurança substitui "classe prevista" no piloto
+
+**Data:** 2026-08-22 · **Status:** `aceita` · **Branch:** `Q1`
+
+**Contexto.** O [[Decision Log#D-014|Desenho C]] estratifica por *classe prevista ×
+grupo linguístico*. Mas **não existe classificador validado**, então "classe
+prevista" ainda não é uma quantidade definida.
+
+**Decisão.** Enquanto não houver classificador validado, o eixo de estratificação do
+piloto é o **sinal preliminar de segurança × grupo linguístico**.
+
+O sinal é calculado **apenas** com informação já existente — léxico estrito de
+[[EXP-002]], `name`, `description`, `domain:`/`category:`, `has_scripts` — e é
+definido por um `CASE` ordenado em quatro níveis mutuamente exclusivos
+(T3 forte, T2 médio, T1 fraco, T0 nulo), documentado em
+`scripts/build_pilot_sample.py` e em [[EXP-005]].
+
+**Restrições.**
+1. O sinal serve **apenas para diversificar o piloto**.
+2. **Não é rótulo** e **não é ground truth**.
+3. **Não pode aparecer depois como evidência de validade do classificador** — usá-lo
+   assim seria avaliar um instrumento contra outro instrumento, não contra
+   julgamento humano.
+4. Os tamanhos de tier medidos na população são **documentação**, não os `N_h` do
+   estimador. Os `N_h` do Desenho C virão da classificação validada em E-8.
+
+**Consequências.** Quando o classificador validado existir, os estratos serão
+recalculados a partir dele. O sinal preliminar não é reaproveitado como estrato
+definitivo.
+
+---
+
+## D-021 — Cegamento da anotação (achado C-3 da auditoria adversarial)
+
+**Data:** 2026-08-22 · **Status:** `aceita` · **Branch:** `Q1`
+
+**Contexto.** A primeira versão do formulário e do reading pack de [[EXP-005]]
+exibia ao anotador, **antes do texto da skill**, o tier do sinal preliminar, a
+densidade de keyword, as flags de GRC e code-review, o grupo linguístico e o motivo
+da seleção (inclusive `"dirigido fronteira SECONDARY/MENTION"`).
+
+**Problema.** O sinal de triagem — cuja premissa declarada em [[#D-020]] é "não é
+rótulo, não é ground truth" — era entregue como **prior explícito** a quem produz o
+rótulo. Sob o Desenho C o desfecho precisa ser anotação humana **independente do
+estrato**. Se o sinal ancora o anotador, `p̂_h` sobe nos estratos altos e desce nos
+baixos, e o viés fica **correlacionado com a probabilidade de seleção** — a única
+falha que [[#D-014]] admite ser capaz de destruir a validade. Como o oversampling é
+forte em T3, o efeito seria amplificado pelos pesos, não cancelado.
+
+**Decisão.** A anotação é **cega ao sinal de triagem**:
+
+1. `results/EXP-005_annotation_form.csv` traz apenas `case_id`, `name`, `body_chars`
+   e os campos humanos vazios.
+2. `results/EXP-005_reading_pack.md` traz apenas `case_id`, `name`, `description`,
+   tamanho e o texto.
+3. Tier, densidade, flags, grupo linguístico e motivo da seleção ficam em
+   `results/EXP-005_strata_key.csv`, unido por `case_id` **somente depois** de a
+   anotação estar fechada.
+4. Registrada como **regra R-11** no [[Codebook]] v2.3 — não apenas no script.
+
+**Apoio na literatura.** Herbold et al. (EMSE, aceito) é o único protocolo em MSR
+que encontramos que (i) mitiga ancoragem por pré-rótulo instruindo ceticismo
+explícito e (ii) **testa empiricamente** se a mitigação funcionou. Cegar é mais
+forte que instruir ceticismo, e mais barato.
+
+**Consequências.** O anotador não pode usar o tier como atalho — anotar fica mais
+lento, e é esse o ponto. O tempo por item medido no piloto passa a ser o tempo real
+de leitura, não o de confirmar um palpite.
+
+**Limitação.** O cegamento não é perfeito: `name` e `description` continuam
+visíveis, e para muitas skills eles já revelam o domínio. Isso é inevitável — são
+parte do artefato a ser julgado.
+
+---
+
+## D-022 — Critério de elegibilidade da população — EM ABERTO
+
+**Data:** 2026-08-22 · **Status:** `proposta` — **requer aprovação humana**
+· **Branch:** `Q1` · **Origem:** achado C-5 da auditoria adversarial
+
+**Contexto.** A QI-1 pergunta pela prevalência na "população pública de Agent
+Skills". O único filtro operacional em todos os scripts é
+`dedup_primary = 1 AND content IS NOT NULL` — n = 1.877.981.
+
+Mas [[GitSkills]] documenta que o frame **contém não-skills**: a descoberta foi por
+nome de arquivo e inclui falsos positivos deliberados, arquivos anteriores ao
+formato, 7.309 conteúdos com menos de 80 caracteres e 5.363 que parecem alvos de
+symlink (`../.claude/SKILL.md`).
+
+E [[#D-014]] condição 1 exige que "toda unidade **elegível** pertença a algum
+estrato" — mas **"elegível" nunca foi definido**.
+
+**Por que importa.** O denominador é o número pelo qual a QI-1 divide. Cada stub de
+42 caracteres no frame é um `NONE` garantido que **deprime a prevalência**. É o mesmo
+tipo de premissa que invalidou o notebook original ([[#D-002]]: keywords rodando
+sobre alvos de symlink), voltando pela porta do denominador. Pelo menos ~12,7 mil
+unidades (0,7%) são inelegíveis por inspeção óbvia; quantas mais existem é
+desconhecido porque ninguém mediu.
+
+**Alternativas.**
+
+- **(a) Frame amplo (status quo).** `dedup_primary = 1 AND content IS NOT NULL`.
+  Simples e sem julgamento; inclui não-skills e subestima a prevalência.
+- **(b) Frame com piso de tamanho.** Acrescentar `body_chars >= X` e excluir
+  symlink-like. Requer justificar `X` — qualquer valor é arbitrário sem análise de
+  sensibilidade.
+- **(c) Frame por conformidade com a spec.** Exigir front matter válido. Exclui
+  252.280 representantes (13,4%) e muda a pergunta: passaria a medir prevalência
+  entre skills bem formadas.
+- **(d) Frame amplo + reporte estratificado.** Manter (a), mas reportar a prevalência
+  também **excluindo** os inelegíveis óbvios, como análise de sensibilidade.
+
+**Recomendação:** **(d)**, com o critério de inelegibilidade escrito antes do piloto
+e testado nele. Preserva a comparabilidade com o dataset publicado e torna o efeito
+do frame visível em vez de embutido.
+
+**Ação no piloto.** Incluir deliberadamente 3–5 casos de fronteira (stubs curtos,
+symlink-like, sem front matter) para que o anotador julgue **se são agent skills**,
+não apenas que classe recebem. Acrescentar ao formulário o campo `is_agent_skill`.
+
+**Consequência de não decidir.** Enquanto D-022 estiver aberta, o denominador da
+QI-1 permanece indefinido e nenhuma estimativa é reportável.
 
 ---
 

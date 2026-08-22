@@ -1,8 +1,8 @@
 ---
 tipo: codebook
-version: 2.2
+version: 2.3
 data: 2026-08-22
-substitui: v2.1 (2026-08-22)
+substitui: v2.2 (2026-08-22)
 decisoes: D-004, D-006, D-012, D-013, D-014, D-016
 status: proposto para teste piloto
 ---
@@ -12,8 +12,8 @@ status: proposto para teste piloto
 Instrumento canônico de anotação. Definição, classes e dimensões fornecidas pelo
 pesquisador; operacionalização e âncoras derivadas dos dados.
 
-> [!warning] v2.1 — ainda não validada
-> Escrita **antes** da anotação definitiva, conforme [[03 - Methodology|E-3]].
+> [!warning] v2.3 — ainda não validada
+> Escrita **antes** da anotação definitiva (etapa E-1 do plano; o piloto é E-5).
 > Nenhuma anotação foi feita sob v1.0 ou v2.0, então não há retrabalho.
 > **Não alterar em silêncio depois que a anotação começar.**
 >
@@ -24,6 +24,10 @@ pesquisador; operacionalização e âncoras derivadas dos dados.
 > R-9 e os campos `language` e `used_translation`.
 > **v2.2** ([[Decision Log#D-016]], [[Decision Log#D-014]]): operacionaliza `mixed`,
 > acrescenta a regra R-10 (escopo de GRC) e o campo `language_detector_agreement`.
+> **v2.3** ([[Decision Log#D-021]]): **remove as duas âncoras de `AMBIGUOUS` cuja
+> única justificativa era barreira de idioma.** A v2.1 declarou essa correção mas
+> ela nunca chegou às âncoras — o texto contraditório sobreviveu a três versões.
+> Acrescenta a regra de cegamento e alinha a ficha de anotação.
 
 ---
 
@@ -196,13 +200,33 @@ configuração ou código**.
 *Fora:* questionário de fornecedor contratual, conformidade regulatória sem objeto
 computacional, gestão de risco corporativo, política como documento.
 
-GRC organizacional puro é **`NONE`**, não `MENTION` — `MENTION` pressupõe preocupação
-de segurança computacional incidental, e conformidade contratual não é disso que
-trata. Caso misto com parte técnica acionável: `SECONDARY`, `confidence: low`.
+**Impacto nas classes (transcrição completa de [[Decision Log#D-016]]):**
 
-**R-8 — Dúvida.** Se a evidência é insuficiente → `AMBIGUOUS` com `confidence: low`.
-Se há evidência mas o limite entre duas classes é discutível → classe **mais baixa**,
-`confidence: low`, e o caso vai para adjudicação.
+| Situação | Classe |
+|---|---|
+| GRC técnico com procedimento acionável | `PRIMARY` ou `SECONDARY` conforme R-1/R-3 |
+| GRC organizacional puro | `NONE` — não `MENTION` |
+| Misto, parte técnica acionável | `SECONDARY`, `confidence: low` |
+| Misto, parte técnica só mencionada | `MENTION` |
+| Indeterminável | `AMBIGUOUS` |
+
+GRC organizacional puro é `NONE`, não `MENTION`, porque `MENTION` pressupõe
+preocupação de segurança **computacional** incidental — conformidade contratual não é
+disso que trata.
+
+**R-8 — Dúvida (regra de fechamento; aplicar por último).** Se a evidência é
+insuficiente → `AMBIGUOUS` com `confidence: low`. Se há evidência mas o limite entre
+duas classes é discutível → classe **mais baixa**, `confidence: low`, e o caso vai
+para adjudicação.
+
+**R-11 — Cegamento.** O anotador **não vê** o sinal preliminar de triagem (tier,
+densidade de keyword, flags de GRC/code-review, grupo linguístico, motivo da
+seleção) antes ou durante a anotação. Esses campos ficam em arquivo separado
+(`EXP-005_strata_key.csv`), unido por `case_id` **somente depois** de a anotação
+estar fechada. Ver [[Decision Log#D-021]].
+
+> Ordem de aplicação: **R-11** (antes de começar) → **R-1 … R-7** (decisão) →
+> **R-9, R-10** (idioma e GRC, transversais) → **R-8** (fechamento).
 
 ---
 
@@ -243,22 +267,37 @@ Concern: SQL Injection | Function: PREVENT       | Capability: source_code_analy
 
 ## 7. Ficha de anotação
 
+A ficha operacional é o CSV de [[EXP-005]]. **Campos humanos** (preenchidos pelo
+anotador) e **campos automáticos** (na chave de estratos, invisíveis durante a
+anotação por R-11) são arquivos separados.
+
 ```yaml
-file_sha: 0ef07f05...
+# --- campos HUMANOS: results/EXP-005_annotation_form.csv ---
+case_id: P007
+human_language: zh        # ISO 639-1, ou "mixed", ou "und". Nunca "la".
+used_translation: false   # a decisão dependeu de tradução?
 security_relevance: PRIMARY
 security_focus: true
 operational_security: true
-operation_level: executable
+operation_level: executable          # reasoning | executable | mixed | n/a
 security_functions: [DETECT, ASSESS]
 security_concerns: [malware, ioc_extraction]
 operational_capability: [static_analysis, command_execution]
 evidence: [description, body, bundled_artifacts]
-confidence: high
-language: en              # ISO 639-1, ou "mixed", ou "und". Nunca "la".
-language_detector_agreement: true   # lingua e py3langid concordaram?
-used_translation: false
-regra: R-1
-nota: ""
+confidence: high                     # high | medium | low
+rule_applied: R-1                    # regra que decidiu
+grc_case: false                      # caiu sob R-10?
+secondary_mention_boundary: false    # ficou na fronteira SECONDARY/MENTION?
+annotation_seconds: 145              # tempo cronometrado
+difficulty: medium                   # easy | medium | hard
+note: ""
+
+# --- campos AUTOMATICOS: results/EXP-005_strata_key.csv ---
+# NAO abrir antes de fechar a anotacao (R-11)
+# case_id, file_sha, repo_full_name, path, tier, kw_density, domain_decl,
+# fm_signal, grc_flag, code_review_flag, lang_group, lang_primary,
+# lang_secondary, lang_secondary_conf, detector_agreement, is_mixed,
+# minor_share, has_scripts, selection_reason
 ```
 
 ---
@@ -285,8 +324,18 @@ in a secure config"*. R-2: recomendação pontual, não acionável.
 **`NONE`** — `meta-ads-audit` (R-5), `go-playwright-v2` (R-4), `retro-smile`
 (geração de imagem), `algolia-autocomplete`, `pdf-goal-saver`.
 
-**`AMBIGUOUS`** — `473b7b77` e `fba0c3f3`: sem front matter, kd alto, corpo genérico.
-`oral-health-analyzer` e `self-recovery-limits`: idioma fora do domínio do anotador.
+**`AMBIGUOUS`** — `473b7b77` e `fba0c3f3`: sem front matter, corpo genérico demais
+para revelar comportamento. Skill cuja capacidade real depende de script não
+recuperado (`composition_truncated = 1`).
+
+> [!danger] Âncoras removidas na v2.3
+> A v2.2 listava aqui `oral-health-analyzer` e `self-recovery-limits` como
+> `AMBIGUOUS` por *"idioma fora do domínio do anotador"* — em contradição direta com
+> a regra R-9 e com [[Decision Log#D-012]], que declarava essa correção já feita.
+> Ambos são casos de idioma não inglês perfeitamente classificáveis; [[EXP-002]] os
+> lê como `NONE`/`MENTION`. Mantê-los como âncora produziria `AMBIGUOUS` sistemático
+> para conteúdo zh/ru — removendo conteúdo não inglês do numerador **e** do
+> denominador, e enviesando a prevalência para a fatia inglesa.
 
 ---
 
@@ -322,9 +371,11 @@ truth — ver [[QI-2 Methodology]].
   **majoritariamente em inglês** — limitação real do instrumento, a corrigir
   acrescentando âncoras em zh, ja, de, ko, es e pt durante o piloto. Concordância e
   desempenho devem ser avaliados **por idioma**, não só no agregado.
-- **Rótulo de idioma não é confiável na cauda.** Concordância entre detectores é 1,00
-  em en/latinos/CJK e **0,667 na cauda** ([[EXP-004]]). Por isso a cauda é um estrato
-  único (L5), sem separação interna por idioma.
+- **Rótulo de idioma: concordância alta, acurácia desconhecida.** [[EXP-004]] v2 mede
+  0,987 global (0,967–1,000 por grupo) entre `lingua` e `py3langid`. Isso é
+  **concordância, não acurácia** — não há ground truth humano, e a primeira medida
+  real sai deste piloto (campo `human_language`). A cauda é um estrato único (L5) por
+  **falta de suporte amostral**, não por falha de detecção.
 - **GRC é julgamento na fronteira.** R-10 reduz, não elimina, a ambiguidade. A
   concordância nesse subconjunto deve ser reportada **à parte** no piloto; se for
   ruim, reconsiderar excluir GRC por completo ([[Decision Log#D-016]] alternativa b).
