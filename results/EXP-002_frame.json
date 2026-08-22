@@ -1,0 +1,102 @@
+{
+  "generated_at": "2026-08-22T12:10:01.555715+00:00",
+  "duckdb_version": "1.5.5",
+  "n_retrieval_terms": 60,
+  "noisy_alone_terms": [
+    "token",
+    "audit",
+    "permission",
+    "sandbox",
+    "safety",
+    "validate"
+  ],
+  "per_stratum": 12,
+  "n_primary_total": 1877981,
+  "n_candidate_pool": 1477763,
+  "pct_candidate_pool": 78.69,
+  "kw_density_distribution": [
+    {
+      "kw_density": 0,
+      "n": 2
+    },
+    {
+      "kw_density": 1,
+      "n": 535029
+    },
+    {
+      "kw_density": 2,
+      "n": 376482
+    },
+    {
+      "kw_density": 3,
+      "n": 209240
+    },
+    {
+      "kw_density": 4,
+      "n": 118099
+    },
+    {
+      "kw_density": 5,
+      "n": 69086
+    },
+    {
+      "kw_density": 6,
+      "n": 45199
+    },
+    {
+      "kw_density": 7,
+      "n": 31054
+    },
+    {
+      "kw_density": 8,
+      "n": 21364
+    },
+    {
+      "kw_density": 9,
+      "n": 15745
+    },
+    {
+      "kw_density": 10,
+      "n": 11502
+    },
+    {
+      "kw_density": 11,
+      "n": 9196
+    },
+    {
+      "kw_density": 12,
+      "n": 6719
+    },
+    {
+      "kw_density": 13,
+      "n": 5644
+    },
+    {
+      "kw_density": 14,
+      "n": 4608
+    },
+    {
+      "kw_density": 15,
+      "n": 18794
+    }
+  ],
+  "strata": {
+    "S1_frontmatter_signal": {
+      "predicate": "fm_signal",
+      "n": 332547
+    },
+    "S2_body_high_density": {
+      "predicate": "NOT fm_signal AND kw_density >= 5",
+      "n": 124773
+    },
+    "S3_body_low_density": {
+      "predicate": "NOT fm_signal AND kw_density BETWEEN 1 AND 2",
+      "n": 777762
+    },
+    "S4_with_scripts": {
+      "predicate": "has_scripts = 1 AND kw_density >= 3",
+      "n": 82190
+    }
+  },
+  "n_sample": 48
+}

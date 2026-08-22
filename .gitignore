@@ -52,3 +52,22 @@ Desktop.ini
 .env
 .env.local
 *.key
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# =========================
+# Pesquisa - artefatos fora do Git
+# =========================
+
+# Registros de reuniao (uso pessoal do pesquisador)
+notes/Meetings/
+
+# Amostras que reproduzem texto de skills de terceiros.
+# Sujeitas a licenca do repositorio de origem (ver repos.license) e
+# regeneraveis de forma deterministica por scripts/build_candidate_frame.py.
+# As metricas agregadas (results/*.json) permanecem versionadas.
+results/*.parquet
+results/*_sample_preview.md
+
+# Anotacao humana em andamento (promover a results/ quando virar gold set)
+results/annotation_wip/
