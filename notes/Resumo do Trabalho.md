@@ -5,9 +5,8 @@ branch: Q1
 publico: leitura rapida - pesquisador, orientador, banca
 ---
 
-# Resumo do trabalho — em linguagem simples
 
-Este documento conta **tudo o que foi feito até agora**, sem jargão.
+Este documento conta **tudo o que foi feito até agora**.
 Serve para retomar o projeto depois de um tempo, ou para explicar a alguém de fora.
 
 > Este é o resumo **narrativo**. O panorama técnico está em
@@ -297,6 +296,9 @@ results/EXP-005_reading_pack.md
 
 # 2. preencher o formulário
 results/EXP-005_annotation_form.csv
+
+# como preencher: exemplo com 7 casos resolvidos
+results/EXP-005_annotation_example.csv
 
 # 3. NÃO abrir antes de terminar:
 results/EXP-005_strata_key.csv

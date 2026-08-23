@@ -271,6 +271,13 @@ A ficha operacional é o CSV de [[EXP-005]]. **Campos humanos** (preenchidos pel
 anotador) e **campos automáticos** (na chave de estratos, invisíveis durante a
 anotação por R-11) são arquivos separados.
 
+> **Exemplo preenchido:** `results/EXP-005_annotation_example.csv` — 7 linhas
+> fictícias cobrindo PRIMARY, SECONDARY, MENTION, NONE (comum e por GRC), AMBIGUOUS e
+> um caso em português. Instruções em [[EXP-005]]§Como preencher o CSV.
+>
+> **No CSV, listas usam `;` como separador** (`DETECT;ASSESS`), porque a vírgula já
+> separa colunas. Campo não aplicável fica **vazio**, nunca `n/a`.
+
 ```yaml
 # --- campos HUMANOS: results/EXP-005_annotation_form.csv ---
 case_id: P007
