@@ -1,5 +1,5 @@
 case_id,name,body_chars,human_language,used_translation,security_relevance,security_focus,operational_security,operation_level,security_functions,security_concerns,operational_capability,evidence,confidence,rule_applied,grc_case,secondary_mention_boundary,annotation_seconds,difficulty,note
-P001,podcast-script-writer,7781,,,,,,,,,,,,,,,,,
+P001,podcast-script-writer,7781,tr,true,NONE,false,false,,,,,,,,,,,,
 P002,fire-smoke-detection-analysis,5109,,,,,,,,,,,,,,,,,
 P003,,944,,,,,,,,,,,,,,,,,
 P004,focused-fix,13767,,,,,,,,,,,,,,,,,
