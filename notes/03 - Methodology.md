@@ -28,11 +28,11 @@ Não avance uma etapa cujo critério de conclusão não tenha sido atingido.
 
 ## Concluído e reaproveitado
 
-| Etapa | Resultado | Uso na QI-1 |
-|---|---|---|
-| **E-0** ✅ Auditoria estrutural | [[EXP-001]] · integridade verificada, denominadores fixados, resultado anterior invalidado | define a população e as unidades |
-| **E-1** ✅ Definição e instrumento | [[Codebook]] v2.3 · [[Decision Log#D-004]], [[Decision Log#D-006\|D-006]] | é o instrumento de anotação |
-| **E-2b** ✅ Candidate retrieval (inglês) | [[EXP-002]] · pool de 78,69% | baseline a superar; mostra que keyword não filtra |
+| Etapa                                   | Resultado                                                                                  | Uso na QI-1                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------- |
+| **E-0** ✅ Auditoria estrutural          | [[EXP-001]] · integridade verificada, denominadores fixados, resultado anterior invalidado | define a população e as unidades                  |
+| **E-1** ✅ Definição e instrumento       | [[Codebook]] v2.3 · [[Decision Log#D-004]], [[Decision Log#D-006\|D-006]]                  | é o instrumento de anotação                       |
+| **E-2b** ✅ Candidate retrieval (inglês) | [[EXP-002]] · pool de 78,69%                                                               | baseline a superar; mostra que keyword não filtra |
 
 Produzido para a QI-2 e **preservado sem estar no caminho crítico**:
 [[QI-2 Methodology]], [[QI-3 Coverage Methodology]], [[Security Taxonomy]] v0.1.
