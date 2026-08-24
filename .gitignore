@@ -76,3 +76,8 @@ results/annotation_wip/
 # por scripts/build_pilot_sample.py. O formulario CSV (metadados + campos
 # humanos vazios) permanece versionado.
 results/*_reading_pack.md
+
+# Modelos treinados (EXP-006): binarios regeneraveis por
+# scripts/train_security_classifier.py com seed fixa. O metadata.json
+# (hiperparametros, metricas, decisao de implantacao) permanece versionado.
+models/*.joblib

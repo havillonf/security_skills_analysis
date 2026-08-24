@@ -915,6 +915,238 @@ QI-1 permanece indefinido e nenhuma estimativa é reportável.
 
 ---
 
+## D-023 — Classificador definitivo da iteração v1 (EXP-012)
+
+**Data:** 2026-08-23 · **Status:** `aceita` · **Branch:** `Q1`
+
+**Contexto.** [[Decision Log#D-022|D-022]] segue em aberto e o gold set humano
+de [[03 - Methodology|E-6]] ainda não existe. Para provar o pipeline
+ponta-a-ponta desta primeira semana exploratória, o pesquisador decidiu
+congelar `EXP-005_annotation_form_filled_updated.csv` (n=50, assistido por
+LLM) como **golden set operacional da iteração v1** — não é gold standard
+humano definitivo, tem as limitações declaradas em [[EXP-005]] (amostra
+deliberadamente enviesada, anotador único/LLM). Commit de congelamento:
+`a90ce044bc07e042467de74a844407e9e5717267`.
+
+Excluindo `AMBIGUOUS` (n=1, suporte insuficiente para qualquer fold),
+n=49: `NONE` 26 · `PRIMARY` 11 · `SECONDARY` 7 · `MENTION` 5. Binário:
+`SECURITY` 18 · `NON_SECURITY` 31.
+
+**Vazamento evitado.** O frame de treino (`scripts/build_training_frame.py`)
+usa **apenas o texto bruto** (`content`) recuperado por `file_sha` — nenhum
+campo de `EXP-005_strata_key.csv` (tier, `kw_density`, `domain_decl`,
+`fm_signal`, flags de GRC/code-review, sinais de idioma, `selection_reason`)
+entra como feature; o script aborta se algum aparecer. Três repositórios do
+golden set contêm mais de um caso (`bpcakes/jig-skills`,
+`pjt222/agent-almanac`, `GeorgeDoors888/GB-Power-Market-JJ`) — a validação
+cruzada agrupa por `repo_full_name` (`StratifiedGroupKFold`) para não deixar
+conteúdo do mesmo repositório em treino e validação simultaneamente.
+
+### Protocolo de validação
+
+`StratifiedGroupKFold(n_splits=5, shuffle=True)` repetido 5× com seeds
+distintas (20260823–20260827), agrupado por `repo_full_name`. Cada repeat
+produz uma predição out-of-fold para as 49 linhas; métricas calculadas por
+repeat e agregadas (média ± desvio padrão) entre os 5 repeats. `AMBIGUOUS`
+fora de qualquer fold, como o [[Codebook]] exige.
+
+### Modelos comparados
+
+| Modelo | Representação | Classificador |
+|---|---|---|
+| A | TF-IDF (char n-grams 2–5, robusto a CJK sem segmentação por espaço) | Logistic Regression |
+| B | idem A | Linear SVM |
+| C | Sentence embeddings multilíngues (`paraphrase-multilingual-MiniLM-L12-v2`) | Logistic Regression |
+
+### Métricas — tarefa binária (`SECURITY` vs `NON_SECURITY`)
+
+| Modelo | Precision | Recall | F1 | Especificidade | Bal.Acc | ROC-AUC | PR-AUC | F1 en | F1 não-en |
+|---|---|---|---|---|---|---|---|---|---|
+| A tfidf+logreg | 0,438 | 0,100 | 0,158±0,090 | 0,923 | 0,511 | 0,610 | 0,481 | 0,000 | 0,254 |
+| B tfidf+linearsvc | 0,515 | 0,133 | 0,206±0,112 | 0,929 | 0,531 | 0,648 | 0,508 | 0,000 | 0,327 |
+| **C embed+logreg** | **0,710** | **0,622** | **0,663±0,046** | 0,852 | **0,737** | **0,830** | **0,798** | **0,653** | **0,675** |
+
+### Métricas — tarefa multiclasse (4 classes, excl. `AMBIGUOUS`)
+
+| Modelo | macro-F1 | weighted-F1 | Bal.Acc | F1 `SECONDARY` | F1 `PRIMARY` | F1 `MENTION` | F1 `NONE` |
+|---|---|---|---|---|---|---|---|
+| A tfidf+logreg | 0,209±0,007 | 0,399 | 0,257 | **0,000** | 0,145 | 0,000 | 0,691 |
+| B tfidf+linearsvc | 0,208±0,018 | 0,401 | 0,264 | **0,000** | 0,133 | 0,000 | 0,699 |
+| **C embed+logreg** | **0,467±0,014** | **0,643** | **0,479** | 0,134 | 0,819 | 0,107 | 0,808 |
+
+**Achado que decidiu contra A/B por si só:** nos dois modelos TF-IDF, `SECONDARY`
+e `MENTION` têm F1 = 0,000 em **todos** os 5 repeats — o modelo nunca prevê
+essas classes na validação cruzada (confusão agregada em
+`results/EXP-012_confusion_matrix.csv` confirma zero previsões de
+`SECONDARY`/`MENTION` nas duas direções). Isso é fatal justamente para a
+fronteira que mais importa ([[Decision Log#D-011|D-011]]): a confusão
+`SECONDARY` × `MENTION` é a que altera a prevalência estimada.
+
+### Decisão — dois papéis distintos
+
+**Melhor desempenho em validação cruzada: `C_embed_logreg`.** Vence em todos
+os critérios 1–4 do enunciado (desempenho binário, macro-F1, recall de
+`SECURITY`, desempenho em `SECONDARY`) por margem larga, inclusive no recorte
+por idioma.
+
+**Modelo implantado na classificação da população: `B_tfidf_linearsvc`.**
+Medição empírica de custo computacional: o encoder de embeddings processou
+1.500–3.000 documentos reais a **17–19 documentos/segundo em CPU** (sem GPU
+disponível nesta máquina — `torch.cuda.is_available() == False`; variar
+`batch_size`, threads (10→16) e truncar o texto antes de tokenizar não
+mudou o throughput de forma relevante). Projeção para 1.877.981 conteúdos:
+**≈ 27–30 horas**. O TF-IDF processou a população inteira
+(`scripts/classify_population.py`) a **≈ 1.972 itens/segundo**, concluindo
+em minutos.
+
+Isso é exatamente o conflito que os critérios 6 (custo computacional) e 7
+(escalabilidade) do enunciado antecipam: o candidato com melhor desempenho
+não é viável de operacionalizar nesta iteração. A decisão foi **priorizar a
+prova de conceito ponta-a-ponta reproduzível** (congelamento → treino →
+validação → classificação da população inteira) em vez de rodar o melhor
+modelo por trinta horas sem supervisão nesta primeira semana.
+
+**Justificativa para não escolher B "de verdade":** B tem desempenho fraco e
+documentado — não é apresentado como classificador válido, e sua saída sobre
+a população é rotulada explicitamente como "resultado preliminar do
+classificador", nunca como prevalência (ver
+`results/EXP-012_population_summary.json`, campo `caveat`).
+
+**Calibração.** `LinearSVC` não expõe `predict_proba`; `decision_function`
+nunca é tratada como probabilidade. O modelo implantado (multiclasse e
+binário) foi re-ajustado no golden set completo com
+`CalibratedClassifierCV(method="sigmoid", cv=3)` antes de servir de base
+para a `confidence` reportada na classificação da população.
+
+### Alternativas consideradas
+
+- **(a) Implantar C mesmo assim, aceitando ~27–30h de execução.** Rejeitada
+  nesta iteração — inviável dentro do escopo de uma prova de conceito de
+  uma semana, sem infraestrutura de GPU.
+- **(b) Implantar B, aceitando o desempenho fraco, com o resultado
+  rotulado como preliminar.** **Adotada.**
+- **(c) Não classificar a população agora; esperar GPU ou um encoder mais
+  leve.** Rejeitada — o pesquisador pediu explicitamente a execução
+  ponta-a-ponta nesta iteração (regra 15 do enunciado desta tarefa: "não
+  deixe a natureza exploratória... impedir a execução end-to-end").
+- **(d) Reduzir a dimensão do embedding/usar um modelo menor para viabilizar
+  C em escala.** Não testada nesta iteração — candidata para v2.
+
+### Consequências
+
+- `results/EXP-012_population_classification.parquet` e
+  `results/EXP-012_population_summary.json` são saídas do modelo B, **não**
+  do modelo C. Qualquer leitura desses números precisa citar essa decisão.
+- Os artefatos do candidato C (`models/security_classifier_v1_*_cv_best_candidate.joblib`)
+  ficam preservados para quando (i) um gold set maior (E-6) justificar
+  retreinar, e (ii) houver GPU ou um encoder mais leve para viabilizar
+  escala.
+- `SECONDARY` previsto pelo modelo implantado é quase inexistente na
+  população — qualquer estrato construído a partir dele para o Desenho C
+  ([[Decision Log#D-014]]) teria eficiência degradada para essa classe.
+  Isso **não é** os `N_h` definitivos do estimador (que exigem classificador
+  validado contra gold set humano, [[Decision Log#D-020]] e
+  [[Decision Log#D-014]] condição 6) — apenas uma prova de que o pipeline
+  roda ponta a ponta.
+
+### Estimativa inicial de tempo incorreta — causa e correção
+
+A primeira estimativa de runtime da classificação da população (15–16 min)
+estava **errada por mais de duas ordens de grandeza**. Registrado aqui
+porque é, em si, uma instância do mesmo erro metodológico de D-002: medir
+sobre uma amostra não representativa e generalizar.
+
+**O que aconteceu.** O primeiro benchmark de throughput usou
+`SELECT content FROM ... ORDER BY hash(file_sha) LIMIT n` — correto como
+padrão de amostragem — mas um segundo benchmark de checagem rápida usou
+`LIMIT n` **sem** `ORDER BY`, o que no Parquet devolve as primeiras linhas
+em ordem física do arquivo. Essas linhas iniciais têm em média **138
+caracteres** — a mesma faixa de stub/symlink que invalidou o notebook
+original ([[#D-002]]). O comprimento médio real da população, medido por
+amostra aleatória, é **7.247 caracteres** (máx. observado: 276.779). A
+uma taxa de ~1.972 itens/s (medida sobre o texto curto), a extrapolação
+para 1.877.981 itens dava ~16 min; a taxa real, medida depois sobre texto
+representativo, era de **~56,5 itens/s** (isolando o custo: vetorização
+TF-IDF ~40s/20.000 linhas, classificação calibrada ~0,2s/20.000 linhas —
+o gargalo é a vetorização por n-gramas de caractere sobre texto longo, não
+a classificação). Extrapolação correta: **~9,3 horas**.
+
+**Consequência operacional.** A primeira tentativa de rodar a população
+inteira foi autorizada para rodar em segundo plano até o fim, mas foi
+**encerrada pelo ambiente de execução após ~2h11min**, sem aviso de erro,
+sem concluir e sem escrever `EXP-012_population_summary.json`. O arquivo
+parquet parcial ficou sem rodapé válido (`ArrowInvalid: Parquet magic
+bytes not found in footer`) — descartado.
+
+**Correção aplicada, sem retreinar o modelo:**
+1. os dois pipelines (multiclasse, binário) foram ajustados no **mesmo
+   corpus com os mesmos hiperparâmetros do vetorizador** — `vocabulary_` e
+   `idf_` são **idênticos** (verificado por igualdade exata, não suposição)
+   — logo a vetorização roda **uma vez** por lote e é reaproveitada pelos
+   dois classificadores, em vez de duas vezes;
+2. o texto é truncado a **1.500 caracteres** antes de vetorizar — reduz o
+   custo por documento linearmente, sem alterar o modelo já treinado;
+3. uma tentativa de paralelizar com `ProcessPoolExecutor` falhou nesta
+   máquina (Windows + `uv`: erro ao importar `scipy`/`scikit-learn` nos
+   processos-filho via spawn) — não investigada a fundo; o ganho das duas
+   otimizações seriais acima já foi considerado suficiente.
+
+**Resultado da correção, medido:** ~1.364 itens/s num teste de 100 mil
+linhas: **449 itens/s reais** na execução completa (throughput cai à
+medida que o processo avança, porque o início do arquivo tem conteúdo
+mais curto que a média — o mesmo viés de ordenação física, na direção
+oposta). Tempo total real: **4.184,5 s (≈ 69,7 min)** para os 1.877.981
+conteúdos. Script: `scripts/classify_population.py` (docstring documenta a
+v1 malsucedida e a v2 otimizada).
+
+### Resultado da classificação da população (execução concluída)
+
+`results/EXP-012_population_summary.json`, gerado em 2026-08-24T00:09:54Z:
+
+| Classe prevista | n | % |
+|---|---|---|
+| `NONE` | 1.815.753 | 96,686 |
+| `PRIMARY` | 58.066 | 3,092 |
+| `MENTION` | 3.154 | 0,168 |
+| `SECONDARY` | 1.008 | 0,054 |
+
+`SECURITY` previsto (`PRIMARY`+`SECONDARY`): **30.281 (1,612%)**.
+`SECONDARY` continua quase ausente em escala (0,054%), consistente com o
+achado da CV — o modelo implantado essencialmente não reconhece essa
+classe. `language_group` (proxy Unicode, não o detector validado):
+L1 (ASCII/latino) 1.436.055 · L2 (zh) 159.525 · L4 (latino acentuado)
+195.355 · L3 (ja) 38.550 · L3 (ko) 27.857 · L5 (cirílico) 13.889 · L5
+(outro script) 6.750. Confiança: média 0,551, mediana 0,561, 24,09% abaixo
+de 0,5. Amostra de 450 casos de baixa confiança/fronteira salva em
+`results/EXP-012_uncertain_cases_sample.csv` (metadados apenas).
+
+Todos os números acima carregam o `caveat` gravado no próprio JSON:
+resultado preliminar do classificador v1, não estimativa de prevalência;
+modelo com desempenho fraco em CV; texto truncado a 1.500 caracteres nesta
+execução.
+
+### Limitações
+
+- n=49 é pequeno demais para qualquer conclusão sobre qual algoritmo é
+  "melhor" de forma estável — `f1_std` do modelo C na tarefa binária
+  (0,046) é a mais estável das três, mas ainda assim sobre 5 repeats de um
+  golden set de 49 casos.
+- O `language_group` usado no recorte multilíngue da CV vem de
+  `human_language` **anotado**, não do detector; já na classificação da
+  população (`scripts/classify_population.py`) o `language_group` é um
+  **proxy barato por script Unicode** (SQL, população inteira), não o
+  detector validado de [[EXP-003]]/[[EXP-004]] — rodar aquele detector a
+  1,88M de documentos está fora do escopo desta iteração.
+- Retreinar no golden set inteiro (sem held-out) para o modelo final produz
+  `accuracy = 1.0` de forma trivial (memorização com features de alta
+  dimensão) — não é evidência de desempenho; a estimativa de generalização
+  válida é a validação cruzada acima, não o ajuste final.
+- Este classificador **não deve ser citado como resultado da QI-1**. É
+  prova de conceito de engenharia; a resposta à QI-1 exige gold set humano
+  maior (E-6) e classificador validado contra ele (E-7), por [[Decision Log#D-014|D-014]].
+
+---
+
 ## Ligações
 
 [[00 - Research Overview]] · [[EXP-001]] · [[EXP-002]] · [[GitSkills]] ·

@@ -97,7 +97,19 @@ E-4 passa a ser executado **depois de E-6** e muda de escopo:
 4. medir **recall por idioma** contra o gold set; só então decidir entre lexical e
    semântico.
 
-### E-5 — Piloto de anotação  ← PRÓXIMA ETAPA
+### EXP-012 — Prova de conceito do classificador (paralela, fora do caminho crítico)
+
+> [!warning] Não é E-6/E-7/E-8
+> [[EXP-012]] usa `EXP-005_annotation_form_filled_updated.csv` como
+> **golden set operacional v1** (assistido por LLM) para provar o pipeline
+> completo — congelar → treinar → comparar 3 modelos em 2 tarefas via CV
+> agrupada/repetida → selecionar → classificar os 1.877.981 conteúdos em
+> lote. **Não substitui** E-6 (gold set humano) nem produz os `N_h`
+> definitivos do Desenho C. Decisão completa, métricas e a divergência entre
+> "melhor em CV" (embeddings) e "implantado na população" (TF-IDF, por
+> custo computacional) em [[Decision Log#D-023]].
+
+### E-5 — Piloto de anotação  ← PRÓXIMA ETAPA (do caminho crítico rigoroso)
 
 **Objetivo.** Testar o [[Codebook]] v2.3 antes de investir na anotação grande.
 **Método.** ~50 casos, estratificados por **classe prevista × grupo linguístico**

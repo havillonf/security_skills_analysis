@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-08-24T00:09:54.780501+00:00",
+  "deployed_algorithm": "B_tfidf_linearsvc",
+  "best_cv_performer_not_deployed": "C_embed_logreg",
+  "n_population": 1877981,
+  "n_classified": 1877981,
+  "performance": {
+    "total_seconds": 4184.51,
+    "items_per_second": 448.8,
+    "truncation_chars": 1500,
+    "shared_vectorization": true,
+    "model_file_sizes_bytes": {
+      "multiclass": 2604504,
+      "binary": 1163746
+    }
+  },
+  "predicted_class_counts": {
+    "MENTION": 3154,
+    "NONE": 1815753,
+    "PRIMARY": 58066,
+    "SECONDARY": 1008
+  },
+  "predicted_class_pct": {
+    "MENTION": 0.168,
+    "NONE": 96.686,
+    "PRIMARY": 3.092,
+    "SECONDARY": 0.054
+  },
+  "predicted_security_count": 30281,
+  "predicted_non_security_count": 1847700,
+  "predicted_security_pct": 1.612,
+  "language_group_proxy_counts": {
+    "L1_proxy_ascii_latin": 1436055,
+    "L2_proxy_zh": 159525,
+    "L4_proxy_latin_accented": 195355,
+    "L3_proxy_ko": 27857,
+    "L3_proxy_ja": 38550,
+    "L5_proxy_cyrillic": 13889,
+    "L5_proxy_other_script": 6750
+  },
+  "language_group_proxy_note": "Proxy barato por script Unicode calculado em SQL sobre toda a populacao - NAO e o detector validado lingua/py3langid de EXP-003/EXP-004. Nao distingue com precisao pt/es/fr/de/it (todos caem em L4_proxy_latin_accented) nem confirma ingles vs outras linguas latinas sem acento (todas caem em L1_proxy_ascii_latin).",
+  "confidence_distribution": {
+    "mean": 0.5511564813417388,
+    "median": 0.561034362360675,
+    "p10": 0.43738851086801117,
+    "p90": 0.6477159399035566,
+    "pct_below_0_5": 24.091
+  },
+  "inference_optimization_note": "v1 deste script (sem truncamento, vetorizacao duplicada) foi encerrada pelo ambiente apos ~2h11min sem concluir; extrapolacao correta a partir do throughput medido era ~9,3h. Causa medida por profiling isolado: a vetorizacao TF-IDF char n-gram e o gargalo (nao a classificacao, ~0,2s/20k linhas), porque o comprimento medio real da populacao (~7.247 caracteres) e muito maior que o da amostra usada no benchmark inicial que gerou a estimativa errada de 15-16 min. v2 (esta execucao): texto truncado a 1500 caracteres antes de vetorizar, vetorizacao compartilhada entre os dois classificadores (vocabularios identicos, verificado por igualdade exata). Uma tentativa de paralelizar com ProcessPoolExecutor falhou nesta maquina (Windows + uv, erro de import de scipy/sklearn nos processos-filho) - nao resolvida, o ganho da otimizacao serial ja foi considerado suficiente. Ver Decision Log D-023.",
+  "caveat": "RESULTADO PRELIMINAR DO CLASSIFICADOR v1, nao estimativa estatistica de prevalencia. O classificador foi treinado num golden set operacional de n=49 (EXP-005, assistido por LLM, nao gold standard humano). O modelo IMPLANTADO (TF-IDF+LinearSVC) teve desempenho fraco na validacao cruzada (F1 binario ~0.21, nunca previu SECONDARY nem MENTION em nenhum repeat da CV) - ver EXP-012_metrics.json. Os numeros abaixo medem o que o pipeline produz em escala, nao a prevalencia real de Security Skills. Alem disso, esta rodada classifica o TEXTO TRUNCADO a 1500 caracteres, nao o conteudo integral."
+}
