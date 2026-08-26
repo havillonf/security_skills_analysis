@@ -1,6 +1,7 @@
 ---
 tipo: resumo
-data: 2026-08-22
+data: 2026-08-23
+atualizado: 2026-08-23
 branch: Q1
 publico: leitura rapida - pesquisador, orientador, banca
 ---
@@ -23,6 +24,13 @@ difícil de responder direito: **quantos deles são sobre segurança?**
 
 Até agora **não temos essa resposta** — e isso é proposital. O que construímos foi o
 método para chegar nela de um jeito que se sustente numa banca.
+
+> **Atualização (23/08).** Fizemos uma primeira volta completa do processo, de
+> ponta a ponta, como prova de conceito: anotamos 50 casos (com ajuda de IA),
+> treinamos um classificador, comparamos três jeitos de fazer isso, escolhemos
+> um e rodamos ele nos 1,9 milhão de skills. O número que saiu (**1,61%** de
+> segurança) **não é a resposta da pesquisa** — é só a prova de que a máquina
+> inteira funciona. Detalhe na seção 17.
 
 ---
 
@@ -155,7 +163,13 @@ graph TD
     style E5 fill:#ffe6cc,stroke:#d79b00,stroke-width:3px
 ```
 
-**Estamos em E-5.** A amostra do piloto está pronta e esperando anotação humana.
+**Estamos em E-5, mas com uma volta de teste já dada por fora deste caminho.**
+Os 50 casos do piloto foram preenchidos — com ajuda de IA, não por um humano do
+zero, então isso **não conta como o E-5 "de verdade"** ainda. Em paralelo,
+usamos esse preenchimento como um **ensaio geral (v1)**: treinamos um
+classificador nele e rodamos nos 1,9 milhão de skills, só para provar que o
+cano inteiro (anotar → treinar → validar → classificar tudo) funciona de
+ponta a ponta. Ver seção 17.
 
 ---
 
@@ -167,7 +181,8 @@ graph TD
 | **EXP-002** | Testou busca por palavra-chave | Não filtra nada: **78,69%** das skills citam algum termo de segurança |
 | **EXP-003** | Mediu os idiomas | **~14% não é em inglês** (~267 mil skills) |
 | **EXP-004** | Testou o detector de idioma | Dois detectores concordam em **98,7%** dos casos |
-| **EXP-005** | Montou a amostra do piloto | **50 casos** prontos para anotar |
+| **EXP-005** | Montou e (com ajuda de IA) preencheu a amostra do piloto | **50 casos** anotados — golden set v1, ainda não é gold standard humano |
+| **EXP-012** | Treinou 3 classificadores, escolheu 1, classificou tudo | **1,61%** de segurança — número **preliminar**, não é a resposta |
 
 ### O erro que encontramos no começo
 
@@ -256,10 +271,15 @@ provavelmente nem são skills.
 
 ---
 
-## 12. O piloto que está pronto
+## 12. O piloto que está pronto (e já foi preenchido, com ressalva)
 
 **50 casos**, sorteados com semente fixa. Rodamos duas vezes e deu **exatamente o
 mesmo resultado** — qualquer pessoa reproduz.
+
+> **Os 50 casos já foram preenchidos** — mas com ajuda de IA, não por um humano
+> lendo do zero. Por isso viramos ele em "golden set operacional v1": serve
+> para testar o cano inteiro (seção 17), mas **não substitui** a anotação
+> humana de verdade que o E-5 pede, nem o gold set maior do E-6.
 
 A amostra foi montada de propósito para ser **difícil**, não representativa:
 
@@ -285,6 +305,7 @@ O objetivo **não** é medir prevalência. É descobrir:
 | **Classificar tudo ou só uma parte?** | Depende do custo real, que só o piloto vai revelar |
 | **Unidade de análise** | Está usada em tudo mas nunca foi formalmente aceita |
 | **Segundo anotador** | Sem ele, vira uma limitação declarada. IA **não pode** fazer esse papel |
+| **Refazer o piloto com humano de verdade?** | O golden set v1 (seção 17) foi anotado com ajuda de IA. Falta decidir se isso basta para seguir para o E-6, ou se vale a pena refazer o E-5 só com humano antes |
 
 ---
 
@@ -328,16 +349,74 @@ notes/
     Multilingual Strategy     como lidar com idiomas
   Literature/
     Multilingual Methodology Review    os artigos que embasam o método
-  Experiments/                EXP-001 a EXP-005
+  Experiments/                EXP-001 a EXP-005, EXP-012
   Meetings/                   pauta para o orientador (fora do Git)
 
 scripts/    os programas que geram tudo
 results/    os números e as amostras
+models/     os classificadores treinados (não fica no Git, dá pra refazer)
 ```
 
 ---
 
-## 16. Duas regras que valem para tudo
+## 16. O ensaio geral: treinamos um classificador e rodamos em tudo (v1, não é o resultado)
+
+Depois de ter os 50 casos preenchidos, decidimos não esperar o gold set "de
+verdade" (E-6) para testar se o resto do processo funciona. Chamamos isso de
+**iteração v1** — uma prova de conceito, guardada à parte do caminho oficial.
+
+**O que fizemos, em ordem:**
+
+1. Congelamos os 50 casos num commit do Git — ponto de partida fixo, para
+   nunca misturar "antes" e "depois" do treino.
+2. Separamos as respostas de cada caso do texto de cada skill, com cuidado
+   para **não deixar vazar** nenhuma pista de como aquele caso foi escolhido
+   para a amostra (isso inflaria artificialmente o resultado).
+3. Testamos **três jeitos diferentes** de fazer um computador reconhecer
+   segurança num texto: dois mais simples e baratos (contagem de pedaços de
+   palavra) e um mais sofisticado (um modelo de linguagem multilíngue menor).
+4. Comparamos os três de forma justa (repetindo o teste várias vezes, sempre
+   escondendo uma parte dos 50 casos do treino para conferir se ele acerta o
+   que nunca viu).
+
+**O que descobrimos — e é o achado mais importante desta etapa:** os dois
+jeitos simples e baratos **nunca** conseguiram reconhecer a classe
+`SECONDARY` nem `MENTION` — exatamente a fronteira que decide o resultado da
+pesquisa inteira (seção 5). O jeito sofisticado reconheceu bem melhor, mas é
+**lento demais** para rodar nos 1,9 milhão de skills nesta máquina (sem uma
+placa de vídeo boa, levaria quase um dia inteiro rodando sem parar).
+
+**A escolha que fizemos:** para não travar a prova de conceito, usamos o
+jeito rápido (mas fraco) para classificar tudo, deixando bem marcado que o
+resultado é **fraco e preliminar**. Isso é uma decisão registrada, com os
+dois lados explicados, no [[Decision Log]] (D-023) — não escondemos a
+fraqueza do modelo escolhido.
+
+**O número que saiu:** classificamos os 1.877.981 textos e **1,61%** vieram
+como "de segurança" (`PRIMARY`+`SECONDARY`). **Isso não é a resposta da
+pesquisa.** É só a prova de que a esteira inteira — anotar, treinar, testar,
+rodar em tudo — funciona sem travar.
+
+> [!warning] Uma trombada no caminho, também registrada
+> A primeira tentativa de rodar nos 1,9 milhão de textos foi cronometrada
+> errado — achamos que levaria 15 minutos, e na real levaria quase 9 horas.
+> O motivo: um teste rápido, sem querer, mediu em textos muito curtos (o
+> mesmo tipo de erro de amostragem que já tinha estragado o resultado do
+> notebook original, seção 8). Depois de medir direito e otimizar (sem
+> mudar o modelo, só deixando ele ler menos texto e não repetir trabalho à
+> toa), o processo real levou **70 minutos**. Detalhe completo também no
+> [[Decision Log]] (D-023).
+
+**Por que isso importa para o resto da pesquisa:** confirma, com dado e não
+só teoria, por que não dá para simplesmente "rodar uma IA em tudo e contar" —
+o jeito rápido nem reconhece a classe que mais importa. Reforça que o
+gold set (E-6) precisa ser grande o bastante, e com bastante casos bem na
+fronteira `SECONDARY`/`MENTION`, para que o classificador definitivo (E-7)
+tenha chance real de aprender essa distinção.
+
+---
+
+## 17. Duas regras que valem para tudo
 
 **1. IA não é gabarito.** Ela ajuda a organizar, sugere, pré-classifica. Mas o que
 vira resultado passa por julgamento humano. Isso está registrado como decisão formal
@@ -352,4 +431,4 @@ Já removemos números que não passaram nesse teste.
 [[00 - Research Overview]] · [[01 - Research Question]] · [[03 - Methodology]] ·
 [[Decision Log]] · [[Codebook]] · [[QI-1 Methodology]] · [[Multilingual Strategy]] ·
 [[Multilingual Methodology Review]] · [[EXP-001]] · [[EXP-002]] · [[EXP-003]] ·
-[[EXP-004]] · [[EXP-005]]
+[[EXP-004]] · [[EXP-005]] · [[EXP-012]]
