@@ -1,0 +1,306 @@
+{
+  "generated_at": "2026-08-22T03:47:26.186679+00:00",
+  "duckdb_version": "1.5.5",
+  "data_dir": "C:\\Users\\victo\\OneDrive\\Documentos\\TCC\\security_skills_analysis\\data\\raw\\gitskills\\data",
+  "volumetria": {
+    "n_rows": 3797117,
+    "n_repos": 282200,
+    "n_distinct_sha": 1877981,
+    "n_primary": 1877981,
+    "n_content_fetched": 1880348,
+    "n_content_notnull": 1880329,
+    "n_frontmatter_valid": 1627753,
+    "n_history_fetched": 458548
+  },
+  "integridade_join": {
+    "repos_in_artifacts": 282200,
+    "rows_repos": 282200,
+    "distinct_repos": 282200,
+    "orphan_repos": 0,
+    "repos_metadata_missing": 0
+  },
+  "dedup_x_content": [
+    {
+      "dedup_primary": 0,
+      "content_fetched": 0,
+      "n_rows": 1916769,
+      "n_with_content": 0
+    },
+    {
+      "dedup_primary": 1,
+      "content_fetched": 1,
+      "n_rows": 1877981,
+      "n_with_content": 1877981
+    },
+    {
+      "dedup_primary": 0,
+      "content_fetched": 1,
+      "n_rows": 2367,
+      "n_with_content": 2348
+    }
+  ],
+  "content_length": {
+    "n": 1880329,
+    "min": 1,
+    "p05": 707.0,
+    "p25": 2428.0,
+    "p50": 4999.0,
+    "p75": 9135.0,
+    "p95": 20905.0,
+    "max": 355781,
+    "mean": 7333.658370423474,
+    "n_lt_80_chars": 7309,
+    "n_symlink_like": 5363
+  },
+  "vies_head5000": {
+    "primeiras_5000_linhas": {
+      "n": 5000,
+      "n_with_content": 1632,
+      "avg_content_len": 36.118872549019606,
+      "median_content_len": 42.0,
+      "n_with_frontmatter_name": 67,
+      "n_repos": 920,
+      "n_distinct_discovered_at": 1
+    },
+    "amostra_aleatoria_primaries": {
+      "n": 5000,
+      "n_with_content": 5000,
+      "avg_content_len": 7198.1988,
+      "median_content_len": 5006.0,
+      "n_with_frontmatter_name": 4364,
+      "n_repos": 3611
+    }
+  },
+  "keyword_prevalence_primaries": {
+    "denominator_n_primaries": 1877981,
+    "any_keyword": {
+      "n": 994106,
+      "pct": 52.93
+    },
+    "por_keyword": [
+      {
+        "keyword": "token",
+        "n": 388584,
+        "pct": 20.69
+      },
+      {
+        "keyword": "security",
+        "n": 336655,
+        "pct": 17.93
+      },
+      {
+        "keyword": "audit",
+        "n": 304925,
+        "pct": 16.24
+      },
+      {
+        "keyword": "secret",
+        "n": 200904,
+        "pct": 10.7
+      },
+      {
+        "keyword": "permission",
+        "n": 189147,
+        "pct": 10.07
+      },
+      {
+        "keyword": "credential",
+        "n": 178470,
+        "pct": 9.5
+      },
+      {
+        "keyword": "authentication",
+        "n": 167035,
+        "pct": 8.89
+      },
+      {
+        "keyword": "api key",
+        "n": 131307,
+        "pct": 6.99
+      },
+      {
+        "keyword": "password",
+        "n": 115688,
+        "pct": 6.16
+      },
+      {
+        "keyword": "injection",
+        "n": 103155,
+        "pct": 5.49
+      },
+      {
+        "keyword": "guardrail",
+        "n": 81739,
+        "pct": 4.35
+      },
+      {
+        "keyword": "sandbox",
+        "n": 52485,
+        "pct": 2.79
+      },
+      {
+        "keyword": "vulnerability",
+        "n": 42723,
+        "pct": 2.27
+      },
+      {
+        "keyword": "exploit",
+        "n": 36389,
+        "pct": 1.94
+      },
+      {
+        "keyword": "sanitize",
+        "n": 32164,
+        "pct": 1.71
+      },
+      {
+        "keyword": "encryption",
+        "n": 31789,
+        "pct": 1.69
+      },
+      {
+        "keyword": "xss",
+        "n": 26376,
+        "pct": 1.4
+      },
+      {
+        "keyword": "owasp",
+        "n": 25333,
+        "pct": 1.35
+      },
+      {
+        "keyword": "cve",
+        "n": 21816,
+        "pct": 1.16
+      },
+      {
+        "keyword": "csrf",
+        "n": 17120,
+        "pct": 0.91
+      },
+      {
+        "keyword": "supply chain",
+        "n": 12958,
+        "pct": 0.69
+      },
+      {
+        "keyword": "prompt injection",
+        "n": 12225,
+        "pct": 0.65
+      },
+      {
+        "keyword": "pentest",
+        "n": 6029,
+        "pct": 0.32
+      },
+      {
+        "keyword": "jailbreak",
+        "n": 2946,
+        "pct": 0.16
+      }
+    ]
+  },
+  "proposito_vs_mencao": {
+    "n_with_frontmatter": 1625701,
+    "n_security_in_frontmatter": 66482
+  },
+  "composicao": {
+    "n_primary": 1877981,
+    "n_has_scripts": 214507,
+    "n_has_references": 485979,
+    "median_sibling_count": 0.0,
+    "max_sibling_count": 79940,
+    "n_composition_truncated": 252250
+  },
+  "duplicacao": {
+    "n_sha_com_copias": 388501,
+    "n_linhas_em_sha_duplicado": 2307637
+  },
+  "location_class": [
+    {
+      "location_class": "skills-dir",
+      "n": 2102053
+    },
+    {
+      "location_class": "other",
+      "n": 1321412
+    },
+    {
+      "location_class": "canonical",
+      "n": 373652
+    }
+  ],
+  "filename_variants": [
+    {
+      "filename": "SKILL.md",
+      "n": 3742828
+    },
+    {
+      "filename": "skill.md",
+      "n": 49314
+    },
+    {
+      "filename": "Skill.md",
+      "n": 3530
+    },
+    {
+      "filename": "SKILL.MD",
+      "n": 1426
+    },
+    {
+      "filename": "skill.MD",
+      "n": 6
+    },
+    {
+      "filename": "Skill.MD",
+      "n": 4
+    },
+    {
+      "filename": "SKIll.md",
+      "n": 3
+    },
+    {
+      "filename": "SkILL.MD",
+      "n": 2
+    },
+    {
+      "filename": "SKILl.md",
+      "n": 1
+    },
+    {
+      "filename": "SKill.md",
+      "n": 1
+    },
+    {
+      "filename": "sKILL.md",
+      "n": 1
+    },
+    {
+      "filename": "SkILL.md",
+      "n": 1
+    }
+  ],
+  "siblings": [
+    {
+      "entry_type": "file",
+      "n": 5858945,
+      "n_with_content": 3497752
+    },
+    {
+      "entry_type": "dir",
+      "n": 1405920,
+      "n_with_content": 0
+    }
+  ],
+  "repos_stars": {
+    "n": 282200,
+    "n_null_stars": 515,
+    "mean": 122.15080320215844,
+    "p50": 0.0,
+    "p75": 2.0,
+    "p90": 15.0,
+    "p99": 1278.0,
+    "max": 383040,
+    "pct_zero_stars": 59.28892202282692
+  }
+}

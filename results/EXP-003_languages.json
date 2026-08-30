@@ -1,0 +1,376 @@
+{
+  "generated_at": "2026-08-22T16:40:08.991496+00:00",
+  "duckdb_version": "1.5.5",
+  "params": {
+    "sample": 20000,
+    "min_chars": 40,
+    "min_prob": 0.9,
+    "detector": "py3langid LanguageIdentifier(norm_probs=True)"
+  },
+  "n_population": 1877981,
+  "layer1_scripts": {
+    "han": {
+      "n": 198327,
+      "pct": 10.561
+    },
+    "hiragana": {
+      "n": 37103,
+      "pct": 1.976
+    },
+    "katakana": {
+      "n": 37133,
+      "pct": 1.977
+    },
+    "hangul": {
+      "n": 28866,
+      "pct": 1.537
+    },
+    "cyrillic": {
+      "n": 14547,
+      "pct": 0.775
+    },
+    "arabic": {
+      "n": 3009,
+      "pct": 0.16
+    },
+    "hebrew": {
+      "n": 1325,
+      "pct": 0.071
+    },
+    "devanagari": {
+      "n": 300,
+      "pct": 0.016
+    },
+    "greek": {
+      "n": 21643,
+      "pct": 1.152
+    },
+    "thai": {
+      "n": 2682,
+      "pct": 0.143
+    },
+    "latin_ext": {
+      "n": 219948,
+      "pct": 11.712
+    },
+    "any_nonlatin_script": {
+      "n": 264099,
+      "pct": 14.063
+    }
+  },
+  "layer1_reused_from": "2026-08-22T16:35:06.530234+00:00",
+  "layer2_sample_n": 20000,
+  "layer2_body_language": [
+    {
+      "lang": "en",
+      "n": 16923,
+      "pct": 84.615,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "zh",
+      "n": 1197,
+      "pct": 5.985,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ja",
+      "n": 345,
+      "pct": 1.725,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "de",
+      "n": 322,
+      "pct": 1.61,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ko",
+      "n": 250,
+      "pct": 1.25,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "es",
+      "n": 194,
+      "pct": 0.97,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "pt",
+      "n": 190,
+      "pct": 0.95,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "und",
+      "n": 165,
+      "pct": 0.825,
+      "mean_conf": null
+    },
+    {
+      "lang": "la",
+      "n": 89,
+      "pct": 0.445,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "fr",
+      "n": 83,
+      "pct": 0.415,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ru",
+      "n": 52,
+      "pct": 0.26,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "vi",
+      "n": 50,
+      "pct": 0.25,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "tr",
+      "n": 35,
+      "pct": 0.175,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ar",
+      "n": 19,
+      "pct": 0.095,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "it",
+      "n": 17,
+      "pct": 0.085,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "th",
+      "n": 11,
+      "pct": 0.055,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "pl",
+      "n": 6,
+      "pct": 0.03,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "nl",
+      "n": 6,
+      "pct": 0.03,
+      "mean_conf": "0.996"
+    },
+    {
+      "lang": "sv",
+      "n": 5,
+      "pct": 0.025,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "km",
+      "n": 5,
+      "pct": 0.025,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "id",
+      "n": 5,
+      "pct": 0.025,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "he",
+      "n": 4,
+      "pct": 0.02,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "cs",
+      "n": 4,
+      "pct": 0.02,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ca",
+      "n": 3,
+      "pct": 0.015,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "uk",
+      "n": 3,
+      "pct": 0.015,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "nb",
+      "n": 3,
+      "pct": 0.015,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "fa",
+      "n": 2,
+      "pct": 0.01,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ro",
+      "n": 2,
+      "pct": 0.01,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ur",
+      "n": 2,
+      "pct": 0.01,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "ky",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "lb",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "sk",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "fo",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "bs",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "0.996"
+    },
+    {
+      "lang": "no",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "hu",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "1.0"
+    },
+    {
+      "lang": "hr",
+      "n": 1,
+      "pct": 0.005,
+      "mean_conf": "0.996"
+    }
+  ],
+  "layer2_frontmatter_language": [
+    {
+      "lang": "en",
+      "n": 15209,
+      "pct": 76.045
+    },
+    {
+      "lang": "und",
+      "n": 2126,
+      "pct": 10.63
+    },
+    {
+      "lang": "zh",
+      "n": 950,
+      "pct": 4.75
+    },
+    {
+      "lang": "de",
+      "n": 316,
+      "pct": 1.58
+    },
+    {
+      "lang": "ja",
+      "n": 304,
+      "pct": 1.52
+    },
+    {
+      "lang": "ko",
+      "n": 208,
+      "pct": 1.04
+    },
+    {
+      "lang": "pt",
+      "n": 203,
+      "pct": 1.015
+    },
+    {
+      "lang": "es",
+      "n": 155,
+      "pct": 0.775
+    },
+    {
+      "lang": "la",
+      "n": 147,
+      "pct": 0.735
+    },
+    {
+      "lang": "fr",
+      "n": 111,
+      "pct": 0.555
+    },
+    {
+      "lang": "ru",
+      "n": 53,
+      "pct": 0.265
+    },
+    {
+      "lang": "tr",
+      "n": 42,
+      "pct": 0.21
+    },
+    {
+      "lang": "vi",
+      "n": 34,
+      "pct": 0.17
+    },
+    {
+      "lang": "ar",
+      "n": 15,
+      "pct": 0.075
+    },
+    {
+      "lang": "it",
+      "n": 15,
+      "pct": 0.075
+    }
+  ],
+  "layer2_frontmatter_body_divergent": {
+    "n": 835,
+    "pct": 4.175
+  },
+  "layer2_mixed_script": {
+    "n": 2341,
+    "pct": 11.705
+  },
+  "layer2_und_reasons": {
+    "prosa_curta": 136,
+    "baixa_confianca": 29
+  }
+}

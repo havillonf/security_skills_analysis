@@ -1,0 +1,51 @@
+case_id,file_sha,repo_full_name,path,tier,kw_density,domain_decl,fm_signal,grc_flag,code_review_flag,lang_group,lang_primary,lang_secondary,lang_secondary_conf,detector_agreement,is_mixed,minor_share,has_scripts,selection_reason
+P001,00c91a68d33447ebe54987eb4b78aeb285c0b993,mikailustuner/OmniRule,skills/podcast-script-writer/SKILL.md,T1,1,0,0,0,0,L5,tr,tr,1.0,1,0,0.0,0,dirigido cauda
+P002,0590e2bf45c3ec7ecbf4282f3c4e861a52129682,smyx-sunjinhui/smyx-open-claw-skills,skills/fire-smoke-detection-analysis/SKILL.md,T2,1,0,1,0,0,L2,zh,zh,1.0,1,1,0.2984,1,cota T2xL2
+P003,0ed2bdd837762c7c661ef971d18caffb481d38b4,wakumo/awesome-web3-agent-skills,skills/opensea/opensea-api/SKILL.md,T1,1,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,cota T1xL1
+P004,116879ace711c236731ee765275b256d7383e38d,thiagofernandes1987-create/APEX,skills/engineering/cs-engineering/focused-fix/SKILL.md,T1,3,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,cota T1xL1
+P005,1d95e80b4e188d8ec70cdeb3b515b1684d6e73a6,rasy007/android-skills,android-arch-generator/SKILL.md,T2,1,0,1,0,0,L2,zh,zh,1.0,1,1,0.4344,1,cota T2xL2
+P006,273a34d94ce21d34a1b83010a471f260071c2cd5,bpcakes/jig-skills,plugins/jig-privacy-audit/skills/network-payload-zero-knowledge-test/SKILL.md,T2,9,0,0,1,0,L1,en,en,1.0,1,0,0.0,1,cota T2xL1
+P007,279ae100e584192aee525d19c97c59d48909cd7d,fxsocialboy/meituan,.claude/skills/bam-query/SKILL.md,T1,1,0,0,0,0,L1,en,zh,1.0,0,0,0.1025,0,dirigido fronteira SECONDARY/MENTION
+P008,2fdda12a088228b97f7fb2f6f5ae1c85b302b9a4,Regtransfers/agency-agents-mcp,skills/threejs-shaders/SKILL.md,T1,1,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,dirigido fronteira SECONDARY/MENTION
+P009,312c5fb886cc47e0c30412fef7461d38e521ffe2,GregsGreyCode/Logos,skills/social-media/xitter/SKILL.md,T2,2,0,1,1,0,L1,en,en,1.0,1,0,0.0,0,cota T2xL1
+P010,37de1ebf62c30501ecb4ca8978c4ef4c1e185c71,SmartTasksOrg/IAISO,IAIso-v5.0/skills/iaiso-deploy-consent-issuance/SKILL.md,T0,0,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,cota T0xL1
+P011,3de558a7c43623d7eef53dd4e73bba2cb7f7954b,loulanyue/awesome-claude-notes,docs/tr/skills/springboot-verification/SKILL.md,T2,2,0,1,0,0,L5,tr,tr,1.0,1,0,0.0,0,cota T2xL5
+P012,4d5813e57f86f0ee40fe5261de8e21bb4e4523e8,caglarkc/sentinel,cli/skills/agentic-secrets-handling/SKILL.md,T2,1,0,1,0,0,L5,tr,tr,1.0,1,0,0.0,0,dirigido cauda
+P013,4ff1c59037408729519b3c9f26783e6757b05c2e,bpcakes/jig-skills,plugins/jig-privacy-audit/skills/crypto-architecture-review/SKILL.md,T3,9,0,1,0,1,L1,en,en,1.0,1,0,0.0,0,dirigido code-review
+P014,5b8e3a11ca298ff2f1082e81b01a241edcd48e9e,UnleashedServices/unleashed-mail-plugin,skills/gemini-review/SKILL.md,T1,4,0,0,1,1,L1,en,en,1.0,1,0,0.0,0,dirigido code-review
+P015,5e6380376ea9fd60986a628fa9126714e0fab91c,AQUILA04/ELYKIA,.agent/skills/keep-changelog/SKILL.md,T1,1,0,0,0,0,L4,fr,fr,1.0,1,0,0.0,0,cota T1xL4
+P016,62a4456060091ed4d0975d0e0c694539368e6a20,duhu2000/financial-services-qcc,skills/equity-structure-qcc/SKILL.md,T0,0,0,0,0,0,L2,zh,zh,1.0,1,1,0.1525,0,dirigido mixed
+P017,64fd5030dd318551784cc6afaf6c5d5c7ba198c2,quyetcot/web-pomohaven,.agents/skills/be-migration/SKILL.md,T1,1,0,0,0,0,L5,vi,vi,1.0,1,0,0.0,0,cota T1xL5
+P018,663bf920b275907f03aa7101ec8f4c21a74b12e7,abustamam/portfolio-blog,.claude/skills/gstack/review/SKILL.md,T2,8,0,0,1,1,L1,en,en,1.0,1,0,0.0,0,dirigido code-review
+P019,69f5941ebfdd408738285509ef7d82b251cf4953,Yemomo511/hybrid-agent-rail,skills/react-native/add-app-clip/SKILL.md,T0,0,0,0,0,0,L2,zh,zh,1.0,1,1,0.2493,0,dirigido mixed
+P020,6ef6a2c1ee3e73e4b935c39f6bae81ce2aca6173,MysMon/Spec-Workflow-Toolkit,skills/core/security-fundamentals/SKILL.md,T3,5,0,1,0,0,L5,und,und,0.0,1,0,0.0,0,cota T3xL5
+P021,71cd9f851b259a61856a6b948883bbe7cae7898e,flight505/skill-forge,plugins/saas-packs/obsidian-pack/skills/obsidian-incident-runbook/SKILL.md,T2,1,0,1,0,0,L1,en,en,1.0,1,0,0.0,0,cota T2xL1
+P022,74e0b0b62b01aba4ca4aa08e580660e99ec3060e,yanacuti1121/Yana-AI,.claude/skills/analyzing-ransomware-leak-site-intelligence/SKILL.md,T3,8,1,1,1,0,L1,en,en,1.0,1,0,0.0,1,dirigido GRC
+P023,7618932130197405e8f0316680aeb931630572e3,alandovskis/dotfiles,ai/skills/architecture/SKILL.md,T0,0,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,cota T0xL1
+P024,7e1c5bc1224ee163f68f29f699540b776654058d,buraksenyurt/dot-net-conf-2026,.github/skills/configure-cicd-pipeline/SKILL.md,T1,1,0,0,0,0,L5,tr,tr,1.0,1,0,0.0,0,cota T1xL5
+P025,7e805753c5f13784a70b392623dd6bd50cc4dfb9,kompiro/hane,skills/security-alert/SKILL.md,T2,2,0,1,0,0,L3,ja,ja,1.0,1,1,0.4278,0,cota T2xL3
+P026,819e6415ae7ec477060e53d4860d8a4a523d516f,salmandev/arabic-skills-library,skills/cybersecurity/arabic-john-the-ripper/SKILL.md,T3,1,1,0,1,0,L5,ar,ar,1.0,1,1,0.2509,0,cota T3xL5
+P027,8972c9d9c88f921e4abadcbf7005d00696e6a62e,pjt222/agent-almanac,i18n/wenyan-ultra/skills/configure-ingress-networking/SKILL.md,T3,4,0,1,0,0,L2,zh,zh,1.0,1,1,0.3569,0,cota T3xL2
+P028,93b41fed309fa106f4ff14f7f9d3c73c001e4a43,killvxk/cybersecurity-skills-zh,skills/exploiting-deeplink-vulnerabilities/SKILL.md,T3,5,1,1,0,0,L2,zh,zh,1.0,1,1,0.4577,1,cota T3xL2
+P029,9e770d951a76ffbb98f623b63096082152cbf8c0,jaredcroxton/hermes-mirror,agents/skills/software-development/requesting-code-review/SKILL.md,T3,4,0,1,1,1,L1,en,en,1.0,1,0,0.0,0,dirigido GRC
+P030,9ec57c03c1e45782dd9da84028dfc4cd221d8ce5,ncdevshiv/NC-skills-mcp,skills/loki-mode/SKILL.md,T2,6,0,0,1,0,L1,en,en,1.0,1,0,0.0,1,cota T2xL1
+P031,a2d36bc4c494655de1916b5a4ce4b2346766a080,anubhavg-icpl/vibe,skills/ag-00-andruia-consultant/SKILL.md,T1,2,0,0,0,0,L4,es,es,1.0,1,0,0.0,0,cota T1xL4
+P032,a7ce2793cc18ea240262b9fd986fa3fa162e30c6,GeorgeDoors888/GB-Power-Market-JJ,openclaw-skills/skills/diankourenxia/openclaw-with-vscode/SKILL.md,T1,1,0,0,0,0,L2,zh,zh,1.0,1,1,0.2084,0,cota T1xL2
+P033,a7fece435da9a50baf9c96e4978a1fdfcbe5d19d,UnderUndre/UnderUndre,.agents/skills/source-command-backend-specialist/SKILL.md,T3,4,0,1,0,0,L1,en,en,1.0,1,0,0.0,0,cota T3xL1
+P034,b2db2edda8bdd36f80acfb02217c42f3f0ac0832,zwright8/OpenClaw-Code,skills/generated/5086-disaster-recovery-orchestration-for-education-support-services/SKILL.md,T2,2,0,1,1,0,L1,en,en,1.0,1,0,0.0,0,dirigido GRC
+P035,c20a2e07088178fd851a872cdbfae19c72dc47b7,gaebalai/king-skills,.claude/skills/review/SKILL.md,T1,1,0,0,0,1,L1,en,en,1.0,1,0,0.0,0,dirigido fronteira SECONDARY/MENTION
+P036,c8fa12c5d45ff36179560339c40c5b00246e2946,smonn/ids,.claude/skills/review/SKILL.md,T0,0,0,0,0,1,L1,en,en,1.0,1,0,0.0,0,dirigido code-review
+P037,c97de57cef6e93886e5aa969df4ab85b15744a33,David-Li0406/meta-skill-evloving,skill-flow/data/skills-refined-36k/skillsmp/rag/SKILL.md,T1,1,0,0,1,0,L3,ja,ja,1.0,1,1,0.3597,0,cota T1xL3
+P038,ca406ac0aa0562f36543fd7cf516e7ea6341398c,meghal86/stacksignal,.agents/skills/monarch-money/SKILL.md,T3,3,0,1,0,0,L1,en,en,1.0,1,0,0.0,1,cota T3xL1
+P039,d1f09b2137f558b98f763dd99a2f4044588609a9,ComeOnOliver/skillshub,skills/jeremylongshore/claude-code-plugins-plus-skills/apify-reference-architecture/SKILL.md,T1,1,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,cota T1xL1
+P040,d2470a8c72a6e98264f9a2f34cf2dd5e18a305f7,Molly-agi/Molly-Core,src/skills/registry/skills/cybersecurity/skills/analyzing-supply-chain-malware-artifacts/SKILL.md,T3,4,1,1,0,0,L1,en,en,1.0,1,0,0.0,1,cota T3xL1
+P041,e223dfd5d1ed059b6498b6ebe318b2bc77c1fa5c,NeuralBlitz/ncx,buggy/ncx/.opencode/skills/analytical-fluid-mechanics-implementation/SKILL.md,T0,0,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,cota T0xL1
+P042,e97f8370584e384fe5b20a054c53c2bf2fcb1c2c,pjt222/agent-almanac,i18n/es/skills/purify-water/SKILL.md,T2,1,0,1,0,0,L4,es,es,1.0,1,0,0.0,0,cota T2xL4
+P043,ea4779824ecb2023d71b644d7fbff70dc1cff5ae,GeorgeDoors888/GB-Power-Market-JJ,openclaw-skills/skills/flywhale-666/nano-banana-image-t8/SKILL.md,T1,1,0,0,0,0,L2,zh,zh,1.0,1,0,0.1252,0,cota T1xL2
+P044,ee1ff83b853adce49ef129bede4a2eadf089d6dc,sitaurs/pbl-ppe-detection,.agents/skills/azure-mgmt-fabric-dotnet/SKILL.md,T1,2,0,0,0,0,L1,en,en,1.0,1,0,0.0,0,cota T1xL1
+P045,ef2d12678679be91b83c66cb8be97fcd6f574810,tsuji-tomonori/lazunex,skills/security-access-control-reviewer/SKILL.md,T3,3,0,1,0,1,L3,ja,ja,1.0,1,1,0.4006,0,cota T3xL3
+P046,f33cede5a65efb68c6ccd3d078dea89ffe153abc,ssiumha/dots,prompts/skills/devops/SKILL.md,T2,1,0,1,0,0,L5,und,und,0.0,1,0,0.0,0,cota T2xL5
+P047,f662e3541a698f3ad1011b17190398dffc7c8f60,GeorgeDoors888/GB-Power-Market-JJ,openclaw-skills/skills/coderwpf/ptrade/SKILL.md,T1,1,0,0,0,0,L2,zh,zh,1.0,1,1,0.4447,0,dirigido mixed
+P048,f756116ab4f81324a4a617276df1303a3011c867,srportto/arj-contratocommand,.claude/skills/java-pro/SKILL.md,T2,6,0,0,0,0,L4,pt,pt,1.0,1,0,0.0,0,cota T2xL4
+P049,f870bd7233700eb1e77bc9e653683ac0acf57bdb,Renzo-Tognella/UniversalThingsForMyAgents,skills/rails-cybersecurity/SKILL.md,T3,13,0,1,0,0,L4,pt,pt,1.0,1,0,0.0,0,cota T3xL4
+P050,fb6830bd1b7af008323c6898601202d6c9117a2a,plurigrid/asi,skills/epistemic-arbitrage/SKILL.md,T2,1,0,1,1,0,L1,en,en,1.0,1,0,0.0,0,dirigido GRC

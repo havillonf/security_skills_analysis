@@ -1,0 +1,26 @@
+[
+  {
+    "stratum": "L1",
+    "file_sha": "a51932b9ce96ef57bbad97105ed792259fc6e58c",
+    "lingua": "en",
+    "langid": "zh",
+    "langid_conf": 1.0,
+    "short": false,
+    "code_heavy": true,
+    "multi_script": true,
+    "prose_len": 1001,
+    "excerpt": "# Async Task Delegation - 后台任务执行系统 借鉴 DeerFlow 2.0 的 Background Task Storage + ThreadPoolExecutor。 ## Why Async Tasks 长任务会阻塞主线程： - 文件迁移（数小时） - 数据分析（大量计算） - 批量处理（成千上万文件） **问题**: 主线程阻塞 → 用户无响应 **解决方案**:"
+  },
+  {
+    "stratum": "L5",
+    "file_sha": "8225e8d714dde6cd60539a9d3afbcad45f880926",
+    "lingua": "tl",
+    "langid": "vi",
+    "langid_conf": 1.0,
+    "short": false,
+    "code_heavy": false,
+    "multi_script": false,
+    "prose_len": 674,
+    "excerpt": "Đọc → Tạo GitHub Issues → Update issue number vào file **Steps:** 1. Verify MCP: 2. Find files to sync (CẢ HAI điều kiện): - Has: - Has: (no number yet) 3. For each file: - Parse title, labels (phase-"
+  }
+]
