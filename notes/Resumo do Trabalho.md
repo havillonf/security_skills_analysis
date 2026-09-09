@@ -313,16 +313,16 @@ O objetivo **não** é medir prevalência. É descobrir:
 
 ```bash
 # 1. ler o pacote de leitura (cego, sem as dicas do computador)
-results/EXP-005_reading_pack.md
+results/_arquivo/EXP-005_reading_pack.md
 
 # 2. preencher o formulário
-results/EXP-005_annotation_form.csv
+results/_arquivo/EXP-005_annotation_form.csv
 
 # como preencher: exemplo com 7 casos resolvidos
-results/EXP-005_annotation_example.csv
+results/_arquivo/EXP-005_annotation_example.csv
 
 # 3. NÃO abrir antes de terminar:
-results/EXP-005_strata_key.csv
+results/_arquivo/EXP-005_strata_key.csv
 ```
 
 Se precisar gerar a amostra de novo:

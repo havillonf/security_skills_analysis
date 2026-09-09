@@ -65,7 +65,7 @@ texto" sem invalidar a escolha.
 
 ## O que já se sabe (verificado)
 
-Tudo abaixo vem de [[EXP-001]] / `results/EXP-001_profile.json`. Nada vem do
+Tudo abaixo vem de [[EXP-001]] / `results/_arquivo/EXP-001_profile.json`. Nada vem do
 notebook legado.
 
 - Estrutura do dataset e integridade referencial: intactas, zero órfãos.

@@ -7,6 +7,11 @@ decisoes: D-012, D-013
 
 # Estratégia multilíngue
 
+> [!important] Histórico — superada como desenho principal por [[Decision Log#D-025]] (2026-09-03)
+> População-alvo agora restrita a inglês. As medições abaixo permanecem
+> válidas; a camada de detecção virou **filtro** (inglês/não inglês), não
+> mais eixo de estratificação (L1–L5).
+
 Decorre de [[Decision Log#D-012]] (população inclui todos os idiomas) e
 [[Decision Log#D-013]] (tradução é auxiliar, nunca substituição).
 

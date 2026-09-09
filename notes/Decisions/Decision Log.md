@@ -1,6 +1,6 @@
 ---
 tipo: decisões
-atualizado: 2026-08-22
+atualizado: 2026-09-05
 ---
 
 # Decision Log
@@ -9,6 +9,55 @@ Toda decisão metodológica relevante. Decisão já usada em experimento **não 
 silêncio**: registra-se a revisão com data e motivo.
 
 Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada`.
+
+> [!info] Este arquivo não é dividido, por desenho
+> O valor dele é ser um registro **único e cronológico** onde se rastreia por que
+> algo mudou (D-012→D-025, D-019→D-026, D-004/D-006→D-027, D-022→D-028). Separar
+> "decisões antigas" quebraria exatamente a cadeia que dá defensabilidade ao
+> trabalho. Use o índice abaixo para ver o estado sem perder o histórico.
+
+## Índice de status (2026-09-05)
+
+**Vigentes — sustentam o desenho atual**
+
+| | Decisão | |
+|---|---|---|
+| D-001 | Unidade = conteúdo distinto (`dedup_primary=1`) | |
+| D-005 | DuckDB sobre Parquet, via `uv` | |
+| D-007 | Eixo B (segurança *da* skill) permanece separado | |
+| D-008 | LLM não é ground truth | |
+| D-011 | QI-1 (prevalência) é a questão central | |
+| D-013 | Tradução é auxiliar, nunca substituição | |
+| D-014 | **Desenho C** — estratificada com classificador de triagem | ⭐ |
+| D-016 | Escopo de GRC (R-10) | |
+| D-017 | Near-duplicates como análise de robustez | |
+| D-018 | E-4 depois de E-6 (evita circularidade) | |
+| D-021 | Cegamento da anotação | |
+| D-024 | Sequência QI-1 → gate → QI-2 → QI-3 | |
+| D-025 | **População restrita a inglês** (revisa D-012) | ⭐ |
+| D-026 | Ensemble de LLMs + adjudicação humana na discordância | |
+| D-027 | **Três classes; subclassificação posterior** (revisa D-004/D-006) | ⭐ |
+| D-028 | Evidência insuficiente = exclusão de frame (fecha D-022) | ⭐ |
+| D-029 | **Primeira classificação enxuta** (Codebook v2.5) | ⭐ |
+| D-030 | Terceira exclusão de frame: não é instrução (Codebook v2.6) | ⭐ |
+
+**Revisadas ou encerradas — preservadas por rastreabilidade**
+
+| | Decisão | Situação |
+|---|---|---|
+| D-002 | Resultado do notebook 01 inválido | histórico; a lição vale |
+| D-003 | Contradições doc↔realidade: registrar | histórico |
+| D-004 · D-006 | Definição operacional / esquema de classes | **revisadas por D-027** |
+| D-009 | Escopo da QI-3 | **EM ABERTO** |
+| D-010 | Dedup por similaridade | encerrada |
+| D-012 | População inclui todos os idiomas | **revisada por D-025** |
+| D-015 | Desenho multi-estágio se integral inviável | contingência não acionada |
+| D-019 · D-020 | Anotador único / sinal preliminar no piloto | **substituídas por D-026** |
+| D-022 | Elegibilidade da população | **fechada por D-028** |
+| D-023 | Classificador v1 do EXP-012 | PoC, fora do caminho crítico |
+
+**Em aberto:** D-009 (escopo da QI-3) e o limiar numérico de "validação
+satisfatória" do gate de D-024.
 
 ---
 
@@ -841,12 +890,12 @@ forte em T3, o efeito seria amplificado pelos pesos, não cancelado.
 
 **Decisão.** A anotação é **cega ao sinal de triagem**:
 
-1. `results/EXP-005_annotation_form.csv` traz apenas `case_id`, `name`, `body_chars`
+1. `results/_arquivo/EXP-005_annotation_form.csv` traz apenas `case_id`, `name`, `body_chars`
    e os campos humanos vazios.
-2. `results/EXP-005_reading_pack.md` traz apenas `case_id`, `name`, `description`,
+2. `results/_arquivo/EXP-005_reading_pack.md` traz apenas `case_id`, `name`, `description`,
    tamanho e o texto.
 3. Tier, densidade, flags, grupo linguístico e motivo da seleção ficam em
-   `results/EXP-005_strata_key.csv`, unido por `case_id` **somente depois** de a
+   `results/_arquivo/EXP-005_strata_key.csv`, unido por `case_id` **somente depois** de a
    anotação estar fechada.
 4. Registrada como **regra R-11** no [[Codebook]] v2.3 — não apenas no script.
 
@@ -865,10 +914,18 @@ parte do artefato a ser julgado.
 
 ---
 
-## D-022 — Critério de elegibilidade da população — EM ABERTO
+## D-022 — Critério de elegibilidade da população — FECHADA por D-028
 
-**Data:** 2026-08-22 · **Status:** `proposta` — **requer aprovação humana**
-· **Branch:** `Q1` · **Origem:** achado C-5 da auditoria adversarial
+**Data:** 2026-08-22 · **Status:** `revisada` — **fechada em 2026-09-03 por
+[[#D-028]]** · **Branch:** `Q1` · **Origem:** achado C-5 da auditoria adversarial
+
+> [!important] Resolução (2026-09-03)
+> "Elegível" passa a ser definido em [[#D-028]]: `dedup_primary = 1`,
+> `content IS NOT NULL`, 100% em inglês ([[#D-025]]), **e**
+> `length(description) + body_chars >= 200`. Os casos de symlink e conteúdo
+> mínimo que motivaram esta entrada são capturados pelo corte de 200
+> caracteres (3.447 ponteiros de symlink entre os excluídos). O texto abaixo
+> permanece por rastreabilidade.
 
 **Contexto.** A QI-1 pergunta pela prevalência na "população pública de Agent
 Skills". O único filtro operacional em todos os scripts é
@@ -977,7 +1034,7 @@ fora de qualquer fold, como o [[Codebook]] exige.
 **Achado que decidiu contra A/B por si só:** nos dois modelos TF-IDF, `SECONDARY`
 e `MENTION` têm F1 = 0,000 em **todos** os 5 repeats — o modelo nunca prevê
 essas classes na validação cruzada (confusão agregada em
-`results/EXP-012_confusion_matrix.csv` confirma zero previsões de
+`results/_arquivo/EXP-012_confusion_matrix.csv` confirma zero previsões de
 `SECONDARY`/`MENTION` nas duas direções). Isso é fatal justamente para a
 fronteira que mais importa ([[Decision Log#D-011|D-011]]): a confusão
 `SECONDARY` × `MENTION` é a que altera a prevalência estimada.
@@ -1010,7 +1067,7 @@ modelo por trinta horas sem supervisão nesta primeira semana.
 documentado — não é apresentado como classificador válido, e sua saída sobre
 a população é rotulada explicitamente como "resultado preliminar do
 classificador", nunca como prevalência (ver
-`results/EXP-012_population_summary.json`, campo `caveat`).
+`results/_arquivo/EXP-012_population_summary.json`, campo `caveat`).
 
 **Calibração.** `LinearSVC` não expõe `predict_proba`; `decision_function`
 nunca é tratada como probabilidade. O modelo implantado (multiclasse e
@@ -1034,8 +1091,8 @@ para a `confidence` reportada na classificação da população.
 
 ### Consequências
 
-- `results/EXP-012_population_classification.parquet` e
-  `results/EXP-012_population_summary.json` são saídas do modelo B, **não**
+- `results/_arquivo/EXP-012_population_classification.parquet` e
+  `results/_arquivo/EXP-012_population_summary.json` são saídas do modelo B, **não**
   do modelo C. Qualquer leitura desses números precisa citar essa decisão.
 - Os artefatos do candidato C (`models/security_classifier_v1_*_cv_best_candidate.joblib`)
   ficam preservados para quando (i) um gold set maior (E-6) justificar
@@ -1101,7 +1158,7 @@ v1 malsucedida e a v2 otimizada).
 
 ### Resultado da classificação da população (execução concluída)
 
-`results/EXP-012_population_summary.json`, gerado em 2026-08-24T00:09:54Z:
+`results/_arquivo/EXP-012_population_summary.json`, gerado em 2026-08-24T00:09:54Z:
 
 | Classe prevista | n | % |
 |---|---|---|
@@ -1118,7 +1175,7 @@ L1 (ASCII/latino) 1.436.055 · L2 (zh) 159.525 · L4 (latino acentuado)
 195.355 · L3 (ja) 38.550 · L3 (ko) 27.857 · L5 (cirílico) 13.889 · L5
 (outro script) 6.750. Confiança: média 0,551, mediana 0,561, 24,09% abaixo
 de 0,5. Amostra de 450 casos de baixa confiança/fronteira salva em
-`results/EXP-012_uncertain_cases_sample.csv` (metadados apenas).
+`results/_arquivo/EXP-012_uncertain_cases_sample.csv` (metadados apenas).
 
 Todos os números acima carregam o `caveat` gravado no próprio JSON:
 resultado preliminar do classificador v1, não estimativa de prevalência;
@@ -1147,8 +1204,794 @@ execução.
 
 ---
 
+## D-024 — Execução sequencial de QI-2 e QI-3, condicionada à validação do classificador de QI-1
+
+**Data:** 2026-08-27 · **Status:** `aceita` (decidida pelo pesquisador) · **Branch:** `Q1`
+
+**Contexto.** [[#D-011]] fixou QI-1 como questão central e manteve QI-2 e QI-3
+como "extensões futuras", sem formalizar se, quando ou em que ordem seriam
+executadas dentro deste projeto. [[01 - Research Question]] já registrava
+informalmente que QI-2 depende da classificação validada de QI-1 e que QI-3
+depende de QI-2 estabilizada, mas essa dependência nunca tinha virado decisão
+registrada nem definia um critério de transição entre etapas.
+
+**Decisão.** A execução de QI-2 e QI-3 passa a ser parte do plano deste
+projeto, formalmente sequenciada:
+
+> **QI-1 → validação satisfatória do classificador de triagem (E-7) → QI-2 → QI-3**
+
+1. QI-1 continua sendo a questão do caminho crítico imediato, com o desenho já
+   estabelecido (Desenho C, [[#D-014]]) — esta decisão **não altera nada** do
+   método já definido para QI-1.
+2. QI-2 e QI-3 só começam **depois** de o classificador de triagem treinado
+   para QI-1 passar pela validação metodológica prevista em E-7
+   (precisão/recall/F1 por classe e por idioma, matriz de confusão completa,
+   contra o gold set humano de E-6) com desempenho considerado
+   **satisfatório**.
+3. O conjunto de skills analisado por QI-2 é a população classificada como
+   `SEC-PRIMARY`/`SEC-SECONDARY` pelo classificador **validado**, produzida em
+   E-8 — não o pool de candidate retrieval por palavra-chave usado como
+   exploração inicial ([[EXP-002]]) nem qualquer classificação não validada
+   (como a prova de conceito de [[#D-023]]).
+4. QI-3 só começa depois de a taxonomia empírica de QI-2 estar razoavelmente
+   estabilizada, como já previsto em [[QI-2 Methodology]] e
+   [[QI-3 Coverage Methodology]] — esta decisão não muda esse requisito, só o
+   integra a uma cadeia de decisão única e explícita em vez de duas
+   dependências registradas separadamente.
+
+**Papel do gate.** A validação do classificador funciona como **gate
+metodológico**: se o desempenho medido em E-7 não for suficiente para
+sustentar as análises seguintes, o método deve ser revisado **antes** de
+avançar para QI-2 — não se prossegue com um conjunto de skills identificado
+por um classificador conhecidamente fraco.
+
+> [!warning] Critério de "satisfatório" ainda não definido — decisão pendente
+> Este projeto ainda não define numericamente o que conta como validação
+> satisfatória (ex.: F1 mínimo por classe, recall mínimo para `SECONDARY`,
+> desempenho mínimo por idioma). E-7 já exige que essas métricas sejam
+> medidas e reportadas com IC ([[03 - Methodology]]), mas não fixa um limiar
+> de aprovação. Fixar esse limiar **antes** de ver o resultado de E-7 é
+> trabalho pendente, não parte desta decisão — inventar um número aqui
+> repetiria o erro que [[#D-014]] existe para evitar (ajustar critério depois
+> de ver o dado). Enquanto não for definido, a decisão de prosseguir ou não
+> para QI-2 é humana e caso a caso.
+
+**Justificativa.**
+- Evita circularidade: QI-2 constrói taxonomia emergente a partir dos dados
+  (regra inegociável de [[QI-2 Methodology]] — nunca usar OWASP/MITRE para
+  semear a taxonomia), mas a *base de skills* sobre a qual essa taxonomia é
+  construída precisa ter confiabilidade conhecida; usar a saída de um
+  classificador não validado (como em [[#D-023]]) contaminaria QI-2 com o
+  mesmo viés não quantificado que [[#D-014]] rejeita para QI-1 (Desenho B).
+- Formaliza uma dependência que já estava implícita em
+  [[01 - Research Question]] e [[QI-2 Methodology]] §1, tornando-a
+  rastreável como decisão datada, em vez de apenas uma frase solta em nota
+  de metodologia.
+
+**Alternativas consideradas.**
+- **(a) Manter QI-2/QI-3 como extensões sem ordem nem gate definidos**
+  (status anterior a esta decisão). Rejeitada: deixava em aberto se QI-2
+  usaria a classificação validada ou uma classificação preliminar — risco já
+  materializado uma vez neste projeto, quando a prova de conceito de
+  [[#D-023]] chegou a produzir números de população antes de qualquer
+  validação.
+- **(b) Executar QI-2 em paralelo a QI-1**, usando o pool de candidate
+  retrieval em vez da classificação validada. Rejeitada: reintroduziria o
+  problema que [[#D-018]] já resolveu para o retrieval de QI-1 — decidir o
+  conjunto analisado antes de ele ter sido validado contra padrão-ouro.
+- **(c) Sequência formal QI-1 → validação → QI-2 → QI-3.** **Adotada.**
+
+**Consequências.**
+- [[QI-2 Methodology]] e [[QI-3 Coverage Methodology]] permanecem válidas
+  como desenho metodológico; esta decisão acrescenta o gate e a origem do
+  conjunto analisado, sem reescrever o que já estava certo nelas.
+- Resultados já produzidos (candidate retrieval de [[EXP-002]], taxonomia
+  semeada por LLM em [[Security Taxonomy]] v0.1) continuam registrados como
+  histórico exploratório — não são o conjunto de entrada de QI-2 sob esta
+  decisão, e não foram alterados por ela.
+- Nenhum cronograma é fixado aqui: se o gate de E-7 não for satisfeito dentro
+  do prazo do trabalho, QI-2 e QI-3 permanecem como trabalho futuro, não como
+  entrega concluída — ver [[03 - Methodology]] e `ROTEIRO.md`.
+
+**Limitações.**
+- O critério numérico de "validação satisfatória" é, ele mesmo, uma decisão
+  pendente (ver aviso acima).
+- QI-3 herda qualquer viés não corrigido de QI-2 (deriva do codebook,
+  dependência entre observações, concentração por repositório/dono) — já
+  documentado em [[QI-2 Methodology]] §7.
+
+---
+
+## D-025 — População-alvo restrita a skills em inglês (revisa D-012)
+
+**Data:** 2026-09-03 · **Status:** `aceita` (decidida em reunião com o
+orientador) · **Branch:** `Q1` · **Revisa:** [[#D-012]]
+
+**Contexto.** [[#D-012]] fixava a população-alvo da QI-1 como toda a
+população pública analisável, sem recorte por idioma, com cinco regras
+vinculantes contra descartar registros por idioma, classificar conteúdo não
+inglês automaticamente como `NONE`/`AMBIGUOUS`, ou tratar inglês como padrão
+de relevância. Essa decisão orientou [[Multilingual Strategy]], os estratos
+L1–L5 de [[EXP-003]]/[[EXP-004]], e a composição deliberadamente multilíngue
+da amostra de [[EXP-005]] (metade não inglesa, por desenho).
+
+Na reunião com o orientador de 2026-09-03, foi decidido restringir a
+população-alvo da pesquisa a skills em **inglês**.
+
+**Decisão.** A população-alvo da QI-1 — e, por extensão, de QI-2/QI-3 via
+[[#D-024]] — passa a ser **skills em inglês**. Conteúdo em outros idiomas
+fica fora do escopo da estimativa de prevalência e da classificação
+subsequente.
+
+**O que isso muda:**
+
+1. O denominador da QI-1 deixa de ser os 1.877.981 (ou 1.877.939 após a
+   exclusão de [[EXP-002]]) representantes em todos os idiomas e passa a ser
+   apenas o subconjunto de língua inglesa desse total. Esta decisão **não
+   fixa** um número exato de denominador — precisa ser recomputado por
+   script versionado, com um `EXP-XXX` próprio, antes de qualquer estimativa.
+2. As cinco regras vinculantes de [[#D-012]] (não descartar por idioma, não
+   tratar inglês como padrão etc.) deixam de valer para a **definição da
+   população** — continuam corretas como proteção contra viés **dentro** de
+   uma população multilíngue, mas essa deixou de ser a população estudada.
+3. [[Multilingual Strategy]] deixa de orientar o desenho amostral principal
+   da QI-1. As medições já feitas ([[EXP-003]]: 14,21% não inglês;
+   [[EXP-004]]: concordância entre detectores) continuam válidas como
+   caracterização histórica da população completa do dataset. A **camada de
+   detecção de idioma que elas construíram é reaproveitada com papel
+   diferente**: deixa de ser variável de estratificação (L1–L5) e passa a
+   ser **critério de filtro** (inglês vs. não inglês).
+4. Os estratos linguísticos L1–L5 de [[EXP-004]] deixam de ser eixo de
+   estratificação da amostragem principal — a população-alvo passa a ser
+   aproximadamente monolíngue por construção.
+5. A amostra de [[EXP-005]] (50 casos, metade deliberadamente não inglesa)
+   deixa de refletir a composição da população-alvo agora em vigor.
+   Permanece um artefato histórico válido — testou o [[Codebook]] em casos
+   difíceis, inclusive multilíngues —, mas não é reaproveitável como piloto
+   representativo da população sob esta decisão. Ver [[#D-026]].
+
+**O que esta decisão não muda:**
+
+- [[Codebook]] R-9 continua vigente para decidir casos de fronteira dentro do
+  subconjunto em inglês (skills `mixed`, termos técnicos embutidos em outro
+  idioma) — ver a pendência de definição operacional abaixo.
+- [[Decision Log#D-013|D-013]] (tradução como apoio, nunca substituição)
+  permanece válida para os casos de fronteira que restarem no subconjunto de
+  inglês.
+
+> [!warning] Definição operacional de "skill em inglês" — pendente
+> Esta decisão fixa a restrição de escopo, mas não define o critério
+> operacional exato: idioma majoritário do corpo (`human_language`/detector
+> = `en`)? Skills `mixed` com inglês dominante entram ou saem? Front matter
+> em inglês com corpo em outro idioma ([[Multilingual Strategy]] documentou
+> 4,17% de divergência) conta como quê? Essa definição precisa ser fixada
+> **antes** de gerar a nova amostra de [[#D-026]], usando a camada de
+> detecção já validada em [[EXP-003]]/[[EXP-004]], e registrada como parte
+> da execução de [[#D-026]] — não decidida ad hoc dentro do script.
+
+> [!success] Pendência resolvida em 2026-09-03 (mesma reunião)
+> Critério fixado: a skill precisa estar **100% em inglês**. Operacionalização
+> que reaproveita um limiar já existente no projeto, em vez de inventar um
+> novo: uma skill é elegível apenas se **não** se qualificaria como `mixed`
+> nem `und` sob os critérios já fixados na regra **R-9** do
+> [[Codebook]] v2.3 (`mixed` = duas ou mais línguas com conteúdo
+> substantivo — operacionalmente, ≥15% do texto na língua minoritária,
+> ≥40 caracteres não latinos e ≥20 palavras latinas; `und` = prosa curta ou
+> técnica demais para decidir). Termos técnicos isolados em inglês dentro
+> de texto majoritariamente não inglês não tornam a skill elegível
+> sozinhos — e, simetricamente, um termo técnico isolado em outro idioma
+> dentro de texto majoritariamente inglês não caracteriza `mixed` sob esse
+> limiar. Trechos não-prosa (nome de arquivo, código, mensagem de erro
+> literal, comando) em outro idioma não contam para o critério — a mesma
+> etapa de pré-processamento de [[Multilingual Strategy]] §2 (remover
+> código, front matter, URLs antes de detectar) se aplica aqui.
+>
+> O detector/script exato que aplica esse critério na amostragem
+> permanece detalhe de implementação (não decisão metodológica adicional)
+> — a documentar no script quando escrito.
+
+> [!success] Denominador real calculado em 2026-09-03 — [[EXP-013]]
+> `scripts/filter_population_english.py` rodou contra a população inteira
+> (1.877.981 conteúdos distintos elegíveis, frame status quo de D-022).
+> **1.571.243 (83,667%) são 100% em inglês**; 306.738 (16,333%) contêm ao
+> menos um parágrafo detectado em outro idioma e ficam fora da
+> população-alvo da QI-1 sob esta decisão. Sem duplicatas (1.877.981
+> `file_sha` únicos = 1.877.981 linhas). Consistente com a estimativa por
+> amostra feita antes (82,0%, IC 95% 75,2–88,8%) e um pouco abaixo da
+> medição antiga de [[EXP-003]] (85,79% inglês) — esperado, porque o
+> critério por parágrafo é mais estrito que a detecção de idioma
+> dominante do documento inteiro. **Este é o denominador oficial da
+> população restrita a inglês** até que [[Decision Log#D-022]] (elegibilidade)
+> seja resolvida, o que mudaria o frame de partida.
+
+> [!danger] Lacuna real encontrada em 2026-09-03, ao construir [[Classification Prompt (D-026)]]
+> O limiar de `mixed` emprestado de R-9 (≥15% do texto em língua
+> minoritária, **≥40 caracteres não latinos**, ≥20 palavras latinas) foi
+> desenhado para mistura com escrita não latina (CJK, cirílico etc.) — a
+> condição de "caracteres não latinos" o torna estruturalmente incapaz de
+> capturar mistura **dentro da mesma escrita latina** (uma frase em
+> italiano, português ou espanhol embutida num texto majoritariamente em
+> inglês). Isso não é hipotético: o caso real
+> `cybersec-testing-ransomware-recovery-procedures` (`file_sha` prefixo
+> `2c503744`, já citado como âncora `PRIMARY` em [[Codebook]] §8) contém a
+> frase *"Nota per Kimi Code: questa skill è convertita dal pacchetto
+> Anthropic Cybersecurity Skills..."* em italiano, e o limiar de R-9 não a
+> detectaria como `mixed`.
+>
+> **Resolvido em [[EXP-013]] (2026-09-03), com uma correção de percurso
+> registrada por transparência.** A primeira tentativa
+> (`lingua.detect_multiple_languages_of()` sobre o texto inteiro) foi
+> **abandonada**: só ~2% dos candidatos passavam em 2.400 testados, muito
+> abaixo do ~86% esperado por [[EXP-003]] — o algoritmo de segmentação
+> automática do `lingua` mostrou-se instável em texto técnico ruidoso
+> (tabelas, listas, trechos curtos), produzindo falsos positivos em massa.
+> **Adotado:** `lingua.compute_language_confidence_values()` **por
+> parágrafo** (≥40 caracteres, confiança ≥0,60 para vencer como não
+> inglês) — captura o caso real do italiano embutido, mantém taxa de
+> rejeição (~18% no primeiro lote) coerente com [[EXP-003]], e roda em
+> ordem de dezenas de milissegundos por candidato. O limiar de confiança
+> (0,60) é engenharia, não decisão metodológica formal — ver limitações em
+> [[EXP-013]].
+
+**Justificativa.** Decisão tomada pelo orientador na reunião de 2026-09-03.
+A motivação específica (viabilidade de prazo, redução de escopo para a
+iteração atual, ou outra razão) não foi detalhada nesta sessão — registrar
+aqui se/quando for comunicada.
+
+**Consequências.**
+
+- Toda alegação de prevalência do TCC passa a valer para a **subpopulação de
+  skills em inglês**, não para a população multilíngue completa do dataset
+  GitSkills. É uma redução de escopo/generalização que precisa ser declarada
+  explicitamente em toda apresentação de resultado.
+- O trabalho já feito sobre multilinguismo ([[EXP-003]], [[EXP-004]],
+  [[Multilingual Strategy]]) não é descartado: continua sendo a única
+  medição existente da composição linguística real do dataset, útil para
+  caracterizar **o que ficou fora** do estudo e para uma eventual extensão
+  futura que reverta este recorte.
+- [[#D-024]] (sequência QI-1 → validação → QI-2 → QI-3) permanece válida; o
+  "conjunto de skills analisado" que ela define para QI-2 agora herda
+  implicitamente a restrição a inglês.
+
+**Alternativas.** Não há alternativas registradas nesta entrada — a decisão
+veio definida pelo orientador. A alternativa que estava em vigor era a
+própria [[#D-012]] (população multilíngue), agora revisada.
+
+**Limitações.**
+
+- Reduz a validade externa dos resultados: não respondem sobre a população
+  real e multilíngue de Agent Skills, apenas sobre seu subconjunto em
+  inglês (~85,79% da população por [[EXP-003]] — número aproximado, não
+  recomputado sob o critério operacional desta decisão).
+- Skills `mixed` ficam numa zona operacionalmente indefinida até a pendência
+  acima ser resolvida.
+
+---
+
+## D-026 — Novo desenho de E-5/E-6: ensemble de três LLMs sobre amostra aleatória, validação humana restrita à discordância (revisa D-019)
+
+**Data:** 2026-09-03 · **Status:** `aceita` (decidida em reunião com o
+orientador) · **Branch:** `Q1` · **Revisa:** [[#D-019]] · **Ver também:**
+[[#D-008]], [[#D-020]], [[#D-021]], [[#D-025]]
+
+**Instrumento operacional.** O prompt único usado pelos três modelos,
+sintetizado a partir da documentação oficial de prompt engineering da
+Anthropic, OpenAI e Google, está em
+[[Classification Prompt (D-026)]] — não testado ainda contra casos reais.
+O resumo em linguagem simples para o anotador humano que faz a
+adjudicação está em [[Guia do Anotador Humano (D-026)]].
+
+**Contexto.** O caminho crítico vigente definia **E-5** como piloto de
+anotação humana cega, estratificado por sinal preliminar × grupo linguístico
+([[#D-020]], [[#D-021]]), sobre os 50 casos de [[EXP-005]], seguido de
+**E-6** — gold set com concordância entre um ou dois anotadores humanos
+([[#D-019]]). [[#D-019]] registrava explicitamente como **restrição
+inegociável** que "LLM, ou consenso entre agentes, não pode ser usado como
+segundo anotador humano nem como ground truth."
+
+Na reunião com o orientador de 2026-09-03, foi decidido um desenho diferente
+para produzir o padrão-ouro que alimenta **E-7**.
+
+**Decisão.** E-5/E-6 passam a ser executados assim:
+
+1. Sortear uma **nova amostra aleatória de n = 100** skills, sobre a
+   população restrita a inglês por [[#D-025]] — **não** reaproveitando os
+   50 casos de [[EXP-005]]. Amostragem determinística
+   (`ORDER BY hash(file_sha)`), como no resto do projeto.
+2. Cada um dos **três modelos** — **GPT-5.6 Sol**, **Claude Opus** e
+   **Gemini 3.1 Pro** — classifica os 100 casos **independentemente**,
+   aplicando o [[Codebook]] v2.3.
+3. Onde os três modelos **concordam**, o rótulo de consenso é aceito.
+4. Onde os três **discordam** (não há unanimidade), um **anotador humano**
+   adjudica o caso aplicando o [[Codebook]] — esse julgamento humano é o
+   rótulo final para esses casos.
+
+O conjunto resultante (rótulos de consenso entre LLMs + rótulos
+humano-adjudicados nos casos de discordância) passa a ser o padrão-ouro
+operacional que alimenta a validação do classificador em **E-7**.
+
+> [!danger] Isto reverte a restrição inegociável de [[#D-019]]
+> [[#D-019]] proibia explicitamente usar consenso entre modelos como
+> substituto de confiabilidade interavaliadores humana, e [[#D-008]] afirma
+> que saída de LLM nunca é verdade de referência sem validação humana. Sob
+> este novo desenho, os casos em que os três LLMs concordam **nunca são
+> vistos por um humano** — o consenso entre modelos passa a funcionar, na
+> prática, como ground truth para a maior parte da amostra (a fração exata
+> depende da taxa de discordância observada, ainda desconhecida). Esta
+> decisão **revoga** essa restrição especificamente para o desenho de
+> E-5/E-6, por instrução explícita do orientador — registrada aqui, não
+> aplicada em silêncio.
+
+**Riscos que este desenho introduz — declarados, não resolvidos:**
+
+- **Viés sistemático compartilhado entre os três modelos fica invisível.**
+  Se os três LLMs erram na mesma direção no mesmo tipo de caso — algo
+  plausível se compartilharem dados de treino ou dificuldades semelhantes —
+  esse erro nunca chega a um humano, porque só a discordância aciona
+  validação. [[EXP-012]] já documentou, com dados de validação cruzada
+  (não especulação), que um classificador barato treinado neste domínio
+  falha sistematicamente na fronteira `SECONDARY`/`MENTION` (F1 = 0,000 em
+  todos os 5 repeats) — é exatamente o tipo de erro correlacionado que este
+  desenho não teria como capturar, se os três modelos compartilharem essa
+  dificuldade.
+- **Amostragem aleatória simples, não estratificada.** Diferente do piloto
+  anterior ([[#D-020]], estratificado por sinal × idioma para garantir casos
+  de fronteira), esta amostra de n=100 é sorteada aleatoriamente sobre a
+  população. Como a prevalência esperada de Security Skill é baixa
+  (ordem de poucos pontos percentuais), é provável que a amostra contenha
+  **poucos casos `PRIMARY`/`SECONDARY`** e menos ainda na fronteira
+  `SECONDARY`/`MENTION` — justamente o caso mais informativo para validar o
+  classificador ([[QI-1 Methodology]] §5). Isso não é corrigido por esta
+  decisão; é um risco a monitorar quando a amostra for gerada.
+- **A estatística de confiabilidade muda de natureza.** O framework de
+  kappa do [[Codebook]] §9 pressupõe dois anotadores humanos independentes.
+  Aqui a métrica análoga é: taxa de concordância unânime entre os três LLMs,
+  e taxa de casos que precisaram de adjudicação humana. Essas duas
+  quantidades devem ser reportadas explicitamente e **não devem ser
+  apresentadas como equivalentes** a um kappa interavaliadores humano.
+- **Cobertura de validação humana é parcial, e precisa ser declarada como
+  tal.** Todo relato deste gold set deve informar a fração de casos que
+  recebeu julgamento humano (discordância) versus a fração aceita só por
+  consenso de LLM.
+
+**O que esta decisão não muda:**
+
+- [[#D-008]] continua valendo para todo uso de LLM fora deste desenho
+  específico — modelo, versão, prompt e temperatura de GPT-5.6 Sol, Claude
+  Opus e Gemini 3.1 Pro devem ser registrados quando a classificação for
+  executada.
+- [[#D-021]] (cegamento) continua aplicável no que for possível: os três
+  LLMs não devem receber o sinal preliminar de triagem, tier ou motivo de
+  seleção como parte do prompt — apenas o conteúdo da skill, para evitar
+  ancoragem, do mesmo modo que se exigiria de um anotador humano.
+- [[#D-025]] define a população da qual a amostra de n=100 é sorteada.
+
+**Consequências para o restante do plano:**
+
+- [[EXP-005]] (50 casos, ainda não anotados por humano) deixa de ser a base
+  de E-5/E-6. Permanece um artefato gerado e válido, reaproveitável no
+  futuro (por exemplo, como amostra de comparação ou se a decisão for
+  revista), mas não é mais parte do caminho crítico em execução.
+- [[#D-015]] (desenho multi-estágio, pendente de custo por item medido em
+  E-5) precisa de uma fonte de dado de custo diferente sob este desenho —
+  o tempo por item de um humano lendo 100 casos não é mais medido da mesma
+  forma que no piloto anterior (que cronometrava anotação completa, não
+  apenas adjudicação de discordância). Registrado como pendência aberta,
+  não resolvida aqui.
+- Nenhum `EXP-XXX` é reservado por esta decisão — será atribuído quando o
+  script que implementa este desenho for escrito e executado, seguindo a
+  convenção do projeto ([[03 - Methodology]] §8).
+
+**Alternativas consideradas.**
+
+- **(a) Manter E-5/E-6 como piloto + gold set humano completo** (desenho
+  anterior, [[#D-019]]/[[#D-020]]/[[#D-021]]). Era o desenho vigente até
+  esta reunião; substituído por instrução do orientador.
+- **(b) Dois anotadores humanos independentes**, fallback previsto em
+  [[#D-019]] quando disponível. Não adotada nesta decisão — o orientador
+  optou pelo ensemble de LLMs com adjudicação humana restrita à
+  discordância.
+- **(c) Ensemble de três LLMs, validação humana só na discordância.**
+  **Adotada.**
+
+**Limitações.**
+
+- Esta decisão não define um critério numérico de quantos casos de
+  discordância seriam "poucos demais" para validar o classificador com
+  confiança — herda a mesma lacuna que [[#D-024]] já registra para o
+  critério de "validação satisfatória" de E-7.
+
+> [!success] Duas pendências resolvidas em 2026-09-03 (mesma reunião)
+> **1. Cegamento entre os três modelos, explícito e não negociável.** Os
+> três modelos classificam de forma estritamente independente: nenhum dos
+> três recebe, em nenhum momento, a saída ou a classificação de outro
+> modelo — nem durante a chamada, nem em qualquer etapa posterior de
+> reclassificação. Isso já estava implícito em "classificam
+> independentemente" no texto original desta decisão, mas fica registrado
+> aqui como regra explícita, por analogia direta a R-11
+> ([[#D-021]]): o sinal preliminar de outro julgador nunca é exposto antes
+> do julgamento.
+>
+> **2. Escopo da adjudicação humana: todas as dimensões, não só
+> `security_relevance`.** Sempre que os três modelos discordarem em
+> **qualquer** dimensão do [[Codebook]] — classe principal
+> (`security_relevance`), `security_focus`, `operational_security`,
+> `operation_level`, `security_functions`, `security_concerns`,
+> `operational_capability`, `evidence`, `confidence`, `rule_applied`,
+> `grc_case` ou `secondary_mention_boundary` —, o caso vai para
+> adjudicação humana. Isso resolve as duas lacunas anteriores (regra de
+> desempate parcial; tratamento de discordância multi-label) com uma única
+> regra mais ampla, em vez de regras separadas por campo.
+>
+> **Operacionalização adotada (não literalmente especificada na reunião,
+> registrada aqui como interpretação razoável a confirmar):** quando
+> qualquer dimensão diverge, o **caso inteiro** — não só o campo
+> divergente — vai para adjudicação humana, que decide todos os campos
+> daquele caso. Justificativa: as dimensões do Codebook são interdependentes
+> (`security_functions`, por exemplo, só existe se `security_relevance`
+> for `PRIMARY`/`SECONDARY`), e reconciliar campos vindos de fontes
+> diferentes por caso — parte do consenso de LLM, parte de um humano —
+> produziria um registro internamente inconsistente. Se essa leitura não
+> for a intencionada, precisa de correção explícita antes da execução.
+
+---
+
+## D-027 — Esquema de três classes com subclassificação posterior (revisa D-004/D-006, Codebook v2.4)
+
+**Data:** 2026-09-03 · **Status:** `aceita` (pesquisador) — requer aval do
+orientador por revisar a definição operacional
+
+**Contexto.** O [[EXP-013]] produziu a primeira medida de confiabilidade do
+instrumento, com três LLMs sobre 100 casos. Fleiss' κ:
+
+| Dimensão | κ | Leitura (Landis & Koch) |
+|---|---|---|
+| `security_focus` | **0,942** | quase perfeita |
+| `security_relevance` (4 ordinais) | 0,448 | moderada |
+| **Security Skill vs resto** | **0,370** | **sofrível** |
+| `operational_security` | 0,298 | sofrível |
+| `grc_case` | 0,234 | sofrível |
+| `confidence` | 0,070 | praticamente ruído |
+
+O desfecho que decide a QI-1 era o menos confiável do instrumento. Em contagem:
+`PRIMARY` deu 6/6/7 entre os três modelos (amplitude de 1 caso), enquanto
+`SECONDARY` deu 25/7/8 (amplitude de 18, 3,6×). Traduzido em prevalência sobre a
+amostra: 6,6–7,7% usando só `PRIMARY`, contra 14,3–34,1% usando
+`PRIMARY`+`SECONDARY` — **20 pontos percentuais de amplitude no número-título**.
+
+Decompondo os 40 casos de classe divergente por fronteira em disputa: 20 (50%)
+eram `NONE`↔`SECONDARY`, contra apenas 7 (17,5%) em `MENTION`↔`SECONDARY`. O
+Codebook v2.3 §10 previa que o piloto estressaria a fronteira
+`SECONDARY`/`MENTION`; **o piloto mostrou que a hipótese estava errada** — a
+disputa dominante não era *"é acionável o bastante?"* e sim *"isso é segurança,
+afinal?"*, com 35% do desacordo concentrado em restrições de comportamento de
+agente, categoria onipresente num corpus de agent skills e para a qual o
+codebook não tinha regra.
+
+**Decisão.** Codebook **v2.4**:
+
+1. **Três classes** — `PRIMARY`, `SECONDARY`, `NONE`. `MENTION` e `AMBIGUOUS`
+   deixam de existir como classes.
+2. **Decisão por analogia de papel profissional** — *se esta skill fosse uma
+   pessoa, qual seria a profissão dela?* Profissional de cibersegurança →
+   `PRIMARY`; outra profissão com consideração de segurança no texto →
+   `SECONDARY`; sem consideração alguma → `NONE`.
+3. **`PRIMARY` e `SECONDARY` são ambas Security Skill.** A classe distingue
+   **se segurança é o foco**, não se conta.
+4. **`SECONDARY` é deliberadamente inclusivo** — balde de coleta por
+   **presença**, não julgamento de **grau**. Contam explicitamente: restrição de
+   comportamento de agente (read-only, permissão, escopo de ferramenta),
+   configuração protetiva (`chmod 600`, secrets), implementação de controle de
+   acesso (login/JWT/RBAC), e defesa/teste contra ameaça nomeada.
+5. **Subclassificação posterior por open coding** sobre `PRIMARY` ∪ `SECONDARY`,
+   com categorias emergindo dos padrões observados — nunca importadas de
+   referencial externo.
+6. `confidence` e `rule_applied` saem de qualquer cálculo de concordância e de
+   qualquer gatilho de adjudicação.
+
+**Justificativa.** A pergunta de grau ("é substancial/acionável?") era a fonte
+medida da baixa confiabilidade e foi removida do caminho crítico; a pergunta de
+presença que a substitui é estruturalmente mais fácil. A granularidade não é
+perdida — é adiada para um estágio onde erra-se de forma recuperável, porque
+subclassificar um conjunto já coletado é revisável, enquanto excluir da coleta
+não é. Por isso R-2 inverte a orientação da v2.3: na dúvida entre `SECONDARY` e
+`NONE`, prefere-se `SECONDARY` com `confidence: low`.
+
+**Alternativas descartadas.**
+- *Manter as quatro classes e refinar R-2* — atacaria os 17,5% do desacordo, não
+  os 50%.
+- *Esquema novo com `protected_object` + `security_actionability` ordinal*
+  (proposto pelo agente e descartado) — a analogia de papel profissional resolve
+  os mesmos casos sem schema novo, preservando comparabilidade com [[EXP-005]] e
+  [[EXP-012]].
+- *Colapsar tudo em binário Security/não* — perderia a distinção de foco, que é
+  justamente a medida confiável (κ=0,942).
+
+**Consequências.**
+- **O numerador cresce muito.** Âncoras medidas: 34% (leitura inclusiva do GPT no
+  [[EXP-013]]) a 78,69% (alcance da recuperação ampla por keyword, [[EXP-002]]).
+  O relato **tem de ser em dois níveis** — quantas contêm alguma consideração de
+  segurança, e quantas existem para fazer segurança. Número único é indefensável.
+- **A confiabilidade da v2.4 é desconhecida.** Os κ acima são da v2.3 e **não
+  transferem** — mudança de esquema invalida confiabilidade calculada sob o
+  esquema anterior. Re-teste obrigatório sobre os mesmos 100 casos antes de uso
+  em escala.
+- Instrumentos adaptados em 2026-09-03: [[Classification Prompt]] e
+  [[Guia do Anotador Humano]] substituem as versões D-026 (que
+  permanecem por rastreabilidade), e `aggregate_llm_classifications.py` passou
+  a aceitar dois avaliadores.
+- As âncoras da v2.3 foram revalidadas e **nenhuma quebra**; `zero-to-running` e
+  `clawville` migram de `MENTION` para `SECONDARY` por efeito da fusão.
+
+**Corroboração externa.** *Agent Skills in the Wild* (arXiv 2601.10338)
+classificou 1.218 skills de outros marketplaces em 8 categorias funcionais e
+encontrou **7,3%** em *Security/Red-team* — praticamente em cima da nossa camada
+`PRIMARY` (6,6–7,7%). A taxonomia deles é de rótulo único e **não tem equivalente
+de `SECONDARY`**, o que explica o κ=0,86 reportado: mede propósito dominante,
+que corresponde ao nosso `security_focus` (κ=0,942). Ver
+[[Classification and Sampling Precedents]].
+
+---
+
+## D-028 — Evidência insuficiente vira exclusão de frame, não classe (fecha D-022)
+
+**Data:** 2026-09-03 · **Status:** `aceita` (pesquisador)
+
+**Contexto.** [[Decision Log#D-022]] (elegibilidade da população) estava em
+aberto desde 2026-08-22. Paralelamente, `AMBIGUOUS` acumulava três fenômenos
+distintos: texto insuficiente, script não recuperado (`composition_truncated = 1`,
+13,43% dos representantes) e fronteira conceitual real. Como `AMBIGUOUS` ficava
+fora do numerador **e** do denominador, um problema de cobertura de dado
+encolhia a população em silêncio.
+
+**Decisão.** O que não pode ser classificado sai da **população**, não vira
+classe. Duas exclusões, aplicadas antes da classificação:
+
+| Exclusão | Critério | n | % |
+|---|---|---|---|
+| Sem evidência classificável | `length(description) + body_chars < 200` | 25.284 | 1,35% |
+| Evidência truncada e indecidível | `composition_truncated = 1` **e** texto restante não permite decidir | ≤14.157 | ≤0,75% |
+
+**Justificativa do limiar de 200.** Medido no dataset: `body_chars` cobre só o
+corpo, e o Codebook aceita `evidence: description` — existem skills com
+`body_chars = 1` e `description` completa, perfeitamente classificáveis. Logo o
+critério tem de ser sobre **description + body**, não sobre tamanho do corpo.
+Inspeção do conteúdo real por faixa mostrou que skills de 150–400 caracteres são
+classificáveis sem dificuldade (a descrição declara o propósito), enquanto abaixo
+de ~200 aparecem ponteiros de symlink (`../../../.claude/commands/...`, 3.447
+casos), corpo vazio e front matter sem descrição (11.866 sem `description` e
+corpo curto). 200 caracteres ≈ 30 palavras ≈ duas frases, e fica logo abaixo do
+p02 da distribuição (274) — corta a cauda extrema, não uma fatia da população.
+O corte é **mecânico** (contagem de caracteres), sem julgamento, logo
+perfeitamente reprodutível.
+
+**Script ausente não muda a classe** e **não força `SECONDARY`**: se a descrição
+revela o comportamento, classifica-se normalmente com `confidence` mais baixa.
+Só o caso genuinamente indecidível é excluído.
+
+**Controle de viés obrigatório.** A segunda exclusão depende de dúvida **sobre a
+própria variável estimada**, o que enviesa em direção desconhecida — e é um
+*julgamento*, ao contrário do corte de tamanho. Mitigação: reportar a prevalência
+como **intervalo de identificação parcial** (limites de Manski), calculado
+assumindo que todos os excluídos são Security Skill e que nenhum é. Como o
+universo possível é ≤0,75%, o intervalo deve sair estreito — o que **demonstra**
+que a exclusão foi inofensiva em vez de assumir. Toda exclusão é registrada com
+`file_sha` e motivo em `results/`, para ser auditável e re-executável.
+
+**Alternativas descartadas.**
+- *Manter `AMBIGUOUS` como classe* — mistura problema de dado com problema de
+  construto e torna a contagem ininterpretável.
+- *Forçar os indecidíveis para `NONE`* — subestima sistematicamente, e o viés é
+  direcional: skills que executam coisas (mais prováveis de serem de segurança)
+  são as que mais dependem de script.
+- *Corte por percentil de `body_chars`* — mede a coisa errada; jogaria fora
+  skills classificáveis pela descrição.
+
+**Precedente.** A análise de conteúdo clássica já trata "unidade não
+codificável" como problema de **seleção de documento**, resolvido no estágio do
+frame, e não como categoria do esquema de codificação. Filtrar artefatos triviais
+com critério declarado é prática aceita em MSR. Ver
+[[Classification and Sampling Precedents]] §4 e §5.
+
+**Consequências.** [[Decision Log#D-022]] passa de `EM ABERTO` para fechada. O
+denominador da QI-1 precisa ser recomputado sobre o frame com os dois cortes,
+partindo dos 1.571.243 conteúdos em inglês de [[EXP-013]]. Números para o TCC
+exigem script versionado e `EXP-XXX` próprio — os desta entrada vieram de
+consulta exploratória.
+
+---
+
+## D-029 — Primeira classificação enxuta; dimensões medidas e podadas (Codebook v2.5)
+
+**Data:** 2026-09-04 · **Status:** `aceita` (pesquisador)
+
+**Contexto.** O [[EXP-014]] mediu, pela primeira vez, **cada dimensão** do
+instrumento sobre a mesma amostra (n=100, dois avaliadores, Codebook v2.4):
+
+| Dimensão | κ / Jaccard | Concordância bruta |
+|---|---|---|
+| `security_relevance` | κ=0,724 | 84% |
+| `security_focus` | κ=1,000 | 100% |
+| `grc_case` | κ=0,852 | 99% |
+| `evidence` | J=0,788 | — |
+| `security_functions` | J=0,784 | — |
+| `frame_exclusion` | κ=0,662 | 99% |
+| `operational_security` | κ=0,511 | 77% |
+| `operation_level` | κ=0,446 | **61%** |
+| `security_concerns` | J=0,368 | — |
+| `operational_capability` | J=0,348 | — |
+| `rule_applied` | κ=0,307 | 50% |
+| `confidence` | κ=0,177 | 46% |
+
+Três achados decidiram a poda:
+
+1. **`security_focus` é redundância pura.** Em **100/100 casos, nos dois
+   avaliadores**, `security_focus` == (`security_relevance` == `PRIMARY`). Não
+   é dimensão independente — é a classe medida duas vezes. Isso recontextualiza
+   o κ=0,942 da v2.3, o número mais citado do projeto: **era a confiabilidade
+   de `PRIMARY`**, não de uma dimensão separada.
+2. **`security_functions` importa referencial externo para dentro do
+   instrumento.** `PREVENT·DETECT·ASSESS·TEST·RESPOND·RECOVER` é derivado do
+   NIST CSF. Coletá-lo na classificação e alimentar o open coding é exatamente
+   a circularidade que a regra inegociável da QI-2 proíbe.
+3. **Vocabulário livre normalizado cedo demais não funciona.** Em `LLM003` e
+   `LLM001` a interseção de `security_concerns` entre os avaliadores é
+   **vazia**, embora as `note` descrevam a mesma coisa de forma reconhecível.
+   É sinonímia, não discordância — sintoma de fazer open coding um caso por
+   vez, sem ver o conjunto.
+
+**Decisão.** Codebook **v2.5**:
+
+- **Primeira classificação reduzida a cinco campos**: `security_relevance`,
+  `evidence`, `frame_exclusion`, `note`, `confidence` (este último explicitamente
+  como metadado de triagem, não medida).
+- **`note` promovida a campo estruturado em prosa**, com três elementos
+  obrigatórios (papel profissional · qual é o conteúdo de segurança, ou por que
+  não conta se `NONE` · o elemento concreto que sustenta). Passa a ser o
+  **insumo primário do open coding**.
+- **`security_focus` removida** — se necessária, derive da classe.
+- **`security_functions` migra para a QI-3** (crosswalk), depois da taxonomia
+  estabilizada.
+- **`operational_security` e `operation_level` removidas**; se voltarem, voltam
+  **fundidas numa dimensão só**, com definição nova e medição própria.
+- **`grc_case`, `security_concerns`, `operational_capability` removidas** da
+  primeira classificação.
+- **A adjudicação da primeira classificação considera apenas
+  `security_relevance`** — dimensões de apoio não disparam revisão humana.
+
+**Justificativa.** A etapa 2 relê os casos de qualquer forma (é reclassificação,
+não enriquecimento incremental), então coletar payload descritivo mal medido na
+etapa 1 não compra nada e custa confiabilidade e tempo de anotação. Efeito
+imediato: a adjudicação do EXP-014 cai de **50 para 16 casos**.
+
+**Não altera a decisão de classe.** R-1…R-8 ficam intactas, portanto os
+coeficientes do [[EXP-014]] (κ=0,724 na classe, κ=0,672 na dicotomia)
+**transferem** para a v2.5. Esta é a diferença em relação a D-027, que alterou
+as regras e por isso invalidou os números da v2.3.
+
+**Alternativas descartadas.**
+- *Manter tudo e só não usar na adjudicação* — não resolve: o campo continua
+  sendo pedido ao anotador, custa tempo e degrada a atenção no que importa.
+- *Normalizar o vocabulário de `security_concerns` com lista fechada* — seria
+  impor taxonomia a priori, violando a regra da QI-2.
+
+**Consequências.** [[Classification Prompt]], [[Guia do Anotador Humano]] e `aggregate_llm_classifications.py` precisam refletir o payload
+reduzido. Métricas de concordância passam a ser calculadas por
+`scripts/compute_agreement.py`, que reporta Cohen's κ, Krippendorff's α, Gwet's
+AC1 e Brennan-Prediger com IC95 por bootstrap, mais os índices de prevalência e
+viés (Byrt et al.) e o teste de McNemar.
+
+**Limitação declarada.** Baseado em **uma** rodada de 100 casos com dois
+avaliadores, um dos quais teve vazamento de contexto por memória de agente (ver
+[[EXP-014]]). A redundância de `security_focus` (100/100 nos dois) é robusta o
+bastante para decidir sozinha; os κ das dimensões fracas têm IC largo nesse n —
+a direção é clara, o valor exato não.
+
+---
+
+## D-030 — Terceira exclusão de frame: o arquivo não é instrução (Codebook v2.6)
+
+**Data:** 2026-09-05 · **Status:** `aceita` (pesquisador)
+
+**Contexto.** Inspecionando a amostra do [[EXP-014]], o pesquisador observou que
+`LLM019` não é uma skill: é um **despejo de resultados de pesquisa** (`Date
+Range`, `Mode`, `OpenAI Model`, threads de Reddit com score e link) salvo com o
+nome `SKILL.md`. Leitura dos demais casos encontrou um segundo, `LLM067`, um
+documento *"Feature Context"* com bloco `Document Metadata / Generated / Input
+Type / Source`. Nenhum dos dois é instrução para um agente.
+
+O limiar do [[Decision Log#D-028]] não os alcança: têm 15.744 e 19.445
+caracteres. Ele exclui **evidência de menos**, não **gênero errado**.
+
+Importante separar dois achados, porque a leitura dos 14 casos de `name` nulo da
+amostra mostrou que eles **não** são a mesma coisa:
+
+- **12 de 14** são skills legítimas cujo front matter está fora da spec. O
+  `name` chega vazio ao avaliador, mas o conteúdo é instrucional — em `LLM060` o
+  front matter aparece intacto quatro linhas abaixo, com `name: pm-dogfood-add`.
+  **`name` nulo não é critério de exclusão.**
+- **2 de 14** são saídas geradas. Só esses saem.
+
+**Decisão.** Terceiro valor de `frame_exclusion`:
+**`not_an_instruction_artifact`** — o arquivo é registro ou saída produzida por
+algum processo (relatório, log, dump, documento de contexto gerado), não um
+conjunto de instruções dirigido a um executor.
+
+O anotador marca; **a exclusão da população fica adiada** até que a taxa seja
+estimada (ver "O que fica em aberto"). Marcar hoje custa uma coluna que já
+existe no formulário; não marcar custa reler a amostra inteira depois.
+
+**Por que não é a mesma coisa que o `truncated_undecidable` do D-028.** Aquela
+exclusão depende do desfecho — exclui-se por não conseguir decidir *se há
+segurança* —, e por isso exige limites de Manski. Esta não: decidir "isto é
+instrução ou é saída?" é julgamento de **gênero do documento**, feito sem
+consultar se há segurança. O estimador estratificado continua válido sem limites.
+
+**Justificativa quantitativa** ([[EXP-015]], `results/EXP-015_frame_artifact_profile.json`).
+Foi testada uma regra em escala populacional — marcador de procedência no topo
+(`Generated:`, `Date Range:`, `Input Type:`, `Document Metadata`, …) **e**
+`frontmatter_valid = 0`:
+
+| | n | % da população |
+|---|---:|---:|
+| População (representantes) | 1.877.981 | 100% |
+| Front matter válido | 1.625.701 | 86,57% |
+| Qualquer marcador de procedência | 5.913 | 0,315% |
+| **Regra completa** | **707** | **0,038%** |
+
+Nos 14 casos conhecidos a regra acerta tudo (2 verdadeiros positivos, 0 falsos
+positivos). **Mas o recall é baixo.** Os 2 não-skills apareceram dentro do
+estrato `frontmatter_valid = 0`, que tem 252.280 arquivos; a regra marca 707
+deles, 0,28% do estrato, contra os ~14% que a leitura sugere. Mesmo supondo que
+a leitura superestime em uma ordem de grandeza, a regra encontraria menos de um
+terço do que existe.
+
+**Por isso a regra determinística foi rejeitada como filtro.** Ela removeria
+0,04% da população e faria o quadro **parecer saneado**, com a distorção intacta
+e agora sem sinalização. A regra permanece útil como **estratificador**, no
+mesmo espírito do [[Decision Log#D-014]]: contagem de positivos não é taxa.
+
+**Alternativas descartadas.**
+
+- *Excluir todo `name` nulo* — descartaria 252.280 arquivos, dos quais a leitura
+  indica que ~86% são skills legítimas. Erro muito maior que o corrigido.
+- *Aplicar a regra determinística e seguir* — recall estimado em ~2%; ver acima.
+- *Classificar como `NONE` sem marcar* — colapsa duas coisas distintas num
+  rótulo só e torna a correção posterior impossível sem reanotar a amostra.
+
+**Limitação declarada.** A direção do viés **não é garantidamente conservadora**.
+Se os artefatos gerados fossem neutros quanto a segurança, deixá-los no
+denominador subestimaria a prevalência — erro seguro. Medição em [[EXP-015]]:
+o grupo marcado pela regra tem **29,14%** de vocabulário de segurança contra
+**24,93%** da população com front matter válido. É plausível: relatório de scan
+e saída de auditoria são exatamente o que se salva por engano como `SKILL.md`.
+Ressalva sobre a ressalva: isso é **vocabulário**, não classificação — este
+projeto já mediu que keyword não separa classe ([[EXP-001]], [[EXP-002]]). Serve
+para proibir a hipótese de neutralidade, não para estimar o viés.
+
+Ordem de grandeza do erro, se ignorado: com f ≈ 2% da amostra e prevalência real
+de 5%, a estimativa cairia entre ~4,9% (artefatos neutros) e ~6,9% (todos
+positivos) — até ~2 pontos numa estimativa de 5.
+
+**O que fica em aberto — decisão futura, não tomada aqui.** Estimar a taxa de
+não-instrução no estrato `frontmatter_valid = 0` **sem** marcador de procedência
+(251.573 arquivos, 13,4% da população), que é onde o problema está escondido.
+Rota proposta: amostra determinística de ~100 casos, uma pergunta por caso
+("instrução ou saída?"), taxa com IC, denominador corrigido. Nada disso invalida
+a anotação já feita, desde que a marcação exista — que é exatamente o que esta
+decisão garante.
+
+**Consequências.** [[Codebook]] passa a **v2.6** (§1.2 e §2.1);
+[[Guia do Anotador Humano]] §6 e §7; [[Classification Prompt]] — no prompt a
+mudança vale **a partir da próxima rodada**, e o [[EXP-014]] permanece registrado
+sob o schema de dois valores. `scripts/build_adjudication_form.py` não muda: a
+coluna `frame_exclusion` já existe e é texto livre.
+
+---
+
 ## Ligações
 
 [[00 - Research Overview]] · [[EXP-001]] · [[EXP-002]] · [[GitSkills]] ·
 [[03 - Methodology]] · [[Codebook]] · [[QI-2 Methodology]] ·
-[[QI-3 Coverage Methodology]] · [[Security Taxonomy]]
+[[QI-3 Coverage Methodology]] · [[Security Taxonomy]] ·
+[[Classification and Sampling Precedents]]

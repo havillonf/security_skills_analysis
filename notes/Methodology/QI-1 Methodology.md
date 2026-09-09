@@ -15,6 +15,11 @@ Questão central desde 2026-08-22 ([[Decision Log#D-011]]).
 Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.3).
 `PRIMARY` e `SECONDARY` **sempre reportados separadamente**, além do agregado.
 
+> [!important] População restrita a inglês — [[Decision Log#D-025]] (2026-09-03)
+> §2 e §6 abaixo descrevem o desenho multilíngue anterior — histórico; a
+> detecção de idioma virou filtro (inglês/não inglês), não mais eixo de
+> estratificação.
+
 ---
 
 ## 1. O que precisa ser produzido
@@ -40,7 +45,10 @@ Nada disso é obtenível por contagem de keyword. Ver §7.
 | Repositório | 282.200 | controle de concentração |
 | Dono | 195.841 | controle de concentração |
 
-Inclui **todos os idiomas** ([[Decision Log#D-012]]).
+Inclui todos os idiomas na medição histórica abaixo ([[Decision Log#D-012]]);
+**desde 2026-09-03 a população-alvo é restrita a inglês**
+([[Decision Log#D-025]]) — os `n` desta tabela precisam ser recomputados
+para o subconjunto em inglês antes de qualquer uso em estimativa.
 
 > [!warning] A unidade primária tem uma fragilidade conhecida
 > Near-duplicates sobrevivem à deduplicação por hash ([[EXP-002]]). Um pacote
@@ -174,7 +182,13 @@ não se resolve escolhendo o número mais conveniente.
 
 ## 5. Validação do classificador
 
-Contra o gold set humano, **por classe e por idioma**:
+> [!important] Gold set misto — [[Decision Log#D-026]] (2026-09-03)
+> "Gold set" agora é: consenso entre 3 LLMs + adjudicação humana nas
+> discordâncias. Reportar a fração de cada origem. Eixo "por idioma" não é
+> mais central (população restrita a inglês, [[Decision Log#D-025]]).
+
+Contra o gold set (agora misto — ver acima), **por classe** e, secundariamente,
+**por idioma** quando ainda houver suporte amostral:
 
 - precisão, recall, F1 por classe (`PRIMARY`, `SECONDARY`, `MENTION`, `NONE`);
 - precisão/recall/F1 para a dicotomia Security Skill vs resto;
@@ -203,7 +217,12 @@ Reportar essas taxas separadamente, não só o F1 global.
 
 ## 6. Idioma
 
-Detalhes em [[Multilingual Strategy]]. O que a QI-1 exige:
+> [!important] De estratificação para filtro — [[Decision Log#D-025]] (2026-09-03)
+> Medições abaixo continuam válidas; idioma virou critério de filtro, não
+> eixo de estratificação (população restrita a inglês).
+
+Detalhes em [[Multilingual Strategy]]. O que a QI-1 exigia sob o desenho
+multilíngue anterior (histórico):
 
 - distribuição de idiomas medida **antes** de desenhar a amostra ([[EXP-003]]) e
   **concordância entre detectores** medida ([[EXP-004]] v2: 0,987 global, 0,967–1,000
@@ -244,15 +263,15 @@ EXP-003  distribuição de idiomas                    ✅ 14,21% não inglês
    |
 EXP-004  validação do detector de idioma            ✅ lingua primário; cauda colapsada
    |
-EXP-005  piloto de anotação  <- PRÓXIMA ETAPA
-         estratificado por classe prevista × grupo linguístico;
-         fronteira SECONDARY/MENTION; casos GRC; casos mixed
+(D-025)  restrição da população a inglês                       2026-09-03
    |
-EXP-006  gold set estratificado + concordância
+EXP-XXX  amostra n=100 (inglês) + ensemble de 3 LLMs +   <- PRÓXIMA ETAPA
+         adjudicação humana na discordância (D-026)
    |
 EXP-007  candidate retrieval, escolhido por recall medido contra o gold set
    |
-EXP-008  classificador validado (métricas por classe e por idioma)
+EXP-008  classificador validado (métricas por classe; por idioma deixa de
+         ser eixo principal sob D-025)
    |
 EXP-009  classificação da população -> estratos (N_h)
    |
@@ -267,10 +286,19 @@ o piloto vem **antes** do retrieval multilíngue. Sob o Desenho C o retrieval
 estratifica e não determina elegibilidade, e o critério para escolhê-lo é recall
 contra o gold set — que não existe antes do piloto.
 
+**Numeração.** O passo "EXP-005 piloto de anotação" e "EXP-006 gold set" desta
+tabela descreviam o desenho anterior a [[Decision Log#D-026]] (2026-09-03) e
+foram substituídos acima por um único `EXP-XXX` a atribuir quando o script do
+novo desenho for escrito — nenhum número foi reservado antecipadamente,
+seguindo a convenção do projeto ([[03 - Methodology]] §8).
+
 ## 9. Estado atual
 
 ✅ `EXP-003` e `EXP-004` concluídos. Desenho C adotado. Estratos linguísticos
-definidos. ⬜ `EXP-005` (piloto) é a próxima etapa.
+medidos, mas **não são mais o eixo principal de estratificação** — desde
+[[Decision Log#D-025]] (2026-09-03) a população-alvo é restrita a inglês.
+⬜ Amostra + gold set via ensemble de LLMs ([[Decision Log#D-026]]) é a
+próxima etapa; os 50 casos de [[EXP-005]] não são mais reaproveitados nela.
 
 Reaproveitado da fase anterior: [[Codebook]] (instrumento), a definição
 ([[Decision Log#D-004]]), o candidate retrieval de [[EXP-002]] (baseline inglês a

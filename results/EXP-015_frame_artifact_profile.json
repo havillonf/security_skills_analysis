@@ -1,0 +1,238 @@
+{
+  "experiment": "EXP-015",
+  "question": "Quantos SKILL.md da populacao sao saidas geradas em vez de arquivos de instrucao, e uma regra em escala populacional consegue separa-los?",
+  "population_frame": "dedup_primary = 1 AND content IS NOT NULL",
+  "duckdb_version": "1.5.5",
+  "head_chars": 2500,
+  "provenance_markers": [
+    "generated:",
+    "generated on ",
+    "date range:",
+    "input type:",
+    "document metadata",
+    "report generated",
+    "analysis date"
+  ],
+  "instruction_markers": [
+    "when to use",
+    "you should",
+    "use this skill"
+  ],
+  "totals": {
+    "n_population": 1877981,
+    "n_frontmatter_valid": 1625701,
+    "n_name_null": 244470,
+    "n_provenance": 5913,
+    "n_rule_candidate": 707,
+    "pct_rule_candidate": 0.0376
+  },
+  "strata": [
+    {
+      "frontmatter_valid": 0,
+      "provenance": false,
+      "instruction": false,
+      "n": 151370,
+      "pct": 8.0603
+    },
+    {
+      "frontmatter_valid": 0,
+      "provenance": false,
+      "instruction": true,
+      "n": 100203,
+      "pct": 5.3357
+    },
+    {
+      "frontmatter_valid": 0,
+      "provenance": true,
+      "instruction": false,
+      "n": 580,
+      "pct": 0.0309
+    },
+    {
+      "frontmatter_valid": 0,
+      "provenance": true,
+      "instruction": true,
+      "n": 127,
+      "pct": 0.0068
+    },
+    {
+      "frontmatter_valid": 1,
+      "provenance": false,
+      "instruction": false,
+      "n": 1141074,
+      "pct": 60.7607
+    },
+    {
+      "frontmatter_valid": 1,
+      "provenance": false,
+      "instruction": true,
+      "n": 479421,
+      "pct": 25.5285
+    },
+    {
+      "frontmatter_valid": 1,
+      "provenance": true,
+      "instruction": false,
+      "n": 3777,
+      "pct": 0.2011
+    },
+    {
+      "frontmatter_valid": 1,
+      "provenance": true,
+      "instruction": true,
+      "n": 1429,
+      "pct": 0.0761
+    }
+  ],
+  "rule": "frontmatter_valid = 0 AND provenance",
+  "validation_on_known_cases": {
+    "n": 14,
+    "true_positives": 2,
+    "false_positives": 0,
+    "false_negatives": 0,
+    "caveat": "n=14, todos do subgrupo `name` nulo da amostra do EXP-013, rotulados por leitura do pesquisador-assistente e NAO adjudicados. Precisao e recall aqui sao ilustrativos, nao estimativas.",
+    "cases": [
+      {
+        "case_id": "LLM002",
+        "file_sha": "3382e8d55b6627021088e13db0ade57d8321355c",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": false,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM004",
+        "file_sha": "341fb32d8d475abde39f7f1c29c0110a379070bd",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": true,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM008",
+        "file_sha": "0a6450c4851a32f99f162b178f17a35161418a5f",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": true,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM019",
+        "file_sha": "a6d95f211f9307e10848664b636e6017dabd442d",
+        "ground_truth": "not_a_skill",
+        "frontmatter_valid": 0,
+        "provenance": true,
+        "instruction": false,
+        "flagged_by_rule": true,
+        "correct": true
+      },
+      {
+        "case_id": "LLM021",
+        "file_sha": "473b7b775c84ef4e913d2f394ae576c52379bc6c",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": true,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM028",
+        "file_sha": "42f315174d0b6bb3be7d7280b13122889a3a1ddc",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": false,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM048",
+        "file_sha": "cf076d64df1e0415729c54b76aba42c9b5557cc5",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": true,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM057",
+        "file_sha": "1d5b3334b8c0abccd238370fd8eea1cac409eda7",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": false,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM060",
+        "file_sha": "8e7408e2297decb787a5d9964f4e159f96811043",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": false,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM067",
+        "file_sha": "51554c7067a59f5cd39d11debd312a2f9c96d77c",
+        "ground_truth": "not_a_skill",
+        "frontmatter_valid": 0,
+        "provenance": true,
+        "instruction": false,
+        "flagged_by_rule": true,
+        "correct": true
+      },
+      {
+        "case_id": "LLM073",
+        "file_sha": "fba0c3f3192cd5bd854286fcd318da428ed0096a",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": false,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM078",
+        "file_sha": "f4920e8935f39d470ef7d2606ebcb75aab4ece56",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": false,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM079",
+        "file_sha": "c8ffe506809ba8b5615906820a72a1aa848d7e31",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": false,
+        "flagged_by_rule": false,
+        "correct": true
+      },
+      {
+        "case_id": "LLM084",
+        "file_sha": "e37e8c49420234daa4788ab73b6a19d5960ccac2",
+        "ground_truth": "skill",
+        "frontmatter_valid": 0,
+        "provenance": false,
+        "instruction": true,
+        "flagged_by_rule": false,
+        "correct": true
+      }
+    ]
+  },
+  "elapsed_seconds": 61.1
+}

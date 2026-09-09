@@ -13,6 +13,12 @@ status: proposta; bloqueada por QI-2
 > A QI-3 **não pode começar** antes de a taxonomia empírica da
 > [[QI-2 Methodology|QI-2]] estar razoavelmente estabilizada. Antecipar o crosswalk
 > contamina a QI-2 com categorias externas e produz circularidade.
+>
+> Desde [[Decision Log#D-024]] (2026-08-27), isso é parte de uma cadeia
+> formal e sequenciada: **QI-1 → validação do classificador → QI-2 → QI-3**.
+> Como QI-2 já depende do classificador de QI-1 estar validado, a QI-3 herda
+> essa dependência **transitivamente** — não começa antes de QI-2 estabilizar
+> e QI-2 não começa antes do gate de E-7.
 
 ---
 
@@ -203,7 +209,9 @@ Nenhuma dessas pode ser assumida antes da análise.
 
 ## 8. Estado atual
 
-⬜ Não iniciada, por desenho. Depende de [[QI-2 Methodology|QI-2]] estabilizada.
+⬜ Não iniciada, por desenho. Depende de [[QI-2 Methodology|QI-2]] estabilizada,
+que por sua vez depende do gate de validação do classificador de QI-1
+([[Decision Log#D-024]]).
 
 O único insumo já produzido é o sinal preliminar da §2 (ransomware recovery e ICS/OT
 sem correspondência no OWASP Top 10), a partir de 48 casos de descoberta.

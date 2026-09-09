@@ -7,9 +7,9 @@ representantes a um pool revisavel, com recall alto e precisao assumidamente bai
 A classificacao e feita por leitura, conforme notes/Decisions/Codebook.md.
 
 Produz:
-  results/EXP-002_frame.json          - tamanhos do pool e dos estratos
-  results/EXP-002_sample.parquet      - amostra estratificada deterministica
-  results/EXP-002_sample_preview.md   - texto truncado para open coding manual
+  results/_arquivo/EXP-002_frame.json          - tamanhos do pool e dos estratos
+  results/_arquivo/EXP-002_sample.parquet      - amostra estratificada deterministica
+  results/_arquivo/EXP-002_sample_preview.md   - texto truncado para open coding manual
 
 Uso:
     uv run --with duckdb python scripts/build_candidate_frame.py
@@ -27,6 +27,7 @@ import duckdb
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = ROOT / "data" / "raw" / "gitskills" / "data"
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 
 # --- Candidate retrieval -----------------------------------------------------
 # Recall-orientado. Termos deliberadamente amplos; o ruido e removido na leitura,
@@ -140,7 +141,7 @@ def main() -> int:
     con.execute(f"CREATE TEMP TABLE sample AS {union}")
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    sample_path = RESULTS_DIR / "EXP-002_sample.parquet"
+    sample_path = ARCHIVE_DIR / "EXP-002_sample.parquet"
     con.execute(
         f"COPY (SELECT * FROM sample) TO '{sample_path.as_posix()}' (FORMAT PARQUET)")
     out["n_sample"] = con.execute("SELECT count(*) FROM sample").fetchone()[0]
@@ -162,10 +163,10 @@ def main() -> int:
             f"- **body_chars:** {bc} · **has_scripts:** {hs} · **kw_density:** {kd}",
             "", "```markdown", (txt or "").strip(), "```", "",
         ]
-    (RESULTS_DIR / "EXP-002_sample_preview.md").write_text(
+    (ARCHIVE_DIR / "EXP-002_sample_preview.md").write_text(
         "\n".join(lines), encoding="utf-8")
 
-    (RESULTS_DIR / "EXP-002_frame.json").write_text(
+    (ARCHIVE_DIR / "EXP-002_frame.json").write_text(
         json.dumps(out, indent=2, default=str), encoding="utf-8")
 
     print(f"pool: {out['n_candidate_pool']:,} / {out['n_primary_total']:,} "

@@ -20,6 +20,18 @@ framework externo.
 > Frameworks externos entram **apenas depois** da taxonomia estabilizada, para
 > crosswalk e [[QI-3 Coverage Methodology|QI-3]].
 
+> [!important] Gate — [[Decision Log#D-024]] (2026-08-27)
+> QI-2 só é executada **depois** de o classificador de triagem de QI-1 passar
+> pela validação de E-7 com desempenho satisfatório. O **conjunto de skills
+> analisado** deixa de ser apenas o pool de candidate retrieval por
+> palavra-chave (§2 abaixo, que permanece válido como medição histórica de
+> [[EXP-002]]) e passa a ser a população classificada como
+> `SEC-PRIMARY`/`SEC-SECONDARY` pelo classificador **validado**, produzida em
+> E-8. Isso não é um erro de desenho anterior — E-8 simplesmente ainda não
+> existia quando este documento foi escrito — mas é a atualização que esta
+> nota registra. O critério numérico de "validação satisfatória" ainda não
+> foi definido; ver o aviso em [[Decision Log#D-024]].
+
 ---
 
 ## 1. Pipeline
@@ -218,13 +230,19 @@ Nada da QI-2 é resultado científico antes disto.
 
 ## 8. Estado atual
 
-- ✅ Candidate retrieval implementado e medido ([[EXP-002]]).
+- ✅ Candidate retrieval implementado e medido ([[EXP-002]]) — histórico,
+  reaproveitável como sinal, não é mais o conjunto de entrada planejado (ver
+  gate acima).
 - ✅ Amostra de descoberta gerada (48 itens, 4 estratos).
 - 🟡 Open coding: **primeira passagem exploratória feita por LLM**, com códigos
   candidatos em [[Security Taxonomy]]. **Não é gold set nem resultado.**
+- ⬜ Classificador de QI-1 ainda não validado (E-7) — **QI-2 não pode começar**
+  enquanto essa etapa não passar pelo gate de [[Decision Log#D-024]].
 - ⬜ Open coding humano, iteração, estabilização, validação.
 
-**Nenhum número de distribuição foi calculado, e nenhum deve ser antes da validação.**
+**Nenhum número de distribuição foi calculado, e nenhum deve ser antes da
+validação — nem da QI-2 propriamente, nem do classificador de QI-1 do qual
+seu conjunto de entrada depende.**
 
 ## Ligações
 

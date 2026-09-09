@@ -6,8 +6,8 @@ Nao re-executa a validacao cruzada (isso e scripts/train_security_classifier.py)
 Este script: (1) confere a integridade dos artefatos serializados - carrega
 os modelos IMPLANTADOS e reproduz as predicoes no golden set completo, como
 checagem de que o .joblib salvo corresponde ao que foi treinado; (2) formata
-o relatorio final a partir de results/EXP-012_metrics.json e
-results/EXP-012_classifier_comparison.csv, ja produzidos pelo treino.
+o relatorio final a partir de results/_arquivo/EXP-012_metrics.json e
+results/_arquivo/EXP-012_classifier_comparison.csv, ja produzidos pelo treino.
 
 Uso:
     uv run --with scikit-learn --with pandas --with pyarrow --with joblib \
@@ -24,13 +24,14 @@ from sklearn.metrics import accuracy_score, f1_score
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 MODELS_DIR = ROOT / "models"
 
 
 def main() -> int:
-    frame_path = RESULTS_DIR / "EXP-012_training_frame.parquet"
+    frame_path = ARCHIVE_DIR / "EXP-012_training_frame.parquet"
     meta_path = MODELS_DIR / "security_classifier_v1_metadata.json"
-    metrics_path = RESULTS_DIR / "EXP-012_metrics.json"
+    metrics_path = ARCHIVE_DIR / "EXP-012_metrics.json"
     if not (frame_path.exists() and meta_path.exists() and metrics_path.exists()):
         print("ERRO: rode build_training_frame.py e train_security_classifier.py "
               "antes deste script", file=sys.stderr)
@@ -60,7 +61,7 @@ def main() -> int:
               f"generalizacao valida e a CV em EXP-012_metrics.json.")
 
     print("\n=== resumo da comparacao (de EXP-012_classifier_comparison.csv) ===")
-    comp = pd.read_csv(RESULTS_DIR / "EXP-012_classifier_comparison.csv")
+    comp = pd.read_csv(ARCHIVE_DIR / "EXP-012_classifier_comparison.csv")
     print(comp.to_string(index=False))
 
     print("\n=== decisao de implantacao ===")
@@ -70,7 +71,7 @@ def main() -> int:
         print(f"motivo do override: {meta['deployment_override_reason']}")
 
     print("\n=== confusao SECONDARY <-> MENTION (a que altera a prevalencia) ===")
-    cm = pd.read_csv(RESULTS_DIR / "EXP-012_confusion_matrix.csv")
+    cm = pd.read_csv(ARCHIVE_DIR / "EXP-012_confusion_matrix.csv")
     mc_cm = cm[(cm.task == "multiclass") &
                (cm.true_label.isin(["SECONDARY", "MENTION"])) &
                (cm.pred_label.isin(["SECONDARY", "MENTION"]))]

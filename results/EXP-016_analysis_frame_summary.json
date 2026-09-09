@@ -1,0 +1,83 @@
+{
+  "experiment": "EXP-016",
+  "question": "Qual e o denominador da QI-1 depois das exclusoes de frame, aplicadas em sequencia?",
+  "duckdb_version": "1.5.5",
+  "min_evidence_chars": 200,
+  "head_chars": 2500,
+  "provenance_markers": [
+    "generated:",
+    "generated on ",
+    "date range:",
+    "input type:",
+    "document metadata",
+    "report generated",
+    "analysis date"
+  ],
+  "waterfall": [
+    {
+      "step": 1,
+      "decision": "D-001",
+      "criterion": "dedup_primary = 1 AND content IS NOT NULL",
+      "remaining": 1877981,
+      "removed": 0
+    },
+    {
+      "step": 2,
+      "decision": "D-025",
+      "criterion": "is_purely_english",
+      "remaining": 1571243,
+      "removed": 306738
+    },
+    {
+      "step": 3,
+      "decision": "D-028",
+      "criterion": "length(description) + body_chars >= 200",
+      "remaining": 1550550,
+      "removed": 20693
+    }
+  ],
+  "frame_size": 1550550,
+  "frame_pct_of_base": 82.565,
+  "marginal_counts": {
+    "note": "cada criterio isolado contra a populacao base; SE SOBREPOEM, nao somar",
+    "not_english": 306738,
+    "below_min_evidence": 25284,
+    "both": 4591
+  },
+  "genre_strata_within_frame": {
+    "note": "D-030: MARCA, nao exclui. A exclusao espera a estimativa da taxa de nao-instrucao em F3 (ver EXP-015).",
+    "strata": [
+      {
+        "stratum": "F1_presumed_instruction",
+        "n": 1339453,
+        "pct_of_frame": 86.3857
+      },
+      {
+        "stratum": "F3_unknown",
+        "n": 205928,
+        "pct_of_frame": 13.281
+      },
+      {
+        "stratum": "F1b_provenance_with_frontmatter",
+        "n": 4543,
+        "pct_of_frame": 0.293
+      },
+      {
+        "stratum": "F2_rule_candidate",
+        "n": 626,
+        "pct_of_frame": 0.0404
+      }
+    ]
+  },
+  "not_applied_here": {
+    "truncated_undecidable": "D-028. Depende de o anotador nao conseguir decidir; so existe durante a anotacao, caso a caso. Nao ha versao em escala.",
+    "not_an_instruction_artifact": "D-030. Marcado como estrato acima, nao excluido."
+  },
+  "integrity_checks": {
+    "join_preserva_linhas": true,
+    "file_sha_unico": true,
+    "nenhum_excluido_no_quadro": true,
+    "csv_ingles_cobre_populacao": true
+  },
+  "elapsed_seconds": 129.0
+}

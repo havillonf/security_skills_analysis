@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 EXP-012 - Monta o frame de treino do classificador v1 a partir do golden set
-operacional de EXP-005 (results/EXP-005_annotation_form_filled_updated.csv).
+operacional de EXP-005 (results/_arquivo/EXP-005_annotation_form_filled_updated.csv).
 
 NATUREZA: EXP-005_annotation_form_filled_updated.csv foi produzido com
 assistencia de LLM. E o golden set OPERACIONAL desta iteracao exploratoria
@@ -26,7 +26,7 @@ O QUE ESTE SCRIPT FAZ
      NON_SECURITY = MENTION+NONE.
 
 SAIDA
-  results/EXP-012_training_frame.parquet (gitignored: contem texto de
+  results/_arquivo/EXP-012_training_frame.parquet (gitignored: contem texto de
   terceiros, regeneravel por este script - mesma politica de EXP-002/EXP-005)
 
 Uso:
@@ -42,10 +42,11 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data" / "raw" / "gitskills" / "data"
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 
-LABELS_CSV = RESULTS_DIR / "EXP-005_annotation_form_filled_updated.csv"
-PILOT_PARQUET = RESULTS_DIR / "EXP-005_pilot_sample.parquet"
-OUT_PARQUET = RESULTS_DIR / "EXP-012_training_frame.parquet"
+LABELS_CSV = ARCHIVE_DIR / "EXP-005_annotation_form_filled_updated.csv"
+PILOT_PARQUET = ARCHIVE_DIR / "EXP-005_pilot_sample.parquet"
+OUT_PARQUET = ARCHIVE_DIR / "EXP-012_training_frame.parquet"
 
 # Colunas de EXP-005_strata_key.csv - NUNCA devem entrar aqui (vazamento de
 # selecao). Listadas explicitamente para que uma futura mudanca de esquema

@@ -35,6 +35,7 @@ import duckdb
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = ROOT / "data" / "raw" / "gitskills" / "data"
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 
 # --- Camada 1: blocos Unicode -----------------------------------------------
 # Presenca de caractere do bloco => o texto contem aquele script.
@@ -117,7 +118,7 @@ def main() -> int:
     print(f"populacao: {n_pop:,} representantes\n")
 
     # === Camada 1: scripts Unicode sobre a populacao inteira =================
-    prev_path = RESULTS_DIR / "EXP-003_languages.json"
+    prev_path = ARCHIVE_DIR / "EXP-003_languages.json"
     if args.skip_layer1 and prev_path.exists():
         prev = json.loads(prev_path.read_text(encoding="utf-8"))
         out["layer1_scripts"] = prev["layer1_scripts"]
@@ -234,7 +235,7 @@ def main() -> int:
     print(f"  motivos de 'und': {dict(und_reason)}")
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    p = RESULTS_DIR / "EXP-003_languages.json"
+    p = ARCHIVE_DIR / "EXP-003_languages.json"
     p.write_text(json.dumps(out, indent=2, default=str), encoding="utf-8")
     print(f"\nOK -> {p}")
     return 0

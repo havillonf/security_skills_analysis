@@ -2,7 +2,7 @@
 """
 EXP-012 - Comparacao e selecao do classificador definitivo da iteracao v1.
 
-Golden set operacional: results/EXP-005_annotation_form_filled_updated.csv
+Golden set operacional: results/_arquivo/EXP-005_annotation_form_filled_updated.csv
 (n=50, LLM-assisted; AMBIGUOUS excluido -> n=49 usado aqui). NAO e gold
 standard humano definitivo - ver Decision Log (classificador definitivo v1).
 
@@ -25,9 +25,9 @@ Modelos:
       + LogisticRegression
 
 Saidas:
-  results/EXP-012_classifier_comparison.csv
-  results/EXP-012_metrics.json
-  results/EXP-012_confusion_matrix.csv
+  results/_arquivo/EXP-012_classifier_comparison.csv
+  results/_arquivo/EXP-012_metrics.json
+  results/_arquivo/EXP-012_confusion_matrix.csv
   models/security_classifier_v1_multiclass.joblib
   models/security_classifier_v1_binary.joblib
   models/security_classifier_v1_metadata.json
@@ -61,8 +61,9 @@ from sklearn.svm import LinearSVC
 
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 MODELS_DIR = ROOT / "models"
-FRAME_PARQUET = RESULTS_DIR / "EXP-012_training_frame.parquet"
+FRAME_PARQUET = ARCHIVE_DIR / "EXP-012_training_frame.parquet"
 
 SEED = 20260823
 N_SPLITS = 5
@@ -285,7 +286,7 @@ def main() -> int:
     comparison_rows = []
     full_metrics = {"generated_at": pd.Timestamp.now('UTC').isoformat(),
                      "n_golden_set_total": int(len(pd.read_csv(
-                         RESULTS_DIR / "EXP-005_annotation_form_filled_updated.csv"))),
+                         ARCHIVE_DIR / "EXP-005_annotation_form_filled_updated.csv"))),
                      "n_used_in_training": n,
                      "n_ambiguous_excluded": 1,
                      "cv_protocol": {
@@ -379,8 +380,8 @@ def main() -> int:
 
     RESULTS_DIR.mkdir(exist_ok=True)
     comp_df = pd.DataFrame(comparison_rows)
-    comp_df.to_csv(RESULTS_DIR / "EXP-012_classifier_comparison.csv", index=False)
-    (RESULTS_DIR / "EXP-012_metrics.json").write_text(
+    comp_df.to_csv(ARCHIVE_DIR / "EXP-012_classifier_comparison.csv", index=False)
+    (ARCHIVE_DIR / "EXP-012_metrics.json").write_text(
         json.dumps(full_metrics, indent=2, ensure_ascii=False, default=str),
         encoding="utf-8")
 
@@ -395,12 +396,12 @@ def main() -> int:
                     cm_rows.append({"task": task_name, "model": model_name,
                                      "true_label": true_l, "pred_label": pred_l,
                                      "count_summed_over_repeats": cm[i][j]})
-    pd.DataFrame(cm_rows).to_csv(RESULTS_DIR / "EXP-012_confusion_matrix.csv",
+    pd.DataFrame(cm_rows).to_csv(ARCHIVE_DIR / "EXP-012_confusion_matrix.csv",
                                   index=False)
 
-    print(f"\nOK -> results/EXP-012_classifier_comparison.csv")
-    print(f"OK -> results/EXP-012_metrics.json")
-    print(f"OK -> results/EXP-012_confusion_matrix.csv")
+    print(f"\nOK -> results/_arquivo/EXP-012_classifier_comparison.csv")
+    print(f"OK -> results/_arquivo/EXP-012_metrics.json")
+    print(f"OK -> results/_arquivo/EXP-012_confusion_matrix.csv")
 
     # --- selecao e treino final -------------------------------------------
     # Criterio (ordem do enunciado): 1) desempenho binario  2) macro-F1

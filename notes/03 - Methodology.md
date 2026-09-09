@@ -10,7 +10,9 @@ status: reorganizado em torno da QI-1
 > pública de Agent Skills? ([[Decision Log#D-011]])
 >
 > Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY`, sempre desagregados.
-> População: **todos os idiomas** ([[Decision Log#D-012]]).
+> População: **skills em inglês** ([[Decision Log#D-025]], 2026-09-03,
+> decisão do orientador — revisa [[Decision Log#D-012]], que incluía todos
+> os idiomas).
 > **Desenho C** — amostragem estratificada com classificador de triagem
 > ([[Decision Log#D-014]]).
 > Desenho estatístico: [[QI-1 Methodology]] · Idiomas: [[Multilingual Strategy]] ·
@@ -49,7 +51,7 @@ de amostragem nem gold set representativo ([[Decision Log#D-012]]).
 **Método.** Duas camadas — script Unicode sobre a população inteira; identificação de
 idioma sobre amostra aleatória determinística, com remoção de código, front matter,
 URLs e caminhos antes de detectar. Ver [[Multilingual Strategy]] §2.
-**Saída.** `scripts/detect_languages.py` · `results/EXP-003_languages.json` ·
+**Saída.** `scripts/detect_languages.py` · `results/_arquivo/EXP-003_languages.json` ·
 [[EXP-003]].
 **Resultado.** ✅ **Não inglês = 14,21% ± 0,48 pp (≈ 267 mil conteúdos)**; zh 5,99%,
 ja 1,73%, de 1,61%, ko 1,25%, es 0,97%, pt 0,95%. Front matter diverge do corpo em
@@ -109,37 +111,75 @@ E-4 passa a ser executado **depois de E-6** e muda de escopo:
 > "melhor em CV" (embeddings) e "implantado na população" (TF-IDF, por
 > custo computacional) em [[Decision Log#D-023]].
 
-### E-5 — Piloto de anotação  ← PRÓXIMA ETAPA (do caminho crítico rigoroso)
+### E-5/E-6 — Amostra + gold set via ensemble de LLMs  ← PRÓXIMA ETAPA (do caminho crítico rigoroso)
 
-**Objetivo.** Testar o [[Codebook]] v2.3 antes de investir na anotação grande.
-**Método.** ~50 casos, estratificados por **classe prevista × grupo linguístico**
-(L1–L5), sobre-amostrando:
+> [!important] Desenho substituído em 2026-09-03 — [[Decision Log#D-026]]
+> O desenho anterior (piloto humano cego de ~50 casos estratificados por
+> sinal × idioma, seguido de gold set com um ou dois anotadores humanos)
+> foi **substituído** por decisão do orientador. Os parágrafos abaixo
+> descrevem o desenho **vigente**; o desenho anterior fica preservado só
+> como histórico em [[Decision Log#D-019]], [[Decision Log#D-020]] e
+> [[Decision Log#D-021]], que continuam valendo como princípios (cegamento,
+> LLM não é ground truth **fora** deste desenho específico) mas não como
+> procedimento em execução.
 
-- a fronteira `SECONDARY`/`MENTION` — onde o instrumento falha;
-- conteúdo **não inglês**, obrigatoriamente presente desde o piloto;
-- casos **`mixed`** e de cauda;
-- casos de **GRC** ([[Decision Log#D-016]]), com concordância reportada à parte;
-- casos `code-review`.
+**Objetivo.** Produzir, numa única etapa, uma amostra anotada e o padrão-ouro
+operacional que alimenta a validação do classificador em **E-7**.
+**Método** ([[Decision Log#D-026]]):
 
-Dois anotadores independentes quando viável. Registrar `used_translation`, o idioma
-julgado por humano (fecha a lacuna de [[EXP-004]]) e o **tempo por item por idioma** —
-se anotar em chinês custar três vezes mais, isso muda o dimensionamento do gold set.
+1. Sortear uma **amostra aleatória nova de n = 100**, sobre a população
+   restrita a inglês de [[Decision Log#D-025]] — não reaproveita os 50 casos
+   de [[EXP-005]]. Amostragem determinística (`ORDER BY hash(file_sha)`).
+2. Três modelos — **GPT-5.6 Sol**, **Claude Opus**, **Gemini 3.1 Pro** —
+   classificam os 100 casos **independentemente**, aplicando o [[Codebook]]
+   v2.3, sem ver o sinal preliminar de triagem (cegamento por analogia a
+   [[Decision Log#D-021]]).
+3. Onde os três **concordam**, o rótulo de consenso é aceito sem revisão
+   humana adicional.
+4. Onde **discordam**, um anotador humano adjudica aplicando o [[Codebook]].
 
-**Saída.** [[Codebook]] v2.3 se revisado, com motivo datado; primeira medida real de
-acurácia de detecção de idioma.
-**Conclusão quando.** R-2 se mostrar aplicável; custo por item medido por idioma;
-regras ambíguas identificadas; concordância preliminar em GRC conhecida.
-**Risco.** Ajustar o codebook depois de ver resultado vira racionalização — revisão
-só entre piloto e anotação definitiva, nunca durante.
+**Riscos declarados, não resolvidos por este desenho** (detalhe completo em
+[[Decision Log#D-026]]):
 
-### E-6 — Gold set e concordância
+- amostra **não estratificada** — pode conter poucos casos `PRIMARY`/
+  `SECONDARY` e menos ainda na fronteira `SECONDARY`/`MENTION`;
+- consenso entre os três LLMs **nunca é verificado por um humano** — viés
+  sistemático compartilhado entre modelos fica invisível;
+- a estatística de confiabilidade (concordância entre LLMs + taxa de
+  adjudicação humana) não é equivalente a um kappa interavaliadores humano
+  do [[Codebook]] §9, e deve ser reportada como tal.
 
-**Objetivo.** Padrão-ouro humano com confiabilidade conhecida.
-**Método.** Amostra estratificada por idioma/grupo linguístico. Dois anotadores
-quando viável; adjudicação registrada. Métricas do [[Codebook]] §9 — kappa ponderado
-nos quatro ordinais (excluindo `AMBIGUOUS`), kappa/α na dicotomia.
-**Conclusão quando.** Gold set versionado em `results/` e concordância reportada,
-incluindo por idioma quando houver suporte.
+**Saída.** Gold set de n=100 com origem de rótulo declarada por caso (consenso
+de LLM vs. adjudicação humana); registro de modelo/versão/prompt/temperatura
+para os três LLMs ([[Decision Log#D-008]]); taxa de discordância; taxa de
+`AMBIGUOUS`.
+**Conclusão quando.** Gold set versionado em `results/`, com a fração
+consenso-vs-adjudicado reportada, e regras ambíguas identificadas.
+**Pendências resolvidas em 2026-09-03** (reunião com o orientador, mesmo
+dia de D-025/D-026): critério operacional de "skill em inglês" — 100%
+inglês; regra de desempate — qualquer discordância entre os três modelos,
+em qualquer dimensão, leva o caso à adjudicação humana; cegamento entre
+modelos confirmado como regra explícita.
+
+**Progresso concreto (2026-09-03):**
+
+1. ✅ **Amostra gerada** — [[EXP-013]], `scripts/build_llm_ensemble_sample.py`.
+   100 casos aceitos, filtro de idioma corrigido na prática (ver
+   [[Decision Log#D-025]] — a primeira operacionalização do limiar tinha
+   uma lacuna real, corrigida).
+2. ✅ **Prompt reformulado** para o modo de invocação escolhido pelo
+   pesquisador — CLI de cada modelo com acesso ao diretório de casos, não
+   API programática. [[Classification Prompt]] §2–§5.
+3. ✅ **Script de agregação/discordância** escrito e testado com dados
+   sintéticos — `scripts/aggregate_llm_classifications.py`.
+4. ⬜ **Rodar as três CLIs** contra `results/EXP-013_llm_cases/` — não
+   feito ainda. Validar o prompt (aviso no topo do documento) antes de
+   rodar para valer.
+5. ⬜ **Adjudicação humana** dos casos discordantes, usando
+   [[Guia do Anotador Humano]] (v2.4). A execução de 2026-09-03 sob
+   a v2.3 está arquivada em `results/_arquivo/` e sua adjudicação foi
+   **suspensa** — o esquema que ela media foi substituído por
+   [[Decision Log#D-027]].
 
 ### E-7 — Classificador validado
 
@@ -151,6 +191,12 @@ prevalência; `PRIMARY` ↔ `SECONDARY` não altera o agregado. Reportar separad
 ([[QI-1 Methodology]] §5).
 **Conclusão quando.** Métricas por classe e por idioma reportadas com IC.
 **Regra.** LLM não é ground truth ([[Decision Log#D-008]]).
+**Papel adicional (desde [[Decision Log#D-024]], 2026-08-27).** O resultado
+desta etapa funciona como **gate metodológico** para QI-2 e QI-3: só depois
+de o desempenho medido aqui ser considerado satisfatório é que a população
+classificada em E-8 pode servir de base para QI-2. O critério numérico de
+"satisfatório" ainda não foi definido — ver aviso em
+[[Decision Log#D-024]].
 
 ### E-8 — Classificação da população
 
@@ -201,9 +247,8 @@ E-0 ✅  E-1 ✅  E-2b ✅
 E-3  idiomas ✅                 14,21% não inglês
 E-3b validação do detector ✅   lingua primário; cauda colapsada
    |
-E-5  piloto de anotação          <- PRÓXIMA ETAPA
-   |
-E-6  gold set + concordância
+E-5/E-6  amostra n=100 (inglês) + ensemble de 3 LLMs +   <- PRÓXIMA ETAPA
+         adjudicação humana na discordância (D-026)
    |
 E-4  retrieval, escolhido por recall medido   (rebaixado e reordenado)
    |
@@ -220,6 +265,35 @@ E-11 consolidação          (literatura em paralelo desde já)
 
 **Reordenação definitiva** ([[Decision Log#D-018]]): E-4 saiu de antes de E-5 para
 depois de E-6. Fundamentação em [[Multilingual Methodology Review]].
+
+---
+
+## Depois da QI-1 — QI-2 e QI-3 ([[Decision Log#D-024]])
+
+Este plano cobre o caminho crítico da QI-1 (E-0 a E-11). QI-2 e QI-3 não são
+etapas desse caminho, mas têm execução planejada e formalmente sequenciada
+desde 2026-08-27:
+
+```text
+E-7  classificador validado  ── gate ──▶  E-8  classificação da população
+                                                  │
+                                                  ▼
+                                    conjunto SEC-PRIMARY/SEC-SECONDARY
+                                                  │
+                                                  ▼
+                                  QI-2  taxonomia emergente ([[QI-2 Methodology]])
+                                                  │
+                                                  ▼
+                                  QI-3  crosswalk com referenciais externos
+                                        ([[QI-3 Coverage Methodology]])
+```
+
+O gate é o desempenho de E-7, não a conclusão de E-9/E-10/E-11: QI-2 usa o
+conjunto de skills classificado em E-8, não a estimativa final de prevalência
+com IC. E-9 (estimativa), E-10 (robustez) e E-11 (consolidação) continuam a
+responder QI-1 e podem correr em paralelo a QI-2/QI-3, não como pré-requisito
+delas. Detalhe completo, justificativa e o aviso sobre o critério de
+"validação satisfatória" ainda não definido: [[Decision Log#D-024]].
 
 ## Ligações
 

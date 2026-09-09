@@ -20,7 +20,7 @@ cada iteração de open coding acrescenta, funde ou poda códigos, sempre com da
 > **Nenhuma frequência foi calculada e nenhuma deve ser citada.** LLM não é ground
 > truth ([[Decision Log#D-008]]).
 
-Fonte: [[EXP-002]] · `results/EXP-002_sample_preview.md`
+Fonte: [[EXP-002]] · `results/_arquivo/EXP-002_sample_preview.md`
 
 ---
 

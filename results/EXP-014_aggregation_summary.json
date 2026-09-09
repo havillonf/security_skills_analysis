@@ -1,0 +1,10 @@
+{
+  "n_total": 100,
+  "n_unanimous": 84,
+  "n_discordant": 16,
+  "n_incomplete_from_some_model": 0,
+  "n_missing_from_some_model": 0,
+  "unanimous_rate": 0.84,
+  "strict_all_open_vocab_fields": false,
+  "note": "n_discordant + n_incomplete + n_missing casos vao para adjudicacao humana (Guia do Anotador Humano), decidindo o caso inteiro, nao so o campo divergente (Decision Log D-026, mantido em D-027). confidence e rule_applied NAO decidem discordancia (D-027: metadados, kappa 0,070 e 0,36 no EXP-013). INCOMPLETE = pelo menos um campo comparavel ausente de pelo menos um modelo (dado insuficiente, nao tratado como divergencia de valor) mas os campos presentes nao divergiam entre si; nunca certificado UNANIMOUS so com dado parcial."
+}

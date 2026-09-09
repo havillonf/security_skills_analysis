@@ -1,0 +1,17 @@
+case_id,name,body_chars,status_reason,security_relevance,evidence,frame_exclusion,confidence,note,annotation_seconds
+LLM019,,15744,DISCORDANT,NONE,description,not_an_instrunction_artifact,high,Isn't an instruction artifact,60
+LLM021,,6377,DISCORDANT,,,,,,
+LLM029,verify-changes,2186,DISCORDANT,,,,,,
+LLM035,excalidraw,23037,DISCORDANT,,,,,,
+LLM036,felt-construction,1919,DISCORDANT,,,,,,
+LLM041,dialogue-audio,8215,DISCORDANT,,,,,,
+LLM045,fmprod-fmdel-crosswalk,2088,DISCORDANT,,,,,,
+LLM052,u09266-mentoring-and-coaching-design-for-sales-and-client-success,3135,DISCORDANT,,,,,,
+LLM067,,19445,DISCORDANT,,,,,,
+LLM071,mcp-builder,1760,DISCORDANT,,,,,,
+LLM083,moai-domain-database,7452,DISCORDANT,,,,,,
+LLM085,docker,9696,DISCORDANT,,,,,,
+LLM089,cloud-functions,6577,DISCORDANT,,,,,,
+LLM091,deploy,2518,DISCORDANT,,,,,,
+LLM095,quiver,1663,DISCORDANT,,,,,,
+LLM096,draft-vendor-onboarding-questionnaire,9133,DISCORDANT,,,,,,

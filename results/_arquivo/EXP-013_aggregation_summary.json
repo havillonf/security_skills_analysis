@@ -1,0 +1,10 @@
+{
+  "n_total": 100,
+  "n_unanimous": 22,
+  "n_discordant": 59,
+  "n_incomplete_from_some_model": 10,
+  "n_missing_from_some_model": 9,
+  "unanimous_rate": 0.22,
+  "strict_all_open_vocab_fields": false,
+  "note": "n_discordant + n_incomplete + n_missing casos vao para adjudicacao humana (Guia do Anotador Humano D-026), decidindo o caso inteiro, nao so o campo divergente (Decision Log D-026). INCOMPLETE = pelo menos um campo comparavel ausente de pelo menos um modelo (dado insuficiente, nao tratado como divergencia de valor) mas os campos presentes nao divergiam entre si; nunca certificado UNANIMOUS so com dado parcial."
+}

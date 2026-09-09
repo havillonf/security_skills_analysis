@@ -49,10 +49,10 @@ TF-IDF + LinearSVC calibrado (Platt scaling) - ver Decision Log
 viabilidade computacional sobre o candidato de melhor CV (embeddings).
 
 Saidas:
-  results/EXP-012_population_classification.parquet (gitignored - grande,
+  results/_arquivo/EXP-012_population_classification.parquet (gitignored - grande,
       mas contem so file_sha/predicoes, nao texto de terceiros; regeneravel)
-  results/EXP-012_population_summary.json (agregados, versionado)
-  results/EXP-012_uncertain_cases_sample.csv (amostra de casos de baixa
+  results/_arquivo/EXP-012_population_summary.json (agregados, versionado)
+  results/_arquivo/EXP-012_uncertain_cases_sample.csv (amostra de casos de baixa
       confianca na fronteira SECONDARY<->MENTION e SECURITY<->NON_SECURITY;
       so metadados, sem corpo do texto - versionado)
 
@@ -77,6 +77,7 @@ import pyarrow.parquet as pq
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data" / "raw" / "gitskills" / "data"
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 MODELS_DIR = ROOT / "models"
 BATCH_SIZE = 20000
 TRUNC_CHARS = 1500  # ver nota "VERSAO 2 - OTIMIZADA" acima; efeito medido no D-023
@@ -153,7 +154,7 @@ def main() -> int:
     """)
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    out_path = RESULTS_DIR / "EXP-012_population_classification.parquet"
+    out_path = ARCHIVE_DIR / "EXP-012_population_classification.parquet"
     schema = pa.schema([
         ("file_sha", pa.string()),
         ("predicted_class", pa.string()),
@@ -299,7 +300,7 @@ def main() -> int:
             "conteudo integral."
         ),
     }
-    (RESULTS_DIR / "EXP-012_population_summary.json").write_text(
+    (ARCHIVE_DIR / "EXP-012_population_summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False, default=str),
         encoding="utf-8")
 
@@ -312,8 +313,8 @@ def main() -> int:
             WHERE file_sha IN ({', '.join("'" + s + "'" for s in unc['file_sha'])})
         """).fetchdf()
         unc = unc.merge(meta_cols, on="file_sha", how="left")
-        unc.to_csv(RESULTS_DIR / "EXP-012_uncertain_cases_sample.csv", index=False)
-        print(f"OK -> results/EXP-012_uncertain_cases_sample.csv "
+        unc.to_csv(ARCHIVE_DIR / "EXP-012_uncertain_cases_sample.csv", index=False)
+        print(f"OK -> results/_arquivo/EXP-012_uncertain_cases_sample.csv "
               f"(n={len(unc)})")
 
     print(f"\nconcluido: {n_done:,} itens em {elapsed:.1f}s "
@@ -323,7 +324,7 @@ def main() -> int:
         print(f"SECURITY previsto: {security_count:,} "
               f"({100*security_count/n_done:.2f}%)")
     print(f"OK -> {out_path.relative_to(ROOT)}")
-    print(f"OK -> results/EXP-012_population_summary.json")
+    print(f"OK -> results/_arquivo/EXP-012_population_summary.json")
     return 0
 
 

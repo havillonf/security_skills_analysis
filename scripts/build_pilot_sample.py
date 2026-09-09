@@ -26,11 +26,11 @@ GRUPOS LINGUISTICOS (EXP-003, EXP-004)
   L5 nao e subdividido: a concordancia entre detectores ali e 0,667.
 
 SAIDAS
-  results/EXP-005_pilot_sample.parquet      amostra congelada (gitignored)
-  results/EXP-005_annotation_form.csv       formulario CEGO, campos humanos VAZIOS
-  results/EXP-005_strata_key.csv            chave de estratos - NAO abrir antes
-  results/EXP-005_sample_composition.json   composicao e tamanhos dos tiers
-  results/EXP-005_reading_pack.md           texto para leitura (gitignored)
+  results/_arquivo/EXP-005_pilot_sample.parquet      amostra congelada (gitignored)
+  results/_arquivo/EXP-005_annotation_form.csv       formulario CEGO, campos humanos VAZIOS
+  results/_arquivo/EXP-005_strata_key.csv            chave de estratos - NAO abrir antes
+  results/_arquivo/EXP-005_sample_composition.json   composicao e tamanhos dos tiers
+  results/_arquivo/EXP-005_reading_pack.md           texto para leitura (gitignored)
 
 Uso:
     uv run --with duckdb --with py3langid --with lingua-language-detector \
@@ -52,6 +52,7 @@ import duckdb
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = ROOT / "data" / "raw" / "gitskills" / "data"
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from detect_languages import clean_prose, split_frontmatter, SCRIPTS  # noqa: E402
@@ -142,7 +143,7 @@ def main() -> int:
     # Anti-circularidade: as ancoras do Codebook foram escritas a partir da
     # amostra de descoberta de EXP-002. Reaproveitar aqueles mesmos casos no
     # piloto mediria a regra contra os exemplos que a originaram.
-    exp002 = RESULTS_DIR / "EXP-002_sample.parquet"
+    exp002 = ARCHIVE_DIR / "EXP-002_sample.parquet"
     excluded = []
     if exp002.exists():
         excluded = [r[0] for r in con.execute(
@@ -405,7 +406,7 @@ def main() -> int:
                 "lang_secondary", "lang_secondary_conf", "detector_agreement",
                 "is_mixed", "minor_share", "has_scripts", "selection_reason"]
 
-    form = RESULTS_DIR / "EXP-005_annotation_form.csv"
+    form = ARCHIVE_DIR / "EXP-005_annotation_form.csv"
     with open(form, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(blind_cols + human_cols)
@@ -413,7 +414,7 @@ def main() -> int:
             # campos humanos VAZIOS por construcao - nunca preenchidos por LLM
             w.writerow([d.get(c, "") for c in blind_cols] + [""] * len(human_cols))
 
-    key = RESULTS_DIR / "EXP-005_strata_key.csv"
+    key = ARCHIVE_DIR / "EXP-005_strata_key.csv"
     with open(key, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(key_cols)
@@ -423,7 +424,7 @@ def main() -> int:
     con.execute("CREATE TEMP TABLE sel (case_id VARCHAR, file_sha VARCHAR)")
     con.executemany("INSERT INTO sel VALUES (?, ?)",
                     [(d["case_id"], d["file_sha"]) for d in chosen])
-    sample_path = RESULTS_DIR / "EXP-005_pilot_sample.parquet"
+    sample_path = ARCHIVE_DIR / "EXP-005_pilot_sample.parquet"
     con.execute(f"COPY (SELECT * FROM sel) TO '{sample_path.as_posix()}' (FORMAT PARQUET)")
 
     pack = [
@@ -438,7 +439,7 @@ def main() -> int:
         "> unidos por `case_id` **depois** de a anotação estar fechada. Ver o achado",
         "> C-3 da auditoria adversarial e a decisão D-021.",
         "",
-        "Preencha `results/EXP-005_annotation_form.csv`.",
+        "Preencha `results/_arquivo/EXP-005_annotation_form.csv`.",
         "",
     ]
     for d in chosen:
@@ -449,10 +450,10 @@ def main() -> int:
             f"- tamanho do corpo: {d['body_chars']} caracteres",
             "", "```markdown", (d["content"] or "")[:2500].strip(), "```", "",
         ]
-    (RESULTS_DIR / "EXP-005_reading_pack.md").write_text(
+    (ARCHIVE_DIR / "EXP-005_reading_pack.md").write_text(
         "\n".join(pack), encoding="utf-8")
 
-    (RESULTS_DIR / "EXP-005_sample_composition.json").write_text(
+    (ARCHIVE_DIR / "EXP-005_sample_composition.json").write_text(
         json.dumps(out, indent=2, ensure_ascii=False, default=str), encoding="utf-8")
 
     print(f"\nselecionados: {len(chosen)}")

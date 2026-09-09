@@ -1,0 +1,12 @@
+{
+  "total_population": 1877981,
+  "n_purely_english": 1571243,
+  "n_rejected_non_english": 306738,
+  "pct_purely_english": 83.667,
+  "pct_rejected": 16.333,
+  "duplicates": 0,
+  "population_frame": "dedup_primary = 1 AND content IS NOT NULL (status quo, D-022 EM ABERTO)",
+  "filter": "lingua, por paragrafo (>=40 caracteres, confianca >=0.60)",
+  "script": "scripts/filter_population_english.py",
+  "date": "2026-09-03"
+}

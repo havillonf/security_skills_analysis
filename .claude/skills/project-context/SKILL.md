@@ -86,7 +86,7 @@ data/raw/gitskills/data/{artifacts,artifact_siblings,repos,mining_runs}/*.parque
 notebooks/01_exploratory.ipynb    exploratorio, legado, contem resultado invalido
 scripts/download_dataset.py       desatualizado: gera layout que ninguem usa
 scripts/profile_dataset.py        profiling reproduzivel (EXP-001)
-results/EXP-001_profile.json      numeros citados nas notas
+results/_arquivo/EXP-001_profile.json      numeros citados nas notas
 notes/                            Obsidian vault = caderno cientifico
 .claude/skills/                   project-context, data-analysis, security-analysis
 ```

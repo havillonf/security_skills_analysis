@@ -11,10 +11,15 @@ status: QI-1 adotada como questão central
 >
 > Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.3), com as
 > duas classes **sempre reportadas separadamente** além do agregado.
-> População: **todos os idiomas** ([[Decision Log#D-012]]).
+> População: **skills em inglês** ([[Decision Log#D-025]], 2026-09-03,
+> decisão do orientador — revisa [[Decision Log#D-012]], que incluía todos
+> os idiomas).
 > Decisão: [[Decision Log#D-011]] · Metodologia: [[QI-1 Methodology]]
 >
-> **QI-2 e QI-3 permanecem documentadas como extensões futuras** — ver §Extensões.
+> **QI-2 e QI-3 têm execução planejada, na sequência QI-1 → validação
+> satisfatória do classificador → QI-2 → QI-3**, condicionada a um gate
+> metodológico sobre o desempenho do classificador de QI-1
+> ([[Decision Log#D-024]], 2026-08-27) — ver §Extensões.
 
 > [!important] Procedência
 > Separado por origem. **Nada abaixo de "Inferidas" ou "Propostas" foi definido
@@ -106,15 +111,21 @@ possivelmente original.
 
 ---
 
-## Extensões futuras
+## Extensões futuras — execução sequenciada (QI-1 → validação → QI-2 → QI-3)
 
-Preservadas, com dependências registradas. Nenhuma é caminho crítico da QI-1, e o
-trabalho já feito nelas é reaproveitável.
+Preservadas, com dependências registradas. Nenhuma é caminho crítico
+*imediato* da QI-1 (o desenho de QI-1 não depende delas), mas ambas têm
+**execução planejada** dentro do projeto, na sequência formalizada em
+[[Decision Log#D-024]] (2026-08-27): QI-2 só começa depois de o classificador
+de QI-1 passar por validação satisfatória em E-7, usando como base a
+população classificada em E-8; QI-3 só começa depois de a taxonomia de QI-2
+estabilizar. O trabalho já feito é reaproveitável, mas **não substitui**
+essa base validada — ver ressalva na tabela.
 
 | Questão | Estado | Depende de |
 |---|---|---|
-| **QI-2** — tipos de preocupação e distribuição | metodologia escrita; candidate retrieval medido; [[Security Taxonomy]] v0.1 não validada | classificação validada da QI-1 fornece a base; taxonomia precisa de open coding humano |
-| **QI-3** — lacunas de cobertura | metodologia escrita; não iniciada | QI-2 estabilizada + [[Decision Log#D-009]] |
+| **QI-2** — tipos de preocupação e distribuição | metodologia escrita ([[QI-2 Methodology]]); candidate retrieval medido ([[EXP-002]], histórico, não é a base de entrada); [[Security Taxonomy]] v0.1 não validada | gate: classificador de QI-1 validado em E-7 (desempenho satisfatório, critério ainda não definido); conjunto de entrada = classificação de E-8; taxonomia exige open coding humano ([[Decision Log#D-024]]) |
+| **QI-3** — lacunas de cobertura | metodologia escrita ([[QI-3 Coverage Methodology]]); não iniciada | QI-2 estabilizada + [[Decision Log#D-009]] (escopo de aplicabilidade, em aberto) + gate transitivo do classificador de QI-1 ([[Decision Log#D-024]]) |
 | **QP-1** — permissões declaradas (`allowed-tools`) | não iniciada | independente; instrumentação própria |
 | **QP-2** — skills com scripts empacotados | não iniciada | independente |
 | **QP-3** — divergência entre cópias | não iniciada | limitada por MNAR do histórico |

@@ -48,6 +48,7 @@ import duckdb
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = ROOT / "data" / "raw" / "gitskills" / "data"
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from detect_languages import clean_prose, split_frontmatter, SCRIPTS  # noqa: E402
@@ -219,9 +220,9 @@ def main() -> int:
     }
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    (RESULTS_DIR / "EXP-004_langdetect_validation.json").write_text(
+    (ARCHIVE_DIR / "EXP-004_langdetect_validation.json").write_text(
         json.dumps(out, indent=2, default=str), encoding="utf-8")
-    (RESULTS_DIR / "EXP-004_disagreements.json").write_text(
+    (ARCHIVE_DIR / "EXP-004_disagreements.json").write_text(
         json.dumps(disagreements, indent=2, ensure_ascii=False), encoding="utf-8")
 
     print(f"\nconcordancia global: {tot_a}/{tot_n} = {out['overall']['agreement']}")
@@ -229,7 +230,7 @@ def main() -> int:
     print("confianca do langid QUANDO discorda:",
           out["langid_confidence_when_disagreeing"])
     print("top confusoes:", out["top_confusions"][:8])
-    print(f"\nOK -> results/EXP-004_langdetect_validation.json")
+    print(f"\nOK -> results/_arquivo/EXP-004_langdetect_validation.json")
     return 0
 
 

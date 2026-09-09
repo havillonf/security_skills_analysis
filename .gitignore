@@ -66,8 +66,8 @@ notes/Meetings/
 # Sujeitas a licenca do repositorio de origem (ver repos.license) e
 # regeneraveis de forma deterministica por scripts/build_candidate_frame.py.
 # As metricas agregadas (results/*.json) permanecem versionadas.
-results/*.parquet
-results/*_sample_preview.md
+results/**/*.parquet
+results/**/*_sample_preview.md
 
 # Anotacao humana em andamento (promover a results/ quando virar gold set)
 results/annotation_wip/
@@ -75,7 +75,24 @@ results/annotation_wip/
 # Reading pack do piloto: reproduz texto de skills de terceiros, regeneravel
 # por scripts/build_pilot_sample.py. O formulario CSV (metadados + campos
 # humanos vazios) permanece versionado.
-results/*_reading_pack.md
+results/**/*_reading_pack.md
+
+# EXP-013 (amostra do ensemble de LLMs, D-026): os arquivos por caso
+# reproduzem o SKILL.md inteiro de terceiros, e o CSV de rejeitados traz
+# trechos literais como evidencia — ambos regeneraveis de forma
+# deterministica por scripts/build_llm_ensemble_sample.py. A amostra final
+# (case_id + file_sha + name + body_chars) e o sumario JSON permanecem
+# versionados.
+results/EXP-013_llm_cases/
+results/EXP-013_llm_sample_rejected.csv
+
+# EXP-013 (filtro de idioma na populacao inteira): CSV linha-a-linha de
+# 1.877.981 registros (~95 MB) - grande demais para versionar por git,
+# mesmo sem texto de terceiros. Regeneravel por
+# scripts/filter_population_english.py (deterministico, sem seed). O
+# agregado citavel (contagens, percentuais) fica em
+# EXP-013_population_english_filter_summary.json, versionado.
+results/EXP-013_population_english_filter.csv
 
 # Modelos treinados (EXP-006): binarios regeneraveis por
 # scripts/train_security_classifier.py com seed fixa. O metadata.json

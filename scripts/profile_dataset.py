@@ -4,7 +4,7 @@ Profiling estrutural do dataset GitSkills (EXP-001).
 
 Gera todas as estatisticas citadas em notes/Datasets/ e notes/Experiments/EXP-001.
 Nao carrega dados em memoria: todas as metricas sao agregacoes DuckDB sobre os
-Parquet shards. Saida determinista em results/EXP-001_profile.json.
+Parquet shards. Saida determinista em results/_arquivo/EXP-001_profile.json.
 
 Uso:
     uv run --with duckdb python scripts/profile_dataset.py
@@ -22,6 +22,7 @@ import duckdb
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = ROOT / "data" / "raw" / "gitskills" / "data"
 RESULTS_DIR = ROOT / "results"
+ARCHIVE_DIR = RESULTS_DIR / "_arquivo"   # etapas concluidas (EXP-001..EXP-005, EXP-012)
 
 # Keywords exatamente como definidas no notebook 01_exploratory (celula 29),
 # para permitir comparacao direta com o resultado invalido registrado la.
@@ -248,7 +249,7 @@ def main() -> int:
     ))
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    out_path = RESULTS_DIR / "EXP-001_profile.json"
+    out_path = ARCHIVE_DIR / "EXP-001_profile.json"
     out_path.write_text(json.dumps(out, indent=2, default=str), encoding="utf-8")
     print(f"OK -> {out_path}")
     return 0
