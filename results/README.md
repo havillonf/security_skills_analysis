@@ -11,7 +11,7 @@ preservado e em boa parte ainda citável — mesma convenção de `notes/_arquiv
 
 > [!important] ⭐ Etapa atual — adjudicação humana
 > **Arquivo:** `EXP-014_adjudication_form.csv` — 16 casos, colunas vazias.
-> **Como preencher:** ler `EXP-013_llm_cases/<case_id>.md` do zero e seguir
+> **Como preencher:** ler `EXP-014_adjudication_cases/<case_id>.md` do zero e seguir
 > `notes/Instruments/Guia do Anotador Humano.md` (Codebook **v2.6**).
 > **Novo (D-030):** se o arquivo não for instrução e sim saída gerada, marque
 > `frame_exclusion: not_an_instruction_artifact` — `LLM019` e `LLM067` são
@@ -81,6 +81,7 @@ Os demais formulários e matrizes em CSV são de etapas concluídas e estão em
 | `EXP-014_discordant_cases.jsonl` | Casos para adjudicação (derivado) | 16 |
 | `EXP-014_comparison_report.jsonl` | Trilha de auditoria, todo caso (derivado) | 100 |
 | **`EXP-014_adjudication_form.csv`** | **Formulário cego a preencher** | **16** |
+| **`EXP-014_adjudication_cases/`** | **Os 16 arquivos a ler** + `PROVENANCE.csv` (repo de origem e licença) | **16** |
 
 `scripts/compute_agreement.py`, `scripts/aggregate_llm_classifications.py`,
 `scripts/build_adjudication_form.py`. Os quatro derivados regeneram a partir

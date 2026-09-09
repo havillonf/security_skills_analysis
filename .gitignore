@@ -86,6 +86,13 @@ results/**/*_reading_pack.md
 results/EXP-013_llm_cases/
 results/EXP-013_llm_sample_rejected.csv
 
+# EXCECAO DELIBERADA: results/EXP-014_adjudication_cases/ E VERSIONADA.
+# Sao so os 16 casos que exigem decisao humana, e a auditoria precisa ser
+# reproduzivel e portavel entre maquinas. A procedencia de cada arquivo
+# (repositorio de origem, caminho e licenca declarada) esta no PROVENANCE.csv
+# da propria pasta. Gerada por scripts/build_adjudication_package.py.
+# Nao acrescente regra que a exclua sem ler o README.md de la.
+
 # EXP-013 (filtro de idioma na populacao inteira): CSV linha-a-linha de
 # 1.877.981 registros (~95 MB) - grande demais para versionar por git,
 # mesmo sem texto de terceiros. Regeneravel por

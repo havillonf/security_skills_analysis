@@ -1,5 +1,5 @@
 case_id,name,body_chars,status_reason,security_relevance,evidence,frame_exclusion,confidence,note,annotation_seconds
-LLM019,,15744,DISCORDANT,NONE,description,not_an_instrunction_artifact,high,Isn't an instruction artifact,60
+LLM019,,15744,DISCORDANT,NONE,description,not_an_instruction_artifact,high,Isn't an instruction artifact,60
 LLM021,,6377,DISCORDANT,,,,,,
 LLM029,verify-changes,2186,DISCORDANT,,,,,,
 LLM035,excalidraw,23037,DISCORDANT,,,,,,
