@@ -1,0 +1,105 @@
+{
+  "rater_a": {
+    "label": "victor",
+    "file": "results\\EXP-014_adjudication_victor.csv"
+  },
+  "rater_b": {
+    "label": "havillon",
+    "file": "results\\EXP-014_adjudication_havillon.csv"
+  },
+  "original_marking": true,
+  "n_paired": 16,
+  "n_only_a": 0,
+  "n_only_b": 0,
+  "bootstrap_iterations": 5000,
+  "bootstrap_seed": 20260904,
+  "class_security_relevance": {
+    "n": 16,
+    "categories": [
+      "NONE",
+      "SECONDARY"
+    ],
+    "observed_agreement": 0.625,
+    "cohen_kappa": 0.1864,
+    "cohen_kappa_ci95": [
+      -0.2308,
+      0.6129
+    ],
+    "krippendorff_alpha": 0.1545,
+    "krippendorff_alpha_ci95": [
+      -0.3478,
+      0.6235
+    ],
+    "gwet_ac1": 0.3425,
+    "gwet_ac1_ci95": [
+      -0.1765,
+      0.7808
+    ],
+    "brennan_prediger": 0.25,
+    "landis_koch_cohen": "leve",
+    "dist_a": {
+      "NONE": 13,
+      "SECONDARY": 3
+    },
+    "dist_b": {
+      "NONE": 9,
+      "SECONDARY": 7
+    }
+  },
+  "binary_security_vs_not": {
+    "n": 16,
+    "categories": [
+      "NOT",
+      "SECURITY"
+    ],
+    "observed_agreement": 0.625,
+    "cohen_kappa": 0.1864,
+    "cohen_kappa_ci95": [
+      -0.2308,
+      0.6129
+    ],
+    "krippendorff_alpha": 0.1545,
+    "krippendorff_alpha_ci95": [
+      -0.3478,
+      0.6235
+    ],
+    "gwet_ac1": 0.3425,
+    "gwet_ac1_ci95": [
+      -0.1765,
+      0.7808
+    ],
+    "brennan_prediger": 0.25,
+    "landis_koch_cohen": "leve",
+    "dist_a": {
+      "NOT": 13,
+      "SECURITY": 3
+    },
+    "dist_b": {
+      "NOT": 9,
+      "SECURITY": 7
+    },
+    "table": {
+      "a_pos_pos": 2,
+      "b_pos_neg": 1,
+      "c_neg_pos": 5,
+      "d_neg_neg": 8
+    },
+    "prevalence_index": 0.375,
+    "bias_index": 0.25,
+    "pabak": 0.25,
+    "mcnemar_exact_p": 0.21875,
+    "mcnemar_reading": "discordancia simetrica (sem vies direcional detectavel)"
+  },
+  "adjudication": {
+    "n_class_disagreement": 6,
+    "case_ids": [
+      "LLM029",
+      "LLM045",
+      "LLM052",
+      "LLM083",
+      "LLM089",
+      "LLM091"
+    ],
+    "rule": "Sob D-027 a adjudicacao da PRIMEIRA classificacao considera apenas security_relevance; as dimensoes de apoio nao disparam revisao humana (serao refeitas na reclassificacao taxonomica posterior, sobre PRIMARY+SECONDARY)."
+  }
+}

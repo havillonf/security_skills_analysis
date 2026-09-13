@@ -1,0 +1,18 @@
+case_id,name,body_chars,status_reason,security_relevance,evidence,frame_exclusion,confidence,note,annotation_seconds
+LLM019,,15744,DISCORDANT,NONE,description,not_an_instruction_artifact,high,Isn't an instruction artifact,60
+LLM021,,6377,DISCORDANT,NONE,body,,high,Don't have any security instruction,60
+LLM029,verify-changes,2186,DISCORDANT,NONE,body,,high,"Besides the title, it only contains protocols to ensure code quality and prevent coding errors.",120
+LLM035,excalidraw,23037,DISCORDANT,NONE,body,,high,"Contains examples about authentication and relacionated issues, but don't mention security",60
+LLM036,felt-construction,1919,DISCORDANT,SECONDARY,body,,high,"Teach how to construct a felt in rust, checking untrusted inputs",120
+LLM041,dialogue-audio,8215,DISCORDANT,NONE,body,,high,"Only has examples about auth, but don't mention security",80
+LLM045,fmprod-fmdel-crosswalk,2088,DISCORDANT,NONE,body,,low,"R-5: It contains agent instructions to ensure quality and consistency with the legacy system, but no security-related instructions for the agent itself.",180
+LLM052,u09266-mentoring-and-coaching-design-for-sales-and-client-success,3135,DISCORDANT,NONE,body,,medium,"R-5: reliability/quality/operations issues, not security",100
+LLM067,,19445,DISCORDANT,NONE,description,not_an_instruction_artifact,high,Isn't an instruction artifact,60
+LLM071,mcp-builder,1760,DISCORDANT,NONE,body,,high,"The skill focuses on MCP tool contract design and schema consistency, with no security-related considerations.",120
+LLM083,moai-domain-database,7452,DISCORDANT,SECONDARY,body,,high,"The skill restricts the tools available to the agent, representing a security-relevant control over its allowed actions. No other security aspects are mentioned. [2026-09-13: rotulo corrigido de NONE para SECONDARY por contradizer a propria nota; erro de marcacao, nao mudanca de julgamento]",120
+LLM085,docker,9696,DISCORDANT,SECONDARY,body,,high,"The skill focuses on setting up a Docker development environment, but includes security-relevant configuration of credentials, secrets, and authentication settings.",120
+LLM089,cloud-functions,6577,DISCORDANT,NONE,body,,high,"The skill focuses on developing and deploying CloudBase functions, with no explicit security considerations. [2026-09-13: rotulo corrigido de SECONDARY para NONE por contradizer a propria nota; erro de marcacao, nao mudanca de julgamento]",200
+LLM091,deploy,2518,DISCORDANT,NONE,body,,medium,The skill focuses on application deployment via SSH/SCP. Its SSH-related restrictions concern deployment error handling rather than security.,280
+LLM095,quiver,1663,DISCORDANT,NONE,body,,high,"The skill focuses on querying alternative financial data and does not contain any explicit security considerations.",120
+LLM096,draft-vendor-onboarding-questionnaire,9133,DISCORDANT,NONE,body,,medium,"The skill focuses on vendor risk and compliance, with security requirements limited to domain-specific due diligence rather than the security of systems, code, or agent actions.
+",120

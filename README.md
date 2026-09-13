@@ -27,11 +27,14 @@ aparecem) e **QI-3** (cobertura frente a frameworks externos).
 | Etapa | Estado |
 |---|---|
 | População definida | ✅ 1.571.243 skills 100% em inglês (de 1.877.981) |
-| Instrumento de classificação | ✅ Codebook v2.5, três classes |
-| Confiabilidade medida | ✅ Cohen's κ = 0,724 (classe) · 0,672 (dicotomia da QI-1) |
-| Adjudicação humana | ⬜ 16 casos pendentes |
+| Quadro de análise (denominador) | ✅ **1.550.550**, exclusões aplicadas em sequência (EXP-016) |
+| Instrumento de classificação | ✅ Codebook v2.6, três classes |
+| Confiabilidade medida | ✅ modelos: Cohen's κ = 0,724 (classe) · 0,672 (dicotomia) · humanos: 10/16 nos casos difíceis |
+| Gold set | ✅ **99 casos** — 83 consenso de LLM + 16 por dois anotadores humanos (D-031) |
+| Estimativa preliminar | 56,1% [46,2%; 65,5%] — **não é a resposta** (rótulos de LLM sem verificação humana) |
+| Validar classificador (E-7) | ⬜ **próxima etapa** — LLM local do orientador |
 | Taxonomia de categorias (QI-2) | ⬜ protocolo escrito, não executado |
-| Classificação em escala + estimativa | ⬜ |
+| Classificação em escala + estimativa final | ⬜ |
 
 Estado detalhado e pendências: [`MEMORY.md`](MEMORY.md).
 
@@ -40,7 +43,8 @@ Estado detalhado e pendências: [`MEMORY.md`](MEMORY.md).
 1. [`notes/00 - Research Overview.md`](notes/00%20-%20Research%20Overview.md) — o projeto em uma página
 2. [`notes/Decisions/Codebook.md`](notes/Decisions/Codebook.md) — **o instrumento**: o que conta como skill de segurança
 3. [`notes/Decisions/Decision Log.md`](notes/Decisions/Decision%20Log.md) — por que cada escolha foi feita (índice de status no topo)
-4. [`notes/Experiments/EXP-014.md`](notes/Experiments/EXP-014.md) — o resultado mais recente
+4. [`notes/Experiments/EXP-014.md`](notes/Experiments/EXP-014.md) — confiabilidade e gold set
+5. [`notes/03 - Methodology.md`](notes/03%20-%20Methodology.md) — o plano, com a próxima etapa (E-7)
 
 Para a versão em linguagem simples: [`notes/Resumo do Trabalho.md`](notes/Resumo%20do%20Trabalho.md).
 
@@ -57,7 +61,8 @@ notes/                    caderno científico (Obsidian) — fonte da verdade
 │                           Guia do Anotador Humano.md    → etapa 1, adjudicação
 │                           Taxonomy Coding Protocol.md   → etapa 2, open coding
 ├── Methodology/          desenho estatístico de QI-1 · QI-2 · QI-3
-├── Experiments/          EXP-013 (amostra) · EXP-014 (confiabilidade)
+├── Experiments/          EXP-013 (amostra) · EXP-014 (confiabilidade + gold set) ·
+│                         EXP-015/016 (quadro de análise)
 ├── Literature/           trabalhos relacionados e precedentes metodológicos
 ├── Results/              Security Taxonomy (saída da etapa 2)
 └── _arquivo/             fora do caminho crítico — ver README de lá

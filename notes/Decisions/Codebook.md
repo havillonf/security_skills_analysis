@@ -3,8 +3,8 @@ tipo: codebook
 version: 2.6
 data: 2026-09-05
 substitui: v2.5 (2026-09-04)
-decisoes: D-004, D-006, D-013, D-014, D-016, D-022, D-025, D-027, D-028, D-029, D-030
-status: classe validada no EXP-014; etapa 2 (§5) ainda não testada
+decisoes: D-004, D-006, D-013, D-014, D-016, D-022, D-025, D-027, D-028, D-029, D-030, D-031
+status: classe validada no EXP-014; concordância humana medida (§8.4); etapa 2 (§5) ainda não testada
 ---
 
 # Codebook — Classificação de Security Skills
@@ -509,6 +509,26 @@ sobreviveu à mudança de esquema.
   `security_relevance`.** As dimensões de apoio não disparam revisão humana.
 - Anotador único é ameaça à validade que **deve** ser declarada. LLM **não** é
   ground truth ([[Decision Log#D-008]]).
+
+### 8.4 Concordância humana medida — [[EXP-014]], [[Decision Log#D-031]]
+
+Dois anotadores humanos independentes nos 16 casos em que os modelos
+discordaram:
+
+| | Concordância | Cohen's κ (IC95) | Gwet AC1 |
+|---|---|---|---|
+| Marcação original | 10/16 | 0,186 [−0,23; 0,61] | 0,343 |
+| Após corrigir 2 erros de marcação | 12/16 | 0,458 [0,00; 0,86] | 0,562 |
+
+Não se compara com o κ dos modelos: n=16 e **só os casos difíceis**. As
+divergências caíram em duas regras: restrição imposta ao agente, e
+"qualidade ≠ segurança" (§3). Na reconciliação, a pergunta que decidiu foi se a
+restrição ou a verificação **existe para proteger alguma coisa ou só para o
+trabalho sair certo**. Exemplos no [[Guia do Anotador Humano]] §9.
+
+O rótulo final alimenta o **gold set de 99 casos**
+(`results/EXP-014_gold_set.csv`): 83 de consenso entre modelos e 16 decididos
+por humanos.
 
 ---
 

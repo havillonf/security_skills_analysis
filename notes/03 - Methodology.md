@@ -1,7 +1,7 @@
 ---
 tipo: metodologia
-atualizado: 2026-08-22
-status: reorganizado em torno da QI-1
+atualizado: 2026-09-13
+status: E-5/E-6 e quadro concluídos; próxima etapa E-7
 ---
 
 # Plano de pesquisa — QI-1
@@ -9,7 +9,8 @@ status: reorganizado em torno da QI-1
 > **Questão central: QI-1.** Qual a prevalência de skills de segurança na população
 > pública de Agent Skills? ([[Decision Log#D-011]])
 >
-> Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY`, sempre desagregados.
+> Security Skill = `PRIMARY` + `SECONDARY`, sempre desagregados. Três classes
+> (`PRIMARY`/`SECONDARY`/`NONE`, [[Decision Log#D-027]]).
 > População: **skills em inglês** ([[Decision Log#D-025]], 2026-09-03,
 > decisão do orientador — revisa [[Decision Log#D-012]], que incluía todos
 > os idiomas).
@@ -33,7 +34,7 @@ Não avance uma etapa cujo critério de conclusão não tenha sido atingido.
 | Etapa                                   | Resultado                                                                                  | Uso na QI-1                                       |
 | --------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------- |
 | **E-0** ✅ Auditoria estrutural          | [[EXP-001]] · integridade verificada, denominadores fixados, resultado anterior invalidado | define a população e as unidades                  |
-| **E-1** ✅ Definição e instrumento       | [[Codebook]] v2.3 · [[Decision Log#D-004]], [[Decision Log#D-006\|D-006]]                  | é o instrumento de anotação                       |
+| **E-1** ✅ Definição e instrumento       | [[Codebook]] v2.6 (três classes) · [[Decision Log#D-027]], [[Decision Log#D-029\|D-029]], [[Decision Log#D-030\|D-030]] | é o instrumento de anotação                       |
 | **E-2b** ✅ Candidate retrieval (inglês) | [[EXP-002]] · pool de 78,69%                                                               | baseline a superar; mostra que keyword não filtra |
 
 Produzido para a QI-2 e **preservado sem estar no caminho crítico**:
@@ -111,131 +112,161 @@ E-4 passa a ser executado **depois de E-6** e muda de escopo:
 > "melhor em CV" (embeddings) e "implantado na população" (TF-IDF, por
 > custo computacional) em [[Decision Log#D-023]].
 
-### E-5/E-6 — Amostra + gold set via ensemble de LLMs  ← PRÓXIMA ETAPA (do caminho crítico rigoroso)
+### E-5/E-6 — Amostra + gold set via ensemble de LLMs ✅ (2026-09-13)
 
-> [!important] Desenho substituído em 2026-09-03 — [[Decision Log#D-026]]
-> O desenho anterior (piloto humano cego de ~50 casos estratificados por
-> sinal × idioma, seguido de gold set com um ou dois anotadores humanos)
-> foi **substituído** por decisão do orientador. Os parágrafos abaixo
-> descrevem o desenho **vigente**; o desenho anterior fica preservado só
-> como histórico em [[Decision Log#D-019]], [[Decision Log#D-020]] e
-> [[Decision Log#D-021]], que continuam valendo como princípios (cegamento,
-> LLM não é ground truth **fora** deste desenho específico) mas não como
-> procedimento em execução.
+> [!success] Concluído — gold set de **99 casos** em `results/EXP-014_gold_set.csv`
+> [[EXP-013]] (amostra) · [[EXP-014]] (classificação, concordância e
+> adjudicação) · [[Decision Log#D-026]] · [[Decision Log#D-031]]
 
-**Objetivo.** Produzir, numa única etapa, uma amostra anotada e o padrão-ouro
-operacional que alimenta a validação do classificador em **E-7**.
-**Método** ([[Decision Log#D-026]]):
+O desenho foi revisado três vezes ao longo da execução, sempre registrado:
 
-1. Sortear uma **amostra aleatória nova de n = 100**, sobre a população
-   restrita a inglês de [[Decision Log#D-025]] — não reaproveita os 50 casos
-   de [[EXP-005]]. Amostragem determinística (`ORDER BY hash(file_sha)`).
-2. Três modelos — **GPT-5.6 Sol**, **Claude Opus**, **Gemini 3.1 Pro** —
-   classificam os 100 casos **independentemente**, aplicando o [[Codebook]]
-   v2.3, sem ver o sinal preliminar de triagem (cegamento por analogia a
-   [[Decision Log#D-021]]).
-3. Onde os três **concordam**, o rótulo de consenso é aceito sem revisão
-   humana adicional.
-4. Onde **discordam**, um anotador humano adjudica aplicando o [[Codebook]].
+| Previsto no D-026 (2026-09-03) | Executado |
+|---|---|
+| 3 modelos (GPT, Claude, Gemini) | **2 modelos**. A cota do Gemini acabou; 91/100 casos, arquivados em `results/_arquivo/` |
+| Codebook v2.3, cinco classes | **v2.4 → v2.6, três classes** (D-027, D-029, D-030) |
+| Qualquer dimensão divergente vai para humano | **Só a classe** decide (D-029): 16 casos em vez de 50 |
+| Um anotador humano adjudica | **Dois anotadores independentes + reconciliação mútua** (D-031) |
 
-**Riscos declarados, não resolvidos por este desenho** (detalhe completo em
-[[Decision Log#D-026]]):
+**Resultados**
 
-- amostra **não estratificada** — pode conter poucos casos `PRIMARY`/
-  `SECONDARY` e menos ainda na fronteira `SECONDARY`/`MENTION`;
-- consenso entre os três LLMs **nunca é verificado por um humano** — viés
-  sistemático compartilhado entre modelos fica invisível;
-- a estatística de confiabilidade (concordância entre LLMs + taxa de
-  adjudicação humana) não é equivalente a um kappa interavaliadores humano
-  do [[Codebook]] §9, e deve ser reportada como tal.
+- Concordância entre modelos na dicotomia da QI-1: κ = 0,672 (substancial).
+  Classe: κ = 0,724.
+- Concordância humana nos 16 casos difíceis: 10/16 na marcação original
+  (κ = 0,186), 12/16 após corrigir dois erros de marcação (κ = 0,458).
+- Gold set: 83 de consenso entre modelos, 16 humanos. LLM078 ficou fora do
+  quadro. `PRIMARY` 9 · `SECONDARY` 46 · `NONE` 44.
+- Marcações de quadro: LLM092 `truncated_undecidable`; LLM019 e LLM067
+  `not_an_instruction_artifact`.
 
-**Saída.** Gold set de n=100 com origem de rótulo declarada por caso (consenso
-de LLM vs. adjudicação humana); registro de modelo/versão/prompt/temperatura
-para os três LLMs ([[Decision Log#D-008]]); taxa de discordância; taxa de
-`AMBIGUOUS`.
-**Conclusão quando.** Gold set versionado em `results/`, com a fração
-consenso-vs-adjudicado reportada, e regras ambíguas identificadas.
-**Pendências resolvidas em 2026-09-03** (reunião com o orientador, mesmo
-dia de D-025/D-026): critério operacional de "skill em inglês" — 100%
-inglês; regra de desempate — qualquer discordância entre os três modelos,
-em qualquer dimensão, leva o caso à adjudicação humana; cegamento entre
-modelos confirmado como regra explícita.
+**Estimativa preliminar** (tratando o gold set como amostra aleatória simples,
+n=98): Security Skill **56,1% [46,2%; 65,5%]**. **Não é a resposta**: 83
+rótulos não passaram por humano, e a margem é de ~±10 pp.
 
-**Progresso concreto (2026-09-03):**
+**Riscos que continuam declarados:** consenso entre modelos nunca verificado
+por humano; McNemar p = 0,0042 entre os modelos (viés direcional); vazamento de
+cegamento pelo plugin `remember` num dos avaliadores ([[EXP-014]] §Limitações).
 
-1. ✅ **Amostra gerada** — [[EXP-013]], `scripts/build_llm_ensemble_sample.py`.
-   100 casos aceitos, filtro de idioma corrigido na prática (ver
-   [[Decision Log#D-025]] — a primeira operacionalização do limiar tinha
-   uma lacuna real, corrigida).
-2. ✅ **Prompt reformulado** para o modo de invocação escolhido pelo
-   pesquisador — CLI de cada modelo com acesso ao diretório de casos, não
-   API programática. [[Classification Prompt]] §2–§5.
-3. ✅ **Script de agregação/discordância** escrito e testado com dados
-   sintéticos — `scripts/aggregate_llm_classifications.py`.
-4. ⬜ **Rodar as três CLIs** contra `results/EXP-013_llm_cases/` — não
-   feito ainda. Validar o prompt (aviso no topo do documento) antes de
-   rodar para valer.
-5. ⬜ **Adjudicação humana** dos casos discordantes, usando
-   [[Guia do Anotador Humano]] (v2.4). A execução de 2026-09-03 sob
-   a v2.3 está arquivada em `results/_arquivo/` e sua adjudicação foi
-   **suspensa** — o esquema que ela media foi substituído por
-   [[Decision Log#D-027]].
+### E-Q — Quadro de análise ✅ (2026-09-05)
 
-### E-7 — Classificador validado
+**Objetivo.** O denominador da QI-1, com as exclusões de quadro aplicadas em
+sequência.
+**Resultado.** 1.877.981 → só inglês (D-025) 1.571.243 → evidência ≥ 200
+caracteres (D-028) **1.550.550**. As exclusões medidas isoladamente se
+sobrepõem (4.591 arquivos são não ingleses e pequenos), então **não se somam
+marginais**. Os estratos de gênero do D-030 são **marcados, não excluídos**:
+F1 1.339.453 · F3 205.928 (taxa de não-instrução desconhecida) · F1b 4.543 ·
+F2 626.
+**Saída.** [[EXP-015]] (regra de não-instrução, recall baixo demais para
+filtrar) · [[EXP-016]] · `scripts/build_analysis_frame.py`.
+**Pendência.** Estimar a taxa de não-instrução em F3 antes de fechar o
+denominador final.
 
-**Objetivo.** Classificador com desempenho medido, para formar estratos.
-**Método.** Validação contra o gold set: precisão, recall, F1 **por classe** e para a
-dicotomia, com IC e matriz de confusão completa; **desempenho por idioma**.
-**Análise de erro exigida.** `SECONDARY` ↔ `MENTION` é a confusão que altera a
-prevalência; `PRIMARY` ↔ `SECONDARY` não altera o agregado. Reportar separadamente
-([[QI-1 Methodology]] §5).
-**Conclusão quando.** Métricas por classe e por idioma reportadas com IC.
+### E-7 — Validar o LLM local do orientador ⭐ PRÓXIMA ETAPA
+
+**Objetivo.** Saber se o LLM local do orientador classifica bem o bastante para
+formar estratos (E-8) e para abrir o gate da QI-2 ([[Decision Log#D-024]]).
+
+**Pré-requisitos** (informação do orientador, ainda não disponível):
+
+- modelo e versão exata;
+- forma de chamada: API compatível com OpenAI (Ollama, vLLM, LM Studio) ou
+  outra;
+- hardware e throughput esperado;
+- se aceita temperatura 0;
+- janela de contexto. O `SKILL.md` mediano tem ~5 mil caracteres, e o prompt de
+  classificação é longo.
+
+**Passos**
+
+1. **Congelar o gold set** num commit antes de qualquer modelo novo vê-lo. O
+   prompt é o [[Classification Prompt]] v2.6 **sem ajuste feito com o gold set**.
+   Se precisar calibrar, usar uma amostra de desenvolvimento separada. Ajustar o
+   prompt olhando o gold set e depois medir contra ele é circular.
+2. **Harness** `scripts/run_local_llm_classification.py`:
+   - endpoint configurável;
+   - registra modelo, versão, hash do prompt e temperatura (D-008);
+   - saída `.jsonl` no formato que `compute_agreement.py` já lê;
+   - retomável: o que já foi classificado sai por anti-join;
+   - `ThreadPoolExecutor`, não `ProcessPoolExecutor` (armadilha do Windows);
+   - lê `EXP-013_llm_cases/` **sem escrever lá** (diretório cego);
+   - plugin `remember` desativado na sessão.
+3. **Medir o throughput nos 99** e projetar para 1.550.550. É isso que decide
+   entre classificar a população inteira e o desenho em dois estágios
+   ([[Decision Log#D-015]]).
+4. **Métricas contra o gold set:**
+   - P/R/F1 por classe e na dicotomia, com IC por bootstrap;
+   - matriz de confusão;
+   - erros `NONE`↔`SECONDARY` reportados à parte, porque são os que mudam a
+     prevalência;
+   - **resultados separados para os 83 casos de consenso e os 16 humanos.**
+     Concordar com rótulos que vieram do GPT e do Claude pode ser só herdar um
+     viés compartilhado; os 16 humanos são os casos difíceis e o teste mais
+     honesto.
+5. **Pré-registrar o critério de "satisfatório"** **antes** de ver as métricas.
+   Está em aberto desde o D-024. É decisão humana e vira entrada no Decision
+   Log. Sem isso, qualquer resultado pode ser declarado bom depois.
+6. **Levar ao orientador a decisão de desenho**, com números. A prevalência
+   preliminar perto de 50% muda a conta do Desenho C, que foi dimensionado para
+   ~5%:
+
+   | Opção | O que exige | Quando compensa |
+   |---|---|---|
+   | **Desenho C** (D-014) | classificar a população inteira + amostra humana por estrato | se o classificador separa bem, os estratos ficam puros e a margem cai muito por caso lido |
+   | **Amostra aleatória simples expandida** | ~384 casos para ±5 pp com p≈0,5, pelo mesmo pipeline ensemble + humano | se o throughput local inviabiliza os 1,55M, ou se o classificador separa mal |
+   | **Dois estágios** (D-015) | classificar uma subamostra grande, com `N_h` estimado | meio-termo de custo |
+
+   E propor rever o **E-4**: busca por keyword não filtra (78,69%, [[EXP-002]]),
+   e com um LLM fazendo a triagem o papel do E-4 talvez desapareça.
+
+**Conclusão quando.** Métricas por classe com IC, critério de gate
+pré-registrado e decidido, e desenho do E-8/E-9 escolhido pelo orientador.
 **Regra.** LLM não é ground truth ([[Decision Log#D-008]]).
-**Papel adicional (desde [[Decision Log#D-024]], 2026-08-27).** O resultado
-desta etapa funciona como **gate metodológico** para QI-2 e QI-3: só depois
-de o desempenho medido aqui ser considerado satisfatório é que a população
-classificada em E-8 pode servir de base para QI-2. O critério numérico de
-"satisfatório" ainda não foi definido — ver aviso em
-[[Decision Log#D-024]].
 
 ### E-8 — Classificação da população
 
-**Objetivo.** Atribuir classe prevista a cada conteúdo, formando os estratos.
+**Objetivo.** Atribuir classe prevista a cada conteúdo do quadro, formando os
+estratos.
 **Atenção.** A contagem de positivos **não é a resposta**. Serve só para `N_h`.
-**Conclusão quando.** Tamanhos de estrato (classe prevista × grupo linguístico)
-conhecidos.
+**Conclusão quando.** Tamanhos de estrato conhecidos, ou estimados, no desenho
+em dois estágios.
 
 ### E-9 — Estimativa de prevalência
 
 **Objetivo.** Responder à QI-1.
-**Método.** Estimador estratificado do Desenho C ([[QI-1 Methodology]] §3), com IC.
+**Método.** Estimador do desenho escolhido no E-7 ([[QI-1 Methodology]] §3), com
+IC.
 **Saídas obrigatórias:**
 - prevalência agregada com IC95%;
 - `PRIMARY` e `SECONDARY` desagregados;
 - por conteúdo distinto **e** por ocorrência (difusão);
-- taxa de `AMBIGUOUS` e limites inferior/superior;
-- concentração por repositório **e** por dono;
-- prevalência por idioma quando houver suporte amostral (secundária).
+- exclusões de quadro reportadas: contagem de `truncated_undecidable` com
+  **limites de Manski** (D-028); taxa de `not_an_instruction_artifact` e
+  sensibilidade com e sem eles (D-030);
+- concentração por repositório **e** por dono.
+
 **Conclusão quando.** Todos os itens acima produzidos por script versionado.
 
 ### E-10 — Robustez e revisão adversarial
 
-**Método.** Repetir E-9 sob: denominador alternativo (ocorrência vs conteúdo);
-exclusão dos 10 maiores repos e donos; deduplicação por similaridade
-([[Decision Log#D-010]]); definição alternativa de Security Skill; `AMBIGUOUS` nos
-dois extremos.
-Depois, revisão adversarial: explicação alternativa? viés de seleção ou
-sobrevivência? a conclusão depende de uma decisão só? frequência lida como
-importância? outro pesquisador reproduz?
-**Conclusão quando.** Cada conclusão tiver intervalo de variação reportado. Se uma
-conclusão só vale sob uma configuração, **isso é o achado**.
+**Método.** Repetir o E-9 sob:
+- denominador alternativo (ocorrência vs. conteúdo);
+- exclusão dos 10 maiores repositórios e donos;
+- deduplicação por similaridade ([[Decision Log#D-017]]);
+- definição alternativa de Security Skill (por exemplo, só `PRIMARY`);
+- exclusões de quadro nos dois extremos.
+
+Depois, revisão adversarial: existe explicação alternativa? viés de seleção ou
+de sobrevivência? a conclusão depende de uma decisão só? frequência foi lida
+como importância? outro pesquisador reproduz?
+**Conclusão quando.** Cada conclusão tiver intervalo de variação reportado. Se
+uma conclusão só vale sob uma configuração, **isso é o achado**.
 
 ### E-11 — Literatura e consolidação
 
-Fontes primárias em `notes/Literature/`; ameaças à validade (construto, interna,
-externa, conclusão); rastro dado → transformação → código → output → análise →
-conclusão verificado ponta a ponta. Todo número com um `EXP-XXX` e um script.
-Literatura pode correr em paralelo desde já.
+Fontes primárias em `notes/Literature/`; ameaças à validade (construto,
+interna, externa, conclusão); rastro dado → transformação → código → saída →
+análise → conclusão verificado ponta a ponta. Todo número com um `EXP-XXX` e um
+script. A literatura pode correr em paralelo desde já.
 
 ---
 
@@ -244,27 +275,28 @@ Literatura pode correr em paralelo desde já.
 ```text
 E-0 ✅  E-1 ✅  E-2b ✅
    |
-E-3  idiomas ✅                 14,21% não inglês
-E-3b validação do detector ✅   lingua primário; cauda colapsada
+E-3 / E-3b  idiomas ✅ ──> D-025: população restrita a inglês
    |
-E-5/E-6  amostra n=100 (inglês) + ensemble de 3 LLMs +   <- PRÓXIMA ETAPA
-         adjudicação humana na discordância (D-026)
+E-5/E-6  amostra n=100 + ensemble de 2 LLMs +              ✅ 2026-09-13
+         2 anotadores humanos na discordância   -> gold set 99
    |
-E-4  retrieval, escolhido por recall medido   (rebaixado e reordenado)
+E-Q      quadro de análise (EXP-015, EXP-016)               ✅ 1.550.550
    |
-E-7  classificador validado (por classe e por idioma)
+E-7      validar o LLM local do orientador + escolher o desenho  <- PRÓXIMA ETAPA
    |
-E-8  classificação da população -> N_h
+E-4      retrieval — rever se ainda faz sentido (decisão no E-7)
    |
-E-9  estimativa de prevalência com IC
+E-8      classificação da população -> N_h
    |
-E-10 robustez (near-duplicates, D-017) + adversarial
+E-9      estimativa de prevalência com IC
    |
-E-11 consolidação          (literatura em paralelo desde já)
+E-10     robustez (near-duplicates, D-017) + adversarial
+   |
+E-11     consolidação          (literatura em paralelo desde já)
 ```
 
-**Reordenação definitiva** ([[Decision Log#D-018]]): E-4 saiu de antes de E-5 para
-depois de E-6. Fundamentação em [[Multilingual Methodology Review]].
+**Reordenação** ([[Decision Log#D-018]]): o E-4 saiu de antes do E-5 para depois
+do E-6. Desde 2026-09-13 ele fica **condicionado** à decisão de desenho do E-7.
 
 ---
 
@@ -300,4 +332,4 @@ delas. Detalhe completo, justificativa e o aviso sobre o critério de
 [[00 - Research Overview]] · [[01 - Research Question]] · [[QI-1 Methodology]] ·
 [[Multilingual Strategy]] · [[Codebook]] · [[Decision Log]] · [[02 - Hypotheses]] ·
 [[EXP-001]] · [[EXP-002]] · [[EXP-003]] · [[QI-2 Methodology]] ·
-[[QI-3 Coverage Methodology]]
+[[QI-3 Coverage Methodology]] · [[EXP-014]] · [[EXP-016]] · [[Decision Log#D-031]]

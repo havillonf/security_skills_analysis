@@ -1,0 +1,103 @@
+{
+  "experiment": "EXP-014",
+  "decisions": [
+    "D-026",
+    "D-028",
+    "D-030",
+    "D-031"
+  ],
+  "n_input_cases": 100,
+  "n_gold_in_frame": 99,
+  "out_of_frame": {
+    "LLM078": "below_min_evidence"
+  },
+  "by_class": {
+    "SECONDARY": 46,
+    "NONE": 44,
+    "PRIMARY": 9
+  },
+  "by_origin": {
+    "llm_consensus": 83,
+    "human_agreement": 10,
+    "human_reconciliation": 4,
+    "human_agreement_after_marking_fix": 2
+  },
+  "frame_flags": {
+    "truncated_undecidable": [
+      "LLM092"
+    ],
+    "not_an_instruction_artifact": [
+      "LLM019",
+      "LLM067"
+    ]
+  },
+  "preliminary_estimate": {
+    "WARNING": "PRELIMINAR. Trata a amostra como aleatoria simples do quadro de analise (EXP-016). A maior parte dos rotulos vem de consenso de LLM sem verificacao humana (D-026). Nao e a resposta da QI-1.",
+    "frame_population": 1550550,
+    "main": {
+      "definition": "quadro sem truncated_undecidable; not_an_instruction_artifact mantidos (D-030: exclusao adiada)",
+      "n": 98,
+      "security_skill": {
+        "k": 55,
+        "proportion": 0.5612,
+        "wilson95": [
+          0.4625,
+          0.6553
+        ]
+      },
+      "primary": {
+        "k": 9,
+        "proportion": 0.0918,
+        "wilson95": [
+          0.0491,
+          0.1654
+        ]
+      },
+      "secondary": {
+        "k": 46,
+        "proportion": 0.4694,
+        "wilson95": [
+          0.3736,
+          0.5675
+        ]
+      }
+    },
+    "sensitivity_without_not_an_instruction_artifact": {
+      "definition": "idem, excluindo tambem os not_an_instruction_artifact",
+      "n": 96,
+      "security_skill": {
+        "k": 55,
+        "proportion": 0.5729,
+        "wilson95": [
+          0.473,
+          0.6672
+        ]
+      },
+      "primary": {
+        "k": 9,
+        "proportion": 0.0938,
+        "wilson95": [
+          0.0501,
+          0.1687
+        ]
+      },
+      "secondary": {
+        "k": 46,
+        "proportion": 0.4792,
+        "wilson95": [
+          0.382,
+          0.578
+        ]
+      }
+    },
+    "manski_bounds_truncated": {
+      "note": "D-028: casos truncated_undecidable tem desfecho desconhecido. Limites sobre os casos do quadro, assumindo todos nao-Security e todos Security.",
+      "cases": [
+        "LLM092"
+      ],
+      "n": 99,
+      "lower": 0.5556,
+      "upper": 0.5657
+    }
+  }
+}

@@ -9,16 +9,15 @@ justamente para o humano preencher.
 concluída ou de esquema substituído está em [`_arquivo/`](_arquivo/README.md),
 preservado e em boa parte ainda citável — mesma convenção de `notes/_arquivo/`.
 
-> [!important] ⭐ Etapa atual — adjudicação humana
-> **Arquivo:** `EXP-014_adjudication_form.csv` — 16 casos, colunas vazias.
-> **Como preencher:** ler `EXP-014_adjudication_cases/<case_id>.md` do zero e seguir
-> `notes/Instruments/Guia do Anotador Humano.md` (Codebook **v2.6**).
-> **Novo (D-030):** se o arquivo não for instrução e sim saída gerada, marque
-> `frame_exclusion: not_an_instruction_artifact` — `LLM019` e `LLM067` são
-> desses. Ver §6.1 do Guia.
-> **Não abrir antes:** `EXP-014_comparison_report.jsonl`,
-> `EXP-014_gpt_output.jsonl`, `EXP-014_claude_output.jsonl` — contêm o rótulo
-> dos modelos e contaminam a adjudicação.
+> [!important] ⭐ Gold set pronto — `EXP-014_gold_set.csv` (99 casos)
+> Adjudicação humana concluída em 2026-09-13 ([[Decision Log#D-031]]). Cada
+> linha traz a origem do rótulo (`llm_consensus`, `human_agreement`,
+> `human_agreement_after_marking_fix`, `human_reconciliation`) e as marcações de
+> quadro. Contagens e estimativa **preliminar** em `EXP-014_gold_set_summary.json`.
+>
+> **Próxima etapa: E-7**, validar o LLM local do orientador contra este arquivo
+> ([`notes/03 - Methodology.md`](../notes/03%20-%20Methodology.md)). **Congelar o
+> gold set num commit antes** de qualquer modelo novo vê-lo.
 
 ---
 
@@ -35,11 +34,13 @@ deve ser lido. O sufixo diz o papel:
 | `_report.jsonl`, `_labels.jsonl`, `_cases.jsonl` | **derivado**, regenerável a partir dos brutos |
 | `_sample.parquet`, `_frame.parquet` | amostra/quadro congelado (grande, gitignored) |
 
-Só existem quatro CSVs na raiz, e a distinção entre eles é esta:
+Os CSVs da raiz, e a distinção entre eles:
 
 | CSV na raiz | Papel |
 |---|---|
-| **`EXP-014_adjudication_form.csv`** | **o da etapa atual** — formulário cego, 16 casos |
+| **`EXP-014_gold_set.csv`** | **o gold set** — 99 casos, rótulo final e origem |
+| `EXP-014_adjudication_form.csv` | rótulo humano final dos 16 casos adjudicados |
+| `EXP-014_adjudication_victor.csv` · `_havillon.csv` | anotação independente de cada pesquisador — **não editar** |
 | `EXP-013_llm_sample.csv` | a amostra de 100 casos (metadados) |
 | `EXP-013_llm_sample_rejected.csv` | rejeitados por idioma *(gitignored)* |
 | `EXP-013_population_english_filter.csv` | filtro linha a linha, 95 MB *(gitignored)* |
@@ -69,7 +70,7 @@ Os demais formulários e matrizes em CSV são de etapas concluídas e estão em
 > dentro dele** — um arquivo de output nesse diretório fica visível para o
 > avaliador seguinte. Já aconteceu uma vez (ver ressalva no EXP-014 abaixo).
 
-### EXP-014 · re-teste do instrumento ⭐ **etapa atual**
+### EXP-014 · re-teste do instrumento, adjudicação e gold set ✅
 
 | Arquivo | O que é | n |
 |---|---|---|
@@ -80,12 +81,19 @@ Os demais formulários e matrizes em CSV são de etapas concluídas e estão em
 | `EXP-014_consensus_labels.jsonl` | Casos unânimes (derivado) | 84 |
 | `EXP-014_discordant_cases.jsonl` | Casos para adjudicação (derivado) | 16 |
 | `EXP-014_comparison_report.jsonl` | Trilha de auditoria, todo caso (derivado) | 100 |
-| **`EXP-014_adjudication_form.csv`** | **Formulário cego a preencher** | **16** |
-| **`EXP-014_adjudication_cases/`** | **Os 16 arquivos a ler** + `PROVENANCE.csv` (repo de origem e licença) | **16** |
+| `EXP-014_adjudication_cases/` | Os 16 arquivos lidos na adjudicação + `PROVENANCE.csv` (repo de origem e licença) | 16 |
+| `EXP-014_adjudication_victor.csv` · `_havillon.csv` | Anotação humana independente, um arquivo por pesquisador | 16 |
+| `EXP-014_human_agreement_original.json` | Concordância humana na marcação original — **a que se reporta** | 16 |
+| `EXP-014_human_agreement.json` | Idem, após corrigir 2 erros de marcação | 16 |
+| `EXP-014_adjudication_form.csv` | Rótulo humano final (concordância ou reconciliação mútua) | 16 |
+| **`EXP-014_gold_set.csv`** | **Gold set consolidado**, no quadro do EXP-016 | **99** |
+| `EXP-014_gold_set_summary.json` | Contagens por classe e origem, marcações de quadro, estimativa preliminar | — |
 
-`scripts/compute_agreement.py`, `scripts/aggregate_llm_classifications.py`,
-`scripts/build_adjudication_form.py`. Os quatro derivados regeneram a partir
-dos dois brutos.
+`scripts/compute_agreement.py` (aceita `.jsonl` e `.csv`),
+`scripts/aggregate_llm_classifications.py`, `scripts/build_adjudication_form.py`,
+`scripts/build_adjudication_package.py`, `scripts/build_gold_set.py`.
+Os derivados do agregador regeneram a partir dos dois brutos; o gold set
+regenera a partir do formulário, dos arquivos individuais e do quadro.
 
 > [!warning] Procedência quebrada em `EXP-014_agreement.json`
 > O campo `rater_a.file` aponta para

@@ -73,14 +73,14 @@ notes/                        caderno científico (Obsidian) — fonte da verdad
   Resumo do Trabalho.md        resumo em linguagem simples
   Datasets/GitSkills.md        o dataset
   Decisions/
-    Decision Log.md            D-001..D-030 — ÍNDICE DE STATUS no topo. Não dividir
+    Decision Log.md            D-001..D-031 — ÍNDICE DE STATUS no topo. Não dividir
     Codebook.md                Security Skill, v2.6 (3 classes)
   Instruments/                 o que se usa para anotar
     Classification Prompt.md   etapa 1 — para colar na CLI de cada modelo
-    Guia do Anotador Humano.md etapa 1 — adjudicação humana
+    Guia do Anotador Humano.md etapa 1 — adjudicação humana; §9 = dois anotadores
     Taxonomy Coding Protocol.md etapa 2 — open coding (NÃO TESTADO)
   Methodology/                 QI-1 · QI-2 · QI-3
-  Experiments/                 EXP-013 (amostra) · EXP-014 (confiabilidade) ·
+  Experiments/                 EXP-013 (amostra) · EXP-014 (confiabilidade + gold set) ·
                                EXP-015 (validade do quadro) · EXP-016 (denominador)
   Literature/                  Classification and Sampling Precedents.md
   Results/Security Taxonomy.md saída da etapa 2 (ainda v0.1, não produzida)
@@ -92,12 +92,15 @@ scripts/
   build_llm_ensemble_sample.py amostra determinística de n=100 (EXP-013)
   filter_population_english.py filtro de idioma na população (EXP-013)
   build_adjudication_form.py   formulário cego dos casos discordantes
+  build_adjudication_package.py pasta versionada com os casos a ler + procedência
+  build_gold_set.py            consolida o GOLD SET (99) + estimativa preliminar
   profile_frame_artifacts.py   artefatos gerados no quadro amostral (EXP-015)
   build_analysis_frame.py      exclusões em sequência -> DENOMINADOR (EXP-016)
   (demais scripts servem experimentos arquivados — ver _arquivo/README.md)
 models/                        classificador v1 do EXP-012 (fora do caminho crítico)
-results/                       raiz = caminho crítico (EXP-013, EXP-014,
-                               EXP-015); README.md indexa tudo. _arquivo/ tem
+results/                       raiz = caminho crítico (EXP-013..EXP-016);
+                               EXP-014_gold_set.csv é o gold set;
+                               README.md indexa tudo. _arquivo/ tem
                                as etapas concluídas (EXP-001..005, EXP-012) e a
                                rodada v2.3, com README próprio
 .claude/skills/                project-context, data-analysis, security-analysis
@@ -157,6 +160,14 @@ Lista de título apenas — conteúdo completo em `Decision Log`:
   κ**, não Fleiss', e nenhuma regra de maioria: toda divergência vai ao
   humano. O risco de "poucos casos na fronteira SECONDARY/MENTION" ficou
   sem objeto: a fronteira medida como problemática foi `NONE`↔`SECONDARY`.
+- **D-028 / D-030** — o que não pode ser classificado sai da **população**,
+  e não vira classe: limiar de 200 caracteres (mecânico), `truncated_undecidable`
+  (na anotação, com limites de Manski) e `not_an_instruction_artifact`
+  (marcado, exclusão adiada até estimar a taxa no estrato F3).
+- **D-031** (2026-09-13) — gold set humano feito por **dois anotadores
+  independentes + reconciliação mútua**; orientador desempata. Arquivos
+  individuais **não se editam** depois da conversa (só erro de marcação,
+  registrado na nota); a concordância reportada é a da marcação original.
 
 ## 6. Funcionalidades / etapas concluídas
 
@@ -164,44 +175,61 @@ Lista de título apenas — conteúdo completo em `Decision Log`:
 - EXP-005: piloto de 50 casos anotado (assistido por LLM) — golden set **operacional v1**, não o E-5 humano rigoroso.
 - EXP-012 (paralelo, fora do caminho crítico): pipeline completo treino → comparação de 3 modelos → seleção → classificação em lote dos 1.877.981 conteúdos. Resultado preliminar do classificador: 1,61% `SECURITY`. Explicitamente **não é a resposta da QI-1** (ver `Decision Log#D-023`).
 - **EXP-013** (2026-09-03): amostra determinística de n=100 sobre a população
-  em inglês; **denominador da QI-1 fixado em 1.571.243** (83,667% de
-  1.877.981). Classificação por 3 LLMs sob a v2.3 — mediu κ=0,370 na
+  em inglês; população em inglês 1.571.243 (83,667% de 1.877.981).
+  **O denominador vigente é 1.550.550** ([[EXP-016]], depois do limiar do
+  D-028). Classificação por 3 LLMs sob a v2.3 — mediu κ=0,370 na
   dicotomia, o que motivou D-027.
 - **EXP-014** (2026-09-04): re-teste sob a v2.4, mesma amostra, 2 avaliadores.
   **κ=0,724 (classe) e 0,672 (dicotomia)**, faixa substancial. Mediu também
-  **cada dimensão separadamente**, o que produziu D-029.
+  **cada dimensão separadamente**, o que produziu D-029. Em 2026-09-13:
+  adjudicação humana por dois anotadores e **gold set de 99 casos** (D-031).
 - **Reorganização** (2026-09-05): `notes/` reestruturado (Instruments/,
   _arquivo/, Literature/), README reescrito como ponto de entrada, Decision
   Log com índice de status. Nada apagado.
 
 ## 7. Em andamento / pendências conhecidas
 
-> [!important] ⭐ PRÓXIMO PASSO — adjudicação humana dos 16 casos
-> `results/EXP-014_adjudication_form.csv` está **gerado e pronto**, com os
-> cinco campos da v2.5. Para cada `case_id`, abrir
-> `results/EXP-013_llm_cases/<case_id>.md` e classificar **do zero**, sem ver
-> a saída de nenhum modelo, seguindo `notes/Instruments/Guia do Anotador
-> Humano.md`.
+> [!important] ⭐ PRÓXIMO PASSO — E-7: validar o LLM local do orientador
+> Plano completo em `notes/03 - Methodology.md`, seção E-7. Em ordem:
 >
-> Casos: `LLM019, 021, 029, 035, 036, 041, 045, 052, 067, 071, 083, 085, 089,
-> 091, 095, 096`. Estimativa ~40–60 min (2–3 min/caso no EXP-005).
->
-> **Atenção:** três regras foram **invertidas** na v2.5 — não existem mais
-> `MENTION`/`AMBIGUOUS`; na dúvida **sobe** para `SECONDARY`; e não se julga
-> mais se é "substancial", só se **está lá**. O aviso está no topo do Guia.
->
-> **Novo na v2.6 (D-030):** se o arquivo não for instrução, e sim saída gerada
-> (relatório, dump, documento de contexto), marque `frame_exclusion:
-> not_an_instruction_artifact` **e classifique mesmo assim**. Nesta leva,
-> `LLM019` e `LLM067` já foram identificados assim. Ver §6.1 do Guia.
-> `name` vazio **não** é motivo de exclusão — 12 dos 14 casos assim são skills
-> legítimas com front matter fora da spec.
->
-> **Depois disso:** gold set fechado (84 consenso + 16 adjudicados) → E-4
-> reordenado (retrieval por recall contra o gold set, D-018) → E-7 (gate de
-> D-024) → E-8 (`N_h`) → E-9 (estimador estratificado — **esta é a
-> prevalência**) → QI-2 com o `Taxonomy Coding Protocol`.
+> 1. **Congelar o gold set num commit** (`results/EXP-014_gold_set.csv`) antes
+>    de qualquer modelo novo vê-lo. Prompt = `Classification Prompt` v2.6 **sem
+>    ajuste feito com o gold set**; calibrar, se precisar, em amostra separada.
+> 2. **Obter do orientador:** modelo e versão, forma de chamada (API compatível
+>    com OpenAI?), hardware e throughput, temperatura 0, janela de contexto.
+> 3. **Harness** `scripts/run_local_llm_classification.py`: endpoint
+>    configurável, registra modelo, versão, hash do prompt e temperatura
+>    (D-008), saída `.jsonl` legível por `compute_agreement.py`, retomável,
+>    `ThreadPoolExecutor`, lê `EXP-013_llm_cases/` sem escrever lá, `remember`
+>    desligado.
+> 4. **Throughput nos 99** → projeção para 1.550.550.
+> 5. **Métricas** P/R/F1 por classe e na dicotomia, com IC, e
+>    `NONE`↔`SECONDARY` à parte, **separadas entre os 83 de consenso e os 16
+>    humanos**.
+> 6. **Pré-registrar o critério de "satisfatório"** do gate (D-024) **antes**
+>    de ver as métricas. Vira entrada no Decision Log.
+> 7. **Decisão de desenho para o orientador:** a prevalência preliminar é
+>    ~56%, e não os ~5% que motivaram o Desenho C. Escolher entre C, amostra
+>    aleatória simples expandida (~384 casos para ±5 pp) e dois estágios
+>    (D-015). Rever também se o E-4 (retrieval) ainda faz sentido.
 
+- **Gold set concluído ([[EXP-014]], [[Decision Log#D-031]], 2026-09-13).**
+  Os 16 casos discordantes foram anotados por **dois pesquisadores
+  independentes**, Victor e Havillon, cada um no próprio arquivo
+  (`EXP-014_adjudication_victor.csv`, `_havillon.csv`). Concordância
+  **10/16 (κ=0,186) na marcação original** — é a que se reporta — e 12/16
+  (κ=0,458) após corrigir 2 erros de marcação (LLM083, LLM089), registrados na
+  nota. Os 4 restantes (LLM029, 045, 052, 091) foram **reconciliados em
+  conjunto**, todos para `NONE`; a reconciliação foi **mútua**, e não partiu de
+  um anotador. Rótulo final em `EXP-014_adjudication_form.csv`.
+  `scripts/build_gold_set.py` → **`EXP-014_gold_set.csv`: 99 casos no quadro**
+  (LLM078 fora), 83 consenso de LLM + 16 humanos; `PRIMARY` 9 · `SECONDARY` 46
+  · `NONE` 44. Marcações: LLM092 `truncated_undecidable` (os dois modelos
+  marcaram, mas o consenso tinha perdido o campo); LLM019/067
+  `not_an_instruction_artifact`. **Estimativa preliminar: 56,1% [46,2%;
+  65,5%]**, que não é a resposta: 83 rótulos sem verificação humana.
+  `compute_agreement.py` agora lê CSV humano, e `--original-marking` desfaz as
+  correções registradas.
 - **Quadro de análise construído ([[EXP-016]], 2026-09-05).** As exclusões
   foram aplicadas **em sequência** pela primeira vez:
   1.877.981 → (só inglês, D-025) 1.571.243 → (evidência ≥ 200, D-028)

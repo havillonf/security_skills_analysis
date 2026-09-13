@@ -1,0 +1,17 @@
+case_id,name,body_chars,status_reason,security_relevance,evidence,frame_exclusion,confidence,note,annotation_seconds
+LLM019,,15744,DISCORDANT,NONE,description,not_an_instruction_artifact,high,"Describes results from a research, not a skill",127
+LLM021,,6377,DISCORDANT,NONE,body,,high,"Describes instructions for agents to decide in between two tools, no security involved",196
+LLM029,verify-changes,2186,DISCORDANT,SECONDARY,body,,low,"Instructions about executing linters and static analysis on code, doesn't express security directly, but executes scans on the code looking for problems, which could maybe find security issues",259
+LLM035,excalidraw,23037,DISCORDANT,NONE,body,,high,"Describes instructions for agents to know how to use a tool, no security involved",130
+LLM036,felt-construction,1919,DISCORDANT,SECONDARY,body,,medium,"Restricts agents behavior, with a ""do not call"" instruction",144
+LLM041,dialogue-audio,8215,DISCORDANT,NONE,body,,high,"Describes instructions for agents to know how to use a tool, no security involved",214
+LLM045,fmprod-fmdel-crosswalk,2088,DISCORDANT,SECONDARY,body,,high,Describes instructions to answer questions about the system. Has guardrail for agent's behavior.,191
+LLM052,u09266-mentoring-and-coaching-design-for-sales-and-client-success,3135,DISCORDANT,SECONDARY,body,,medium,"Has instructions for tests execution, actions in case of critical posture or repeated failures and scailing concerns",317
+LLM067,,19445,DISCORDANT,NONE,description,not_an_instruction_artifact,high,"Describes results from an investigation, the file is not an agent skill",156
+LLM071,mcp-builder,1760,DISCORDANT,NONE,body,,high,"Describes instructions for agents to know how to create MCPs based on a contract, no security involved",102
+LLM083,moai-domain-database,7452,DISCORDANT,SECONDARY,body,,low,"Has a list of restrictions for the tools allowed for the agent, no other security aspects mentioned",212
+LLM085,docker,9696,DISCORDANT,SECONDARY,body,,medium,Has an explicit restriction for the agent not to use docker compose down -v unless a data reset is intentionally necessary,180
+LLM089,cloud-functions,6577,DISCORDANT,NONE,body,,high,"Describes instructions to help agents to decide and operate with event functions, no security involved",227
+LLM091,deploy,2518,DISCORDANT,SECONDARY,body,,high,"Has restrictions for the agent regarding SSH deployments. Explicitly says that the agent should not  troubleshoot SSH errors, just hand them to the user",128
+LLM095,quiver,1663,DISCORDANT,NONE,body,,high,"Only a set of instructions, no security involved",83
+LLM096,draft-vendor-onboarding-questionnaire,9133,DISCORDANT,NONE,body,,high,"Security aspects only relate to the domain of the application, not related to any system, code or agent's actions",376

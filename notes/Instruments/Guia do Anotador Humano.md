@@ -1,16 +1,15 @@
 ---
 tipo: instrumento
 questao: QI-1
-data: 2026-09-05
-decisoes: D-027, D-028, D-029, D-030, D-021
+data: 2026-09-13
+decisoes: D-027, D-028, D-029, D-030, D-031, D-021
 substitui: Guia do Anotador Humano (D-026)
-status: proposto — não testado
+status: aplicado na adjudicação do EXP-014 (dois anotadores, 2026-09-13)
 ---
 
 # Guia do anotador humano — Codebook v2.6
 
-Resumo em linguagem direta do [[Codebook]] **v2.6**, para a adjudicação humana
-do re-teste. Não substitui o Codebook — é a porta de entrada para decidir
+Resumo em linguagem direta do [[Codebook]] **v2.6**, para a adjudicação humana. Não substitui o Codebook — é a porta de entrada para decidir
 rápido. Em divergência entre este guia e o Codebook, **o Codebook manda**.
 
 > [!danger] Se você já usou o guia anterior, leia isto primeiro
@@ -250,8 +249,58 @@ mais olha para ele.
 
 ---
 
+## 9. Quando há dois anotadores ([[Decision Log#D-031]])
+
+Foi o que se fez nos 16 casos do [[EXP-014]]. O procedimento vale para
+qualquer adjudicação futura.
+
+1. **Cada um anota sozinho, no próprio arquivo.** Nome no padrão
+   `EXP-XXX_adjudication_<nome>.csv`, sem espaço. Não conversem antes.
+2. **Mede-se a concordância antes de qualquer conversa.** É a única que se
+   reporta como independente.
+   ```bash
+   python scripts/compute_agreement.py \
+     --a results/EXP-014_adjudication_victor.csv \
+     --b results/EXP-014_adjudication_havillon.csv \
+     --label-a victor --label-b havillon --original-marking \
+     --out results/EXP-014_human_agreement_original.json
+   ```
+3. **Erro de marcação pode ser corrigido; julgamento, não.** Se o rótulo
+   contradiz a sua própria nota, corrija e registre na nota:
+   `[AAAA-MM-DD: rotulo corrigido de X para Y por contradizer a propria nota; erro de marcacao, nao mudanca de julgamento]`.
+   Mudar de opinião depois da conversa **não** se registra no arquivo
+   individual. O `--original-marking` do script desfaz essas correções.
+4. **Os casos ainda divergentes se reconciliam em conjunto.** Releiam o trecho
+   exato. Comecem pelo tipo de dúvida, não caso a caso, porque casos do mesmo
+   tipo costumam se resolver juntos. Se não houver acordo, **o orientador
+   desempata**.
+5. **O rótulo final vai para o formulário principal**
+   (`EXP-XXX_adjudication_form.csv`). A nota começa com a origem:
+   `[CONCORDANCIA]`, `[CONCORDANCIA apos correcao de marcacao]` ou
+   `[RECONCILIACAO AAAA-MM-DD]`. O `build_gold_set.py` confere essas etiquetas
+   contra os arquivos individuais.
+
+### O que a reconciliação do EXP-014 esclareceu
+
+A regra de ouro (§8, *"na dúvida, suba"*) vale para dúvida sobre **se a
+consideração de segurança está no texto**. Ela não passa por cima do §3. Nos
+quatro casos reconciliados, a decisão conjunta foi `NONE`:
+
+| Caso | O que parecia segurança | Por que ficou `NONE` |
+|---|---|---|
+| `verify-changes` (LLM029) | roda linters e análise estática | é qualidade; poderia achar falha de segurança, mas o texto não pede isso |
+| `u09266-mentoring-...` (LLM052) | testes, falhas repetidas, escala | é confiabilidade |
+| `fmprod-fmdel-crosswalk` (LLM045) | guardrail no comportamento do agente | a restrição garante que o trabalho saia certo, não protege nada |
+| `deploy` (LLM091) | "não investigue erro de SSH, repasse ao usuário" | idem |
+
+A pergunta que separou os casos: **a restrição ou a verificação existe para
+proteger alguma coisa, ou só para o trabalho sair certo?** Restrição de escopo
+de ferramenta continua contando (LLM083 ficou `SECONDARY`).
+
+---
+
 ## Ligações
 
 [[Codebook]] (v2.6) · [[Classification Prompt]] ·
-[[Decision Log#D-027]] · [[Decision Log#D-028]] · [[EXP-013]] ·
+[[Decision Log#D-027]] · [[Decision Log#D-028]] · [[Decision Log#D-031]] · [[EXP-013]] · [[EXP-014]] ·
 [[Guia do Anotador Humano (D-026)]] (versão anterior, v2.3)

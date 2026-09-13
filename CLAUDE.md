@@ -19,22 +19,27 @@ decisões (isso é `MEMORY.md`). Separação de responsabilidades:
 2. Leia `MEMORY.md` para o estado atual (etapas concluídas, pendências,
    decisões que não devem ser revertidas sem razão explícita).
 3. Onde as coisas estão (reorganizado em 2026-09-05):
-   - `notes/Decisions/` — `Codebook.md` (o instrumento, **v2.5**) e
+   - `notes/Decisions/` — `Codebook.md` (o instrumento, **v2.6**) e
      `Decision Log.md` (**índice de status no topo** — leia-o em vez de
-     percorrer as 29 entradas). **Não dividir o Decision Log**: o valor dele
+     percorrer as 31 entradas). **Não dividir o Decision Log**: o valor dele
      é ser registro único e cronológico.
    - `notes/Instruments/` — o que se usa para anotar, em ordem de uso:
      `Classification Prompt.md` (etapa 1, para as CLIs) ·
-     `Guia do Anotador Humano.md` (etapa 1, adjudicação) ·
+     `Guia do Anotador Humano.md` (etapa 1, adjudicação; §9 = dois anotadores) ·
      `Taxonomy Coding Protocol.md` (etapa 2, open coding — **não testado**).
      Instrumentos são nomeados **pelo que são**, com versão no frontmatter —
      não por decisão. Não crie `Instrumento (D-XXX).md`.
-   - `notes/Experiments/` — só o caminho crítico (EXP-013, EXP-014).
+   - `notes/Experiments/` — só o caminho crítico: EXP-013 (amostra),
+     EXP-014 (confiabilidade + **gold set**), EXP-015/016 (quadro de análise).
      O resto está em `notes/_arquivo/`, **não apagado** — ver o `README.md`
      de lá, que diz o que ainda é citável de cada um.
    - `notes/Literature/` — `README.md` (índice), `Protocolo de Busca.md`,
      `Resultado da Busca.md` e uma nota por referência.
    - `referencias.bib` na raiz.
+   - **Gold set da QI-1: `results/EXP-014_gold_set.csv`** (99 casos, com a
+     origem de cada rótulo), gerado por `scripts/build_gold_set.py`. O
+     denominador vigente é **1.550.550** (`EXP-016_analysis_frame_summary.json`).
+     Próxima etapa: E-7, em `notes/03 - Methodology.md`.
 4. Consulte `README.md` para setup/dataset, e as skills abaixo quando a
    tarefa exigir:
    - `project-context` — antes de analisar dados, escrever código, interpretar
@@ -97,6 +102,16 @@ Coisas que já morderam e vão morder de novo:
   **a direção do viés do outro avaliador**. Não deixa rastro na saída.
   **Antes de qualquer rodada cega, desativar explicitamente**; se não for
   possível, declarar como limitação.
+- **Não edite os formulários individuais de anotação** (`*_adjudication_<nome>.csv`)
+  depois que os anotadores conversaram. É deles que sai a concordância
+  independente. Só se corrige **erro de marcação** (rótulo contradizendo a
+  própria nota), registrado na nota com data e valor anterior — o
+  `--original-marking` do `compute_agreement.py` depende desse formato. O
+  rótulo final vai para `*_adjudication_form.csv`; o gold set é regenerado a
+  partir dele, **nunca editado à mão**.
+- **Congele o gold set antes de validar qualquer classificador contra ele.**
+  Ajustar prompt ou modelo olhando o gold set e depois medir contra ele é
+  circular. Calibração, se precisar, em amostra separada.
 - **Nunca escreva saída dentro de `results/EXP-013_llm_cases/`.** O prompt
   manda o modelo ler tudo daquele diretório — um arquivo de output ali fica
   visível para o avaliador seguinte. Já aconteceu.

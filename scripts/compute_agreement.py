@@ -42,7 +42,13 @@ diferente:
 
 Intervalos de confianca por bootstrap percentil sobre as unidades.
 
-Uso:
+Uso (aceita .jsonl de modelo e .csv de formulario humano):
+    python scripts/compute_agreement.py \
+        --a results/EXP-014_adjudication_victor.csv \
+        --b results/EXP-014_adjudication_havillon.csv \
+        --label-a victor --label-b havillon --original-marking \
+        --out results/EXP-014_human_agreement_original.json
+
     python scripts/compute_agreement.py \
         --a results/EXP-013_llm_cases/classifications.jsonl \
         --b results/EXP-014_claude_output.jsonl \
@@ -53,17 +59,44 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import math
 import random
+import re
 from collections import Counter
 from pathlib import Path
 
 SECURITY_CLASSES = {"PRIMARY", "SECONDARY"}
 
 
-def load_labels(path: Path, field: str = "security_relevance") -> dict[str, str]:
+MARKING_FIX = re.compile(r"rotulo corrigido de (PRIMARY|SECONDARY|NONE) para (PRIMARY|SECONDARY|NONE)")
+
+
+def load_labels(path: Path, field: str = "security_relevance",
+                original_marking: bool = False) -> dict[str, str]:
+    """Le rotulos de .jsonl (saida dos modelos) ou .csv (formulario humano).
+
+    `original_marking`: nos formularios humanos, um erro de marcacao
+    corrigido depois da anotacao fica registrado na nota como
+    "rotulo corrigido de X para Y". Com a flag ligada, devolve X - a
+    marcacao original, antes de qualquer conversa entre anotadores. E a
+    concordancia que deve ser reportada como independente (D-031).
+    """
     out = {}
+    if path.suffix.lower() == ".csv":
+        with path.open(encoding="utf-8-sig", newline="") as f:
+            for row in csv.DictReader(f):
+                cid = (row.get("case_id") or "").strip()
+                val = (row.get(field) or "").strip().upper()
+                if not cid or not val:
+                    continue
+                if original_marking:
+                    m = MARKING_FIX.search(row.get("note") or "")
+                    if m:
+                        val = m.group(1)
+                out[cid] = val
+        return out
     with path.open(encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -230,9 +263,12 @@ def main() -> None:
     p.add_argument("--label-a", default="rater_a")
     p.add_argument("--label-b", default="rater_b")
     p.add_argument("--out", type=Path, default=None)
+    p.add_argument("--original-marking", action="store_true",
+                   help="em CSV humano, desfaz correcoes de marcacao registradas na nota")
     args = p.parse_args()
 
-    la, lb = load_labels(args.a), load_labels(args.b)
+    la = load_labels(args.a, original_marking=args.original_marking)
+    lb = load_labels(args.b, original_marking=args.original_marking)
     ids = sorted(set(la) & set(lb))
     if not ids:
         raise SystemExit("Nenhum case_id em comum.")
@@ -245,6 +281,7 @@ def main() -> None:
     out = {
         "rater_a": {"label": args.label_a, "file": str(args.a)},
         "rater_b": {"label": args.label_b, "file": str(args.b)},
+        "original_marking": args.original_marking,
         "n_paired": len(ids),
         "n_only_a": len(set(la) - set(lb)),
         "n_only_b": len(set(lb) - set(la)),

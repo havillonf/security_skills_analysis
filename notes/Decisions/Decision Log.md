@@ -1,6 +1,6 @@
 ---
 tipo: decisões
-atualizado: 2026-09-05
+atualizado: 2026-09-13
 ---
 
 # Decision Log
@@ -16,7 +16,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 > "decisões antigas" quebraria exatamente a cadeia que dá defensabilidade ao
 > trabalho. Use o índice abaixo para ver o estado sem perder o histórico.
 
-## Índice de status (2026-09-05)
+## Índice de status (2026-09-13)
 
 **Vigentes — sustentam o desenho atual**
 
@@ -40,6 +40,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-028 | Evidência insuficiente = exclusão de frame (fecha D-022) | ⭐ |
 | D-029 | **Primeira classificação enxuta** (Codebook v2.5) | ⭐ |
 | D-030 | Terceira exclusão de frame: não é instrução (Codebook v2.6) | ⭐ |
+| D-031 | **Gold set**: dois anotadores independentes + reconciliação mútua | ⭐ |
 
 **Revisadas ou encerradas — preservadas por rastreabilidade**
 
@@ -1986,6 +1987,125 @@ decisão garante.
 mudança vale **a partir da próxima rodada**, e o [[EXP-014]] permanece registrado
 sob o schema de dois valores. `scripts/build_adjudication_form.py` não muda: a
 coluna `frame_exclusion` já existe e é texto livre.
+
+---
+
+## D-031 — Gold set da QI-1: dois anotadores humanos independentes e reconciliação mútua (estende D-026)
+
+**Data:** 2026-09-13 · **Status:** `aceita` (pesquisadores)
+
+**Contexto.** O [[Decision Log#D-026]] previa que **um** anotador humano
+adjudicasse os casos em que os modelos discordassem. No [[EXP-014]] foram 16
+casos. Eles foram anotados por **dois** pesquisadores, Victor e Havillon, de
+forma independente, cada um no próprio arquivo, seguindo o
+[[Guia do Anotador Humano]] (Codebook v2.6).
+
+**Decisão.** O rótulo humano de um caso adjudicado sai deste procedimento:
+
+1. **Anotação independente**, um arquivo por anotador, sem conversa prévia.
+2. **Concordância medida antes de qualquer conversa**, e é essa que se reporta
+   como independente.
+3. **Erro de marcação** (rótulo que contradiz a própria nota do anotador) pode
+   ser corrigido no arquivo individual, **registrado na nota** com data, valor
+   anterior e motivo. Mudança de julgamento depois da conversa **não** é
+   permitida nos arquivos individuais.
+4. **Reconciliação mútua** dos casos ainda divergentes: os dois anotadores
+   relêem o caso e decidem juntos. Se não houver acordo, **o orientador
+   desempata**.
+5. O rótulo final vai para o formulário principal
+   (`EXP-014_adjudication_form.csv`), com etiqueta de origem no início da nota.
+
+**Resultado.**
+
+| Etapa | Concordância | Cohen's κ (IC95 bootstrap) | Gwet's AC1 |
+|---|---|---|---|
+| Marcação original, independente | 10/16 (0,625) | 0,186 [−0,23; 0,61] | 0,343 |
+| Depois de corrigir 2 erros de marcação | 12/16 (0,750) | 0,458 [0,00; 0,86] | 0,562 |
+
+- Erros de marcação corrigidos: LLM083 (NONE → SECONDARY) e LLM089
+  (SECONDARY → NONE), os dois no arquivo do Victor. Nos dois a nota já dizia
+  o contrário do rótulo.
+- Reconciliados em conjunto: LLM029, LLM045, LLM052 e LLM091, **todos para
+  `NONE`**. Motivos registrados nas notas:
+  - LLM029/LLM052: linters, testes e confiabilidade são qualidade, e o Guia §3
+    exige a consideração de segurança no conteúdo.
+  - LLM045/LLM091: a restrição imposta ao agente foi lida como de fluxo de
+    trabalho, não de proteção.
+- Nenhum caso precisou de desempate do orientador.
+
+**Por que a concordância baixa não invalida o gold set.**
+
+- **n=16.** Os intervalos são largos: o de κ da marcação original inclui zero.
+- **Seleção.** Os 16 são, por construção, os casos em que os modelos
+  discordaram, ou seja, os mais difíceis da amostra. **Não** se comparam com o
+  κ=0,672 dos modelos, medido em 100 casos sorteados.
+- **A divergência se concentrou** em duas regras do Guia (restrição ao agente
+  e "qualidade ≠ segurança"), não se espalhou. Isso aponta para onde o
+  instrumento precisa de exemplo, não para um instrumento sem confiabilidade.
+
+**Composição do gold set** (`results/EXP-014_gold_set.csv`,
+`scripts/build_gold_set.py`):
+
+| | n |
+|---|---:|
+| Casos da amostra | 100 |
+| Fora do quadro do [[EXP-016]] (LLM078, 75 caracteres) | −1 |
+| **Gold set no quadro** | **99** |
+| … consenso entre modelos, sem verificação humana | 83 |
+| … concordância humana independente | 10 |
+| … concordância após corrigir marcação | 2 |
+| … reconciliação mútua | 4 |
+
+Classes: `PRIMARY` 9 · `SECONDARY` 46 · `NONE` 44.
+
+**Marcações de quadro aplicadas ao gold set.**
+
+- `truncated_undecidable` ([[Decision Log#D-028]]) em **LLM092**. Os dois
+  modelos marcaram, mas o arquivo de consenso guardou só a classe. Sai da
+  população na estimativa, com limites de Manski.
+- `not_an_instruction_artifact` ([[Decision Log#D-030]]) em **LLM019** e
+  **LLM067**. Marcados; exclusão adiada.
+
+**Estimativa preliminar, não é a resposta da QI-1.** Tratando o gold set como
+amostra aleatória simples do quadro (n=98, sem LLM092):
+
+- Security Skill **56,1%**, IC95 de Wilson [46,2%; 65,5%]
+- `PRIMARY` 9,2% · `SECONDARY` 46,9%
+- Limites de Manski para LLM092: [55,6%; 56,6%]
+- Sensibilidade sem os dois artefatos do D-030 (n=96): 57,3% [47,3%; 66,7%]
+
+Três razões para não tratar isso como resultado:
+
+- 83 rótulos são de consenso de LLM sem verificação humana (risco declarado do
+  D-026);
+- n=98 dá margem de ~±10 pp;
+- o `SECONDARY` inclusivo do D-027 é deliberadamente amplo.
+
+**Consequência para o desenho.** O Desenho C ([[Decision Log#D-014]]) e a tabela
+de tamanhos da [[QI-1 Methodology]] §3 foram pensados para prevalência de ~5%,
+com positivos raros. Com a prevalência perto de 50%, a vantagem da
+estratificação precisa ser recalculada antes do E-8/E-9. Fica como decisão
+aberta para o orientador (ver [[03 - Methodology]], E-7).
+
+**Alternativas descartadas.**
+
+- *Um só anotador, como no D-026*: impede medir a confiabilidade humana, que é o
+  que sustenta o rótulo dos 16.
+- *Conversar antes de anotar*: produziria um rótulo, mas inflaria a
+  concordância e esconderia onde o Guia é ambíguo.
+- *Reescrever os arquivos individuais depois da conversa*: apagaria a medida de
+  concordância independente.
+
+**Limitação declarada.** Os quatro casos reconciliados terminaram em `NONE`, o
+rótulo inicial de um dos anotadores. A reconciliação foi mútua e o critério foi
+o Guia §3, registrado caso a caso. O dado é declarado para que a direção possa
+ser examinada.
+
+**Consequências.** [[EXP-014]] (seção de adjudicação), [[Guia do Anotador Humano]]
+(procedimento com dois anotadores), [[Codebook]] §8, [[03 - Methodology]] e
+[[QI-1 Methodology]] (E-5/E-6 concluídos; próximo passo E-7).
+`scripts/compute_agreement.py` passa a aceitar os CSVs humanos, e
+`--original-marking` desfaz as correções de marcação registradas.
 
 ---
 

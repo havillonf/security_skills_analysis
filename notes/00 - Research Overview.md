@@ -1,7 +1,7 @@
 ---
 tipo: overview
-atualizado: 2026-08-22
-status: exploração inicial concluída
+atualizado: 2026-09-13
+status: gold set de 99 casos e quadro de análise prontos; próxima etapa E-7
 ---
 
 # Research Overview
@@ -9,19 +9,22 @@ status: exploração inicial concluída
 > [!important] Questão central: **QI-1** ([[Decision Log#D-011]], 2026-08-22)
 > **Qual a prevalência de skills de segurança na população pública de Agent Skills?**
 >
-> Security Skill = `SEC-PRIMARY` + `SEC-SECONDARY` ([[Codebook]] v2.3), sempre
-> desagregados. População: **todos os idiomas** ([[Decision Log#D-012]]).
+> Security Skill = `PRIMARY` + `SECONDARY` ([[Codebook]] v2.6, três classes), sempre
+> desagregados. População: **skills em inglês** ([[Decision Log#D-025]], revisa
+> D-012), com quadro de análise de **1.550.550** conteúdos ([[EXP-016]]).
 > Desenho: [[QI-1 Methodology]] · Idiomas: [[Multilingual Strategy]] ·
 > Plano: [[03 - Methodology]]
 >
 > QI-2 e QI-3 preservadas como extensões futuras
 > ([[01 - Research Question]]§Extensões).
 
-> [!warning] Nenhum resultado ainda
-> O codebook **não passou pelo piloto** e não existe padrão-ouro. Nenhum número deste
-> projeto é resposta à QI-1. Em particular, **52,93%** (keyword) e **78,69%**
-> (candidate retrieval) são números exploratórios — **não são prevalência**
-> ([[QI-1 Methodology]] §7).
+> [!warning] Ainda não há resposta à QI-1
+> Existe gold set: **99 casos** ([[EXP-014]], [[Decision Log#D-031]]), com instrumento
+> de confiabilidade medida (κ = 0,672 na dicotomia entre modelos). A estimativa que
+> sai dele, **56,1% [46,2%; 65,5%]**, é **preliminar**: 83 rótulos são de consenso
+> de LLM sem verificação humana. **52,93%** (keyword), **78,69%** (candidate
+> retrieval) e **1,61%** (classificador de teste) **não são prevalência**
+> ([[QI-1 Methodology]] §7). Próxima etapa: E-7 ([[03 - Methodology]]).
 
 ## Tema
 
@@ -47,7 +50,7 @@ relevantes"*.
 Amplo demais para ser executável como esta. O refinamento está em
 [[01 - Research Question]].
 
-## Unidade de análise - ainda em aberto
+## Unidade de análise — adotada: conteúdo distinto ([[Decision Log#D-001]])
 
 Candidatas, com consequências diferentes:
 

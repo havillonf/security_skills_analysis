@@ -2,7 +2,8 @@
 tipo: metodologia
 questao: QI-1
 data: 2026-08-22
-status: Desenho C adotado (D-014); estratos linguisticos definidos
+atualizado: 2026-09-13
+status: Desenho C adotado (D-014); gold set de 99 casos pronto; desenho do E-8/E-9 a reavaliar no E-7
 ---
 
 # QI-1 — Metodologia
@@ -12,7 +13,8 @@ status: Desenho C adotado (D-014); estratos linguisticos definidos
 
 Questão central desde 2026-08-22 ([[Decision Log#D-011]]).
 
-Security Skill = **`SEC-PRIMARY` + `SEC-SECONDARY`** ([[Codebook]] v2.3).
+Security Skill = **`PRIMARY` + `SECONDARY`** ([[Codebook]] v2.6, três classes:
+`PRIMARY` / `SECONDARY` / `NONE`, [[Decision Log#D-027]]).
 `PRIMARY` e `SECONDARY` **sempre reportados separadamente**, além do agregado.
 
 > [!important] População restrita a inglês — [[Decision Log#D-025]] (2026-09-03)
@@ -29,8 +31,10 @@ Uma **estimativa com incerteza**, não uma contagem:
 - prevalência de Security Skill com intervalo de confiança de 95%;
 - desagregada em `PRIMARY` e `SECONDARY`;
 - por conteúdo distinto (primária) e por ocorrência (difusão);
-- com taxa de `AMBIGUOUS` reportada à parte;
-- com desempenho do classificador medido **por idioma**.
+- com as exclusões de quadro reportadas à parte: `truncated_undecidable` com
+  limites de Manski (D-028), `not_an_instruction_artifact` com análise de
+  sensibilidade (D-030);
+- com desempenho do classificador medido contra o gold set.
 
 Nada disso é obtenível por contagem de keyword. Ver §7.
 
@@ -133,6 +137,16 @@ raros (`PRIMARY`) e idiomas minoritários sem enviesar o total.
 *Contras:* exige `N_h` exato (classificar a população inteira) e disciplina para não
 confundir contagem prevista com estimativa.
 
+> [!warning] A premissa de prevalência baixa não se confirmou (2026-09-13)
+> A tabela do Desenho A e a motivação do Desenho C supunham prevalência de ~5%,
+> com positivos raros. O gold set de 99 casos ([[EXP-014]]) dá uma estimativa
+> **preliminar** de **56,1% [46,2%; 65,5%]**, inflada pelo `SECONDARY` inclusivo
+> do D-027. Com p≈0,5, amostra aleatória simples precisa de ~384 casos para
+> ±5 pp e ~1.067 para ±3 pp. O ganho do Desenho C depende de o classificador
+> produzir estratos puros. A escolha entre C, amostra aleatória simples
+> expandida e dois estágios (D-015) é **decisão do orientador no E-7**, com o
+> throughput e as métricas do LLM local na mão. Ver [[03 - Methodology]].
+
 **Adotado: Desenho C.** Se rodar o classificador em 1,88 M for proibitivo, **não**
 basta tratar uma sub-amostra como se fosse a população — isso ignora a variância do
 primeiro estágio. A alternativa correta é o desenho em **dois estágios** de
@@ -141,12 +155,31 @@ propaga para `Var(p̂)`. Comparar custo antes de adotar.
 
 ---
 
-## 4. Tratamento de `AMBIGUOUS`
+## 4. Exclusões de quadro (antes: tratamento de `AMBIGUOUS`)
+
+> [!important] Regra vigente — [[Decision Log#D-028]] e [[Decision Log#D-030]]
+> `AMBIGUOUS` **deixou de ser classe** em 2026-09-03 (D-027/D-028). O que não
+> pode ser classificado sai da **população**, e não vira categoria:
+>
+> | Exclusão | Onde é aplicada | Tratamento na estimativa |
+> |---|---|---|
+> | `description + corpo < 200` caracteres | no quadro, mecânica ([[EXP-016]]) | fora de numerador e denominador |
+> | `truncated_undecidable` | na anotação, caso a caso | **depende do desfecho** → limites de Manski |
+> | `not_an_instruction_artifact` | marcada na anotação; estratos F1–F3 no quadro | exclusão adiada; reportar com e sem |
+>
+> No gold set: LLM092 `truncated_undecidable` (Manski [55,6%; 56,6%]);
+> LLM019 e LLM067 `not_an_instruction_artifact`.
+>
+> A matemática abaixo continua valendo, trocando "`AMBIGUOUS`" por
+> "`truncated_undecidable`": sob amostragem estratificada os limites se calculam
+> **por estrato antes de ponderar**, e não sobre a amostra bruta.
+
+Histórico: o texto original desta seção, escrito para `AMBIGUOUS` como classe.
 
 Fica fora do numerador **e** do denominador. Sob o Desenho C isso **não** é uma
-razão simples sobre a amostra: a taxa de `AMBIGUOUS` varia por estrato (será alta em
-L5 e em T0/sem front matter), então o denominador de classificáveis é ele próprio uma
-**quantidade estimada**, com variância que precisa se propagar.
+razão simples sobre a amostra: a taxa de `AMBIGUOUS` varia por estrato, então o
+denominador de classificáveis é ele próprio uma **quantidade estimada**, com
+variância que precisa se propagar.
 
 Estimador correto — **razão de dois estimadores estratificados**, com `w_h = N_h/N`:
 
@@ -156,62 +189,54 @@ p̂  =  ────────────────────────
         Σ_h w_h · (1 − p̂_h^AMB)
 ```
 
-onde `p̂_h^SS` é a proporção de Security Skill e `p̂_h^AMB` a de `AMBIGUOUS`, ambas
-observadas na anotação humana do estrato `h`. A variância sai por **método delta**
-ou **bootstrap estratificado** — não pela fórmula de proporção simples.
+onde `p̂_h^SS` é a proporção de Security Skill e `p̂_h^AMB` a de `AMBIGUOUS`
+(hoje: `truncated_undecidable`), ambas observadas na anotação humana do estrato
+`h`. A variância sai por **método delta** ou **bootstrap estratificado**, e não
+pela fórmula de proporção simples.
 
 **Limites**, também por estrato **antes** de ponderar:
 
 ```text
-p_min = Σ_h w_h · p̂_h^SS                          (todo AMBIGUOUS = não-Security)
-p_max = Σ_h w_h · (p̂_h^SS + p̂_h^AMB)              (todo AMBIGUOUS = Security)
+p_min = Σ_h w_h · p̂_h^SS                          (todo excluído = não-Security)
+p_max = Σ_h w_h · (p̂_h^SS + p̂_h^AMB)              (todo excluído = Security)
 ```
 
-Os limites ingênuos calculados sobre a amostra bruta **não** são conservadores nem
-corretos: a amostra é sobre-amostrada em T3 e em L2–L5.
-
-**Taxa de `AMBIGUOUS`** sempre reportada, global e por estrato. Fixar de antemão um
-teto acima do qual a estimativa não é reportável — proposta: se
-`Σ_h w_h · p̂_h^AMB > 0,20`, a prevalência não é reportável como número pontual,
-apenas como intervalo `[p_min, p_max]`.
-
-Se os limites forem largos demais para sustentar a conclusão, isso **é** o achado —
-não se resolve escolhendo o número mais conveniente.
+Se os limites forem largos demais para sustentar a conclusão, isso **é** o
+achado. Não se resolve escolhendo o número mais conveniente.
 
 ---
 
 ## 5. Validação do classificador
 
-> [!important] Gold set misto — [[Decision Log#D-026]] (2026-09-03)
-> "Gold set" agora é: consenso entre 3 LLMs + adjudicação humana nas
-> discordâncias. Reportar a fração de cada origem. Eixo "por idioma" não é
-> mais central (população restrita a inglês, [[Decision Log#D-025]]).
+> [!important] Gold set pronto — [[EXP-014]], [[Decision Log#D-031]] (2026-09-13)
+> 99 casos no quadro: **83 de consenso entre 2 modelos** (GPT, Claude), sem
+> verificação humana, e **16 decididos por 2 anotadores humanos**
+> independentes com reconciliação mútua. `results/EXP-014_gold_set.csv`, com a
+> origem de cada rótulo. **Reportar as métricas separadas por origem**:
+> concordar com rótulos do GPT e do Claude pode ser só herdar o viés deles.
 
-Contra o gold set (agora misto — ver acima), **por classe** e, secundariamente,
-**por idioma** quando ainda houver suporte amostral:
+Contra o gold set:
 
-- precisão, recall, F1 por classe (`PRIMARY`, `SECONDARY`, `MENTION`, `NONE`);
-- precisão/recall/F1 para a dicotomia Security Skill vs resto;
+- precisão, recall, F1 por classe (`PRIMARY`, `SECONDARY`, `NONE`);
+- precisão/recall/F1 para a dicotomia Security Skill vs. resto;
 - **matriz de confusão completa**;
 - intervalos de confiança em toda métrica.
 
 ### Análise de erro exigida
 
-A fronteira que decide o resultado é **`SECONDARY` ↔ `MENTION`**. Confundir
-`PRIMARY` com `SECONDARY` não muda a prevalência agregada — ambos são Security
-Skill. Confundir `SECONDARY` com `MENTION` muda.
-
 | Confusão | Impacto na prevalência agregada |
 |---|---|
-| PRIMARY ↔ SECONDARY | nenhum; muda só a desagregação |
-| **SECONDARY ↔ MENTION** | **direto — é o erro que importa** |
-| MENTION ↔ NONE | nenhum |
-| qualquer ↔ AMBIGUOUS | muda o denominador |
+| `PRIMARY` ↔ `SECONDARY` | nenhum; muda só a desagregação |
+| **`SECONDARY` ↔ `NONE`** | **direto — é o erro que importa** |
+| `PRIMARY` ↔ `NONE` | direto, mas raro |
+| qualquer ↔ exclusão de quadro | muda o denominador |
 
-Reportar essas taxas separadamente, não só o F1 global.
+Até a v2.3 a fronteira decisiva era `SECONDARY` ↔ `MENTION`. Com três classes ela
+virou `SECONDARY` ↔ `NONE`, que é também onde se concentraram as discordâncias
+dos modelos no [[EXP-013]]/[[EXP-014]] e as dos anotadores humanos.
 
 > [!danger] LLM não é ground truth ([[Decision Log#D-008]])
-> Registrar modelo, versão, prompt e temperatura. O gold set é humano.
+> Registrar modelo, versão, prompt e temperatura.
 
 ---
 
@@ -247,8 +272,9 @@ multilíngue anterior (histórico):
 |---|---|---|
 | Exploratório | 52,93% citam keyword ([[EXP-001]]) | **não é prevalência** |
 | Candidate retrieval | pool de 78,69% ([[EXP-002]]) | **não é prevalência** |
-| Amostra anotada | — | insumo |
-| Desempenho do classificador | — | insumo |
+| Classificador v1 (TF-IDF) | 1,61% ([[EXP-012]]) | **não é prevalência** — prova de conceito |
+| Amostra anotada | gold set, 56,1% [46,2%; 65,5%] ([[EXP-014]]) | **preliminar** — insumo |
+| Desempenho do classificador | — | insumo (E-7) |
 | **Estimativa de prevalência** | — | **a produzir** |
 
 Nenhum número das duas primeiras linhas pode ser apresentado como resposta à QI-1,
@@ -259,50 +285,40 @@ nem como aproximação dela.
 ## 8. Caminho
 
 ```text
-EXP-003  distribuição de idiomas                    ✅ 14,21% não inglês
+EXP-003/004  idiomas                                  ✅ -> D-025: só inglês
    |
-EXP-004  validação do detector de idioma            ✅ lingua primário; cauda colapsada
+EXP-013      amostra n=100 (inglês)                   ✅
+EXP-014      ensemble de 2 LLMs + 2 humanos na        ✅ gold set 99 casos
+             discordância (D-026, D-031)
    |
-(D-025)  restrição da população a inglês                       2026-09-03
+EXP-015/016  quadro de análise                        ✅ 1.550.550
    |
-EXP-XXX  amostra n=100 (inglês) + ensemble de 3 LLMs +   <- PRÓXIMA ETAPA
-         adjudicação humana na discordância (D-026)
+E-7          validar o LLM local do orientador;       <- PRÓXIMA ETAPA
+             critério de gate pré-registrado;
+             escolher desenho (C / AAS expandida / dois estágios)
    |
-EXP-007  candidate retrieval, escolhido por recall medido contra o gold set
+E-8          classificação da população -> N_h
    |
-EXP-008  classificador validado (métricas por classe; por idioma deixa de
-         ser eixo principal sob D-025)
+E-9          estimativa de prevalência com IC, desagregada, com exclusões de quadro
    |
-EXP-009  classificação da população -> estratos (N_h)
-   |
-EXP-010  estimativa de prevalência com IC, desagregada
-   |
-EXP-011  robustez: near-duplicates ([[Decision Log#D-017]]), denominadores,
-         concentração por dono, definições alternativas
+E-10         robustez: near-duplicates (D-017), denominadores, concentração, definições
 ```
 
-**Mudança de ordem** proposta em [[Multilingual Methodology Review]] e adotada aqui:
-o piloto vem **antes** do retrieval multilíngue. Sob o Desenho C o retrieval
-estratifica e não determina elegibilidade, e o critério para escolhê-lo é recall
-contra o gold set — que não existe antes do piloto.
+**Numeração.** Os `EXP-007` a `EXP-011` do plano original nunca foram usados, e
+os experimentos seguiram a ordem de execução (EXP-012 a EXP-016). Os próximos
+recebem número quando o script existir.
 
-**Numeração.** O passo "EXP-005 piloto de anotação" e "EXP-006 gold set" desta
-tabela descreviam o desenho anterior a [[Decision Log#D-026]] (2026-09-03) e
-foram substituídos acima por um único `EXP-XXX` a atribuir quando o script do
-novo desenho for escrito — nenhum número foi reservado antecipadamente,
-seguindo a convenção do projeto ([[03 - Methodology]] §8).
+## 9. Estado atual (2026-09-13)
 
-## 9. Estado atual
-
-✅ `EXP-003` e `EXP-004` concluídos. Desenho C adotado. Estratos linguísticos
-medidos, mas **não são mais o eixo principal de estratificação** — desde
-[[Decision Log#D-025]] (2026-09-03) a população-alvo é restrita a inglês.
-⬜ Amostra + gold set via ensemble de LLMs ([[Decision Log#D-026]]) é a
-próxima etapa; os 50 casos de [[EXP-005]] não são mais reaproveitados nela.
-
-Reaproveitado da fase anterior: [[Codebook]] (instrumento), a definição
-([[Decision Log#D-004]]), o candidate retrieval de [[EXP-002]] (baseline inglês a
-ser superado) e [[EXP-001]] (estrutura e denominadores).
+- ✅ População restrita a inglês (D-025) e quadro de análise de **1.550.550**
+  conteúdos ([[EXP-016]]).
+- ✅ Instrumento: [[Codebook]] v2.6, três classes, κ = 0,672 na dicotomia entre
+  modelos.
+- ✅ Gold set de **99 casos** ([[EXP-014]], [[Decision Log#D-031]]).
+- ⬜ **E-7**: validar o LLM local do orientador, pré-registrar o critério de
+  gate e decidir o desenho do E-8/E-9 à luz da prevalência preliminar perto de
+  50%.
+- ⬜ Taxa de não-instrução no estrato F3 (205.928 arquivos), D-030.
 
 ## Ligações
 
