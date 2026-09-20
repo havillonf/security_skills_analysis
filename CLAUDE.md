@@ -21,12 +21,13 @@ decisões (isso é `MEMORY.md`). Separação de responsabilidades:
 3. Onde as coisas estão (reorganizado em 2026-09-05):
    - `notes/Decisions/` — `Codebook.md` (o instrumento, **v2.6**) e
      `Decision Log.md` (**índice de status no topo** — leia-o em vez de
-     percorrer as 31 entradas). **Não dividir o Decision Log**: o valor dele
+     percorrer as 32 entradas). **Não dividir o Decision Log**: o valor dele
      é ser registro único e cronológico.
    - `notes/Instruments/` — o que se usa para anotar, em ordem de uso:
      `Classification Prompt.md` (etapa 1, para as CLIs) ·
      `Guia do Anotador Humano.md` (etapa 1, adjudicação; §9 = dois anotadores) ·
-     `Taxonomy Coding Protocol.md` (etapa 2, open coding — **não testado**).
+     `Taxonomy Coding Protocol.md` (etapa 2, open coding v1.1 — LLM propõe,
+     humanos validam, D-032 — **não testado**; só depois do gate do E-7).
      Instrumentos são nomeados **pelo que são**, com versão no frontmatter —
      não por decisão. Não crie `Instrumento (D-XXX).md`.
    - `notes/Experiments/` — só o caminho crítico: EXP-013 (amostra),

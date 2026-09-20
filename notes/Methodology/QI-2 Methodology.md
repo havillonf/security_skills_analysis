@@ -238,7 +238,10 @@ Nada da QI-2 é resultado científico antes disto.
   candidatos em [[Security Taxonomy]]. **Não é gold set nem resultado.**
 - ⬜ Classificador de QI-1 ainda não validado (E-7) — **QI-2 não pode começar**
   enquanto essa etapa não passar pelo gate de [[Decision Log#D-024]].
-- ⬜ Open coding humano, iteração, estabilização, validação.
+- ⬜ Open coding, iteração, estabilização, validação — **LLM propõe, humanos
+  validam**, com as salvaguardas do [[Taxonomy Coding Protocol]] v1.1
+  ([[Decision Log#D-032]]). Ordem do D-024 reafirmada em 2026-09-13: só depois
+  do gate do E-7.
 
 **Nenhum número de distribuição foi calculado, e nenhum deve ser antes da
 validação — nem da QI-2 propriamente, nem do classificador de QI-1 do qual

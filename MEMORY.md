@@ -73,12 +73,12 @@ notes/                        caderno científico (Obsidian) — fonte da verdad
   Resumo do Trabalho.md        resumo em linguagem simples
   Datasets/GitSkills.md        o dataset
   Decisions/
-    Decision Log.md            D-001..D-031 — ÍNDICE DE STATUS no topo. Não dividir
+    Decision Log.md            D-001..D-032 — ÍNDICE DE STATUS no topo. Não dividir
     Codebook.md                Security Skill, v2.6 (3 classes)
   Instruments/                 o que se usa para anotar
     Classification Prompt.md   etapa 1 — para colar na CLI de cada modelo
     Guia do Anotador Humano.md etapa 1 — adjudicação humana; §9 = dois anotadores
-    Taxonomy Coding Protocol.md etapa 2 — open coding (NÃO TESTADO)
+    Taxonomy Coding Protocol.md etapa 2 — open coding v1.1, LLM propõe/humanos validam (NÃO TESTADO)
   Methodology/                 QI-1 · QI-2 · QI-3
   Experiments/                 EXP-013 (amostra) · EXP-014 (confiabilidade + gold set) ·
                                EXP-015 (validade do quadro) · EXP-016 (denominador)
@@ -168,6 +168,9 @@ Lista de título apenas — conteúdo completo em `Decision Log`:
   independentes + reconciliação mútua**; orientador desempata. Arquivos
   individuais **não se editam** depois da conversa (só erro de marcação,
   registrado na nota); a concordância reportada é a da marcação original.
+- **D-032** (2026-09-13) — subclassificação **depois do gate do E-7** (D-024
+  reafirmado, sem piloto antecipado); **LLM propõe, humanos validam**, com
+  salvaguardas no `Taxonomy Coding Protocol` v1.1.
 
 ## 6. Funcionalidades / etapas concluídas
 
@@ -212,6 +215,15 @@ Lista de título apenas — conteúdo completo em `Decision Log`:
 >    ~56%, e não os ~5% que motivaram o Desenho C. Escolher entre C, amostra
 >    aleatória simples expandida (~384 casos para ±5 pp) e dois estágios
 >    (D-015). Rever também se o E-4 (retrieval) ainda faz sentido.
+>
+> **Depois do gate do E-7 → E-8, e em paralelo ao E-9: subclassificação** de
+> `PRIMARY` ∪ `SECONDARY` (QI-2), com o `Taxonomy Coding Protocol` v1.1.
+> **Ordem do D-024 mantida** (decisão de 2026-09-13, D-032: não antecipar
+> como piloto no gold set). **LLM propõe códigos e agrupamentos, humanos
+> decidem as categorias e validam**: trecho citado conferido por script,
+> prompt sem frameworks externos, confiabilidade entre dois humanos,
+> conferência no `SKILL.md`. Preferir um modelo diferente de GPT/Claude como
+> propositor (candidato: o LLM do orientador).
 
 - **Gold set concluído ([[EXP-014]], [[Decision Log#D-031]], 2026-09-13).**
   Os 16 casos discordantes foram anotados por **dois pesquisadores

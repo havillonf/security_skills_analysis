@@ -3,7 +3,7 @@ tipo: codebook
 version: 2.6
 data: 2026-09-05
 substitui: v2.5 (2026-09-04)
-decisoes: D-004, D-006, D-013, D-014, D-016, D-022, D-025, D-027, D-028, D-029, D-030, D-031
+decisoes: D-004, D-006, D-013, D-014, D-016, D-022, D-025, D-027, D-028, D-029, D-030, D-031, D-032
 status: classe validada no EXP-014; concordância humana medida (§8.4); etapa 2 (§5) ainda não testada
 ---
 
@@ -343,6 +343,11 @@ durante a anotação, nem a resposta de qualquer modelo. Ver [[Decision Log#D-02
 classificado, todo o conjunto `PRIMARY` ∪ `SECONDARY` passa por **open coding**
 sobre o contexto e as justificativas, e as categorias emergem dos padrões
 observados.
+
+**Quando e quem** ([[Decision Log#D-032]]): depois do gate do E-7, sobre o
+conjunto do E-8. **O LLM propõe códigos e agrupamentos; os humanos decidem as
+categorias e validam.** Procedimento e salvaguardas no
+[[Taxonomy Coding Protocol]] v1.1.
 
 > [!danger] Regra inegociável da QI-2
 > **Nunca usar referencial externo (OWASP, MITRE, NIST, ou a taxonomia de

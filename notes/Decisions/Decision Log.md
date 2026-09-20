@@ -41,6 +41,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-029 | **Primeira classificação enxuta** (Codebook v2.5) | ⭐ |
 | D-030 | Terceira exclusão de frame: não é instrução (Codebook v2.6) | ⭐ |
 | D-031 | **Gold set**: dois anotadores independentes + reconciliação mútua | ⭐ |
+| D-032 | Subclassificação depois do gate do E-7; **LLM propõe, humanos validam** | ⭐ |
 
 **Revisadas ou encerradas — preservadas por rastreabilidade**
 
@@ -2106,6 +2107,80 @@ ser examinada.
 [[QI-1 Methodology]] (E-5/E-6 concluídos; próximo passo E-7).
 `scripts/compute_agreement.py` passa a aceitar os CSVs humanos, e
 `--original-marking` desfaz as correções de marcação registradas.
+
+---
+
+## D-032 — Subclassificação: mantida depois do gate do E-7; LLM propõe, humanos validam
+
+**Data:** 2026-09-13 · **Status:** `aceita` (pesquisadores)
+
+**Contexto.** Com o gold set pronto ([[Decision Log#D-031]]), surgiu a pergunta
+de antecipar a subclassificação de `PRIMARY` ∪ `SECONDARY`
+([[Codebook]] §5, [[Taxonomy Coding Protocol]]). Três argumentos a favor de
+antecipar:
+
+- o protocolo nunca foi testado;
+- 46 das 55 skills de segurança do gold set são `SECONDARY`, o que torna a
+  estimativa preliminar de 56% difícil de interpretar sem saber o que há
+  dentro dela;
+- as notas dos dois modelos já existem para 52 dos 55 casos.
+
+Em aberto também estava **quem** faz a codificação aberta.
+
+**Decisão.**
+
+1. **A ordem do [[Decision Log#D-024]] fica mantida.** A subclassificação
+   acontece **depois do gate do E-7**, sobre o conjunto classificado no E-8, e
+   não como piloto no gold set agora.
+2. **A codificação aberta é feita por LLM propondo e humanos validando.** Nas
+   passagens do protocolo:
+
+   | Passagem ([[Taxonomy Coding Protocol]] §3) | Quem faz |
+   |---|---|
+   | 1 — códigos abertos, com exemplo literal | **LLM propõe** |
+   | 2 — agrupamento de códigos | **LLM propõe** |
+   | 3 — poda, fusão e nomeação das categorias | **Humanos decidem** |
+   | 4 — reaplicação da taxonomia a todos os casos | LLM aplica; **humanos revisam** |
+   | §5.1 — conferência contra o `SKILL.md` original | **Humanos** |
+   | §5.2 — confiabilidade (dupla codificação de subamostra) | **Dois humanos** |
+
+**Salvaguardas obrigatórias**, porque o insumo já são notas de LLM
+(protocolo §6) e o risco de circularidade aumenta:
+
+- **Exemplo literal verificável.** Todo código proposto cita `case_id` e um
+  trecho que precisa existir **literalmente** na nota de origem. A checagem é
+  por script; código sem trecho confirmado é descartado. Isso impede categoria
+  inventada pelo modelo.
+- **Regra inegociável da QI-2 no prompt.** O prompt do propositor proíbe
+  explicitamente OWASP, MITRE, NIST ou qualquer taxonomia externa; propostas que
+  as usem como categoria são rejeitadas na passagem 3.
+- **Registro completo** de modelo, versão, prompt e temperatura
+  ([[Decision Log#D-008]]).
+- **A decisão final sobre as categorias é humana.** A saída do LLM é proposta,
+  nunca resultado.
+- **A confiabilidade reportada é humana:** Krippendorff α para multi-valorados
+  e Jaccard médio, calculados entre os dois pesquisadores aplicando a taxonomia
+  final, e não entre LLM e humano.
+
+**Recomendação, ainda não decidida:** o modelo propositor deve ser **diferente**
+dos que escreveram as notas (GPT e Claude), para não reforçar a leitura deles.
+O LLM local do orientador é o candidato natural, se passar pelo E-7.
+
+**Alternativas descartadas.**
+
+- *Piloto agora no gold set:* recusado para manter a sequência formal do D-024.
+  O protocolo continua sem teste até o gate.
+- *Dois pesquisadores codificando tudo à mão:* mais caro. O ganho sobre LLM
+  propondo com salvaguardas foi julgado menor que o custo.
+
+**Limitação declarada.** **Viés de ancoragem:** humanos que validam categorias
+já propostas tendem a aceitá-las. A dupla codificação humana (§5.2) e a
+conferência contra o texto original (§5.1) medem, mas não eliminam, esse
+efeito. Declarar no texto.
+
+**Consequências.** [[Taxonomy Coding Protocol]] → v1.1 (papéis por passagem e
+salvaguardas); [[Codebook]] §5; [[03 - Methodology]] (subclassificação explícita
+na ordem, depois do E-8); [[QI-2 Methodology]] §8.
 
 ---
 

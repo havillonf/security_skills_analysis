@@ -220,6 +220,12 @@ formar estratos (E-8) e para abrir o gate da QI-2 ([[Decision Log#D-024]]).
 
 **Conclusão quando.** Métricas por classe com IC, critério de gate
 pré-registrado e decidido, e desenho do E-8/E-9 escolhido pelo orientador.
+**Passar no gate libera também a subclassificação** (QI-2, abaixo).
+
+> [!note] Se o LLM local passar no gate, ele tem um segundo papel
+> Pelo [[Decision Log#D-032]], a codificação taxonômica usa um LLM para
+> **propor** códigos, de preferência um modelo diferente dos que escreveram as
+> notas (GPT e Claude). O LLM do orientador é o candidato natural.
 **Regra.** LLM não é ground truth ([[Decision Log#D-008]]).
 
 ### E-8 — Classificação da população
@@ -287,8 +293,10 @@ E-7      validar o LLM local do orientador + escolher o desenho  <- PRÓXIMA ETA
 E-4      retrieval — rever se ainda faz sentido (decisão no E-7)
    |
 E-8      classificação da população -> N_h
-   |
-E-9      estimativa de prevalência com IC
+   |                                    \
+E-9      estimativa de prevalência com IC   QI-2  subclassificação de PRIMARY ∪ SECONDARY
+   |                                              (depois do gate do E-7; LLM propõe,
+   |                                               humanos validam — D-032)
    |
 E-10     robustez (near-duplicates, D-017) + adversarial
    |
@@ -310,10 +318,12 @@ desde 2026-08-27:
 E-7  classificador validado  ── gate ──▶  E-8  classificação da população
                                                   │
                                                   ▼
-                                    conjunto SEC-PRIMARY/SEC-SECONDARY
+                                    conjunto PRIMARY ∪ SECONDARY
                                                   │
                                                   ▼
-                                  QI-2  taxonomia emergente ([[QI-2 Methodology]])
+                                  QI-2  subclassificação / taxonomia emergente
+                                        ([[Taxonomy Coding Protocol]] v1.1:
+                                         LLM propõe, humanos validam — D-032)
                                                   │
                                                   ▼
                                   QI-3  crosswalk com referenciais externos
@@ -326,6 +336,11 @@ com IC. E-9 (estimativa), E-10 (robustez) e E-11 (consolidação) continuam a
 responder QI-1 e podem correr em paralelo a QI-2/QI-3, não como pré-requisito
 delas. Detalhe completo, justificativa e o aviso sobre o critério de
 "validação satisfatória" ainda não definido: [[Decision Log#D-024]].
+
+**Ordem reafirmada em 2026-09-13** ([[Decision Log#D-032]]): a subclassificação
+não é antecipada como piloto no gold set, apesar de o protocolo seguir sem
+teste até lá. Consequência a ter em mente: a estimativa preliminar de 56%
+continua sem decomposição do `SECONDARY` até o E-8.
 
 ## Ligações
 

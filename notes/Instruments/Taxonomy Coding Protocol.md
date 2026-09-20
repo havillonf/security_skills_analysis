@@ -1,9 +1,9 @@
 ---
 tipo: instrumento
 questao: QI-2 (alimenta QI-1 e QI-3)
-version: 1.0
-data: 2026-09-05
-decisoes: D-024, D-027, D-029
+version: 1.1
+data: 2026-09-13
+decisoes: D-024, D-027, D-029, D-032
 status: proposto — não testado
 ---
 
@@ -14,7 +14,14 @@ classificação + adjudicação humana), o conjunto `PRIMARY` ∪ `SECONDARY` é
 codificado em categorias que **emergem dos dados**.
 
 Implementa [[Codebook]] §5. Entra em execução **depois** do gate de
-[[Decision Log#D-024]].
+[[Decision Log#D-024]], confirmado em 2026-09-13 ([[Decision Log#D-032]]):
+aplica-se ao conjunto classificado no E-8, e não ao gold set.
+
+> [!important] Quem codifica — [[Decision Log#D-032]] (v1.1)
+> **O LLM propõe, os humanos validam.** O LLM faz as passagens 1 e 2 (códigos
+> e agrupamento) e aplica a taxonomia na passagem 4. **Os humanos decidem**
+> poda, fusão e nomeação (passagem 3), revisam a reaplicação e fazem sozinhos
+> a validação da §5. A saída do LLM é **proposta, nunca resultado**.
 
 > [!danger] Regra inegociável
 > **Nunca usar referencial externo — OWASP, MITRE, NIST CSF, ou a taxonomia de
@@ -108,7 +115,7 @@ superestimar operacionalidade infla um resultado, em vez de apenas coletar.
 
 ## 3. Procedimento — quatro passagens
 
-### Passagem 1 — codificação aberta, sem economia
+### Passagem 1 — codificação aberta, sem economia · **LLM propõe**
 
 Leia todas as `note` em sequência. Para cada caso, escreva um ou mais **códigos
 em linguagem próxima ao texto observado**. Não tente ser econômico, não tente
@@ -117,7 +124,17 @@ padronizar, não olhe para trás para reaproveitar código.
 Registre, para **cada código criado**, um **exemplo literal** (o `case_id` e o
 trecho da nota que o originou). Código sem exemplo literal não existe.
 
-### Passagem 2 — agrupamento
+**Salvaguardas para a proposta do LLM** ([[Decision Log#D-032]]):
+
+- o trecho citado precisa existir **literalmente** na nota de origem, conferido
+  por script; código sem trecho confirmado é descartado;
+- o prompt proíbe OWASP, MITRE, NIST ou qualquer taxonomia externa, e proposta
+  que use alguma delas como categoria é rejeitada na passagem 3;
+- registrar modelo, versão, prompt e temperatura ([[Decision Log#D-008]]);
+- preferir um modelo **diferente** dos que escreveram as notas (GPT, Claude).
+  Recomendação, não decisão.
+
+### Passagem 2 — agrupamento · **LLM propõe**
 
 Com todos os códigos à vista, agrupe por substância. É aqui que
 `agent_guardrails` e `agent_autonomy_constraints` viram uma coisa só.
@@ -125,7 +142,7 @@ Com todos os códigos à vista, agrupe por substância. É aqui que
 Ao fundir, **preserve os dois rótulos originais** no registro da categoria —
 eles documentam a variação de vocabulário e servem de material para a QI-3.
 
-### Passagem 3 — poda e nomeação
+### Passagem 3 — poda e nomeação · **humanos decidem**
 
 - Categoria com **1 único caso**: mantenha como código, **não promova** a
   categoria. Registre à parte como cauda.
@@ -135,7 +152,7 @@ eles documentam a variação de vocabulário e servem de material para a QI-3.
   segurança consagrado — se a categoria natural é "restrição de comportamento
   de agente", esse é o nome, ainda que não exista em nenhum framework.
 
-### Passagem 4 — segunda volta
+### Passagem 4 — segunda volta · **LLM aplica, humanos revisam**
 
 Reaplique a taxonomia estabilizada a **todos** os casos, do início. Casos que
 não couberem em nenhuma categoria são sinal de que a passagem 3 podou demais —
@@ -181,8 +198,15 @@ o ecossistema de um jeito que o ecossistema não confirma.
 
 ### 5.2 Confiabilidade da própria codificação
 
-Dupla codificação de uma subamostra, com **Krippendorff's α para nominais
-multi-valorados** (kappa não se aplica a multi-label) e Jaccard médio.
+Dupla codificação de uma subamostra **por dois pesquisadores humanos**
+aplicando a taxonomia final, com **Krippendorff's α para nominais
+multi-valorados** (kappa não se aplica a multi-label) e Jaccard médio. A
+confiabilidade reportada é **entre humanos**, e não entre LLM e humano
+([[Decision Log#D-032]]).
+
+> [!warning] Viés de ancoragem — limitação declarada
+> Quem valida categorias já propostas tende a aceitá-las. A dupla codificação
+> humana e a conferência da §5.1 medem esse efeito, mas não o eliminam.
 `operationality` é nominal simples → Cohen's κ.
 
 Reportar junto: quantas categorias, quantos casos na cauda, e quantos casos
@@ -242,4 +266,4 @@ Justificar a classe é subproduto, não objetivo. Ver [[Classification Prompt]]
 
 [[Codebook]] §5 · [[Classification Prompt]] · [[Guia do Anotador Humano]] ·
 [[QI-2 Methodology]] · [[QI-3 Coverage Methodology]] · [[Security Taxonomy]] ·
-[[Decision Log#D-029]] · [[EXP-014]]
+[[Decision Log#D-029]] · [[Decision Log#D-032]] · [[EXP-014]]

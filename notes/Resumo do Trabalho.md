@@ -293,6 +293,7 @@ data, causa e correção.
 | **O que é "bom o bastante"** para a IA do orientador | Precisa ser decidido **antes** de ver o resultado, senão qualquer resultado vira "bom" |
 | **Quantos arquivos não são skills** | Hoje estão marcados, não removidos. Falta ler uma amostra do grupo onde eles se escondem (~206 mil arquivos) |
 | **Conferir parte das 83 skills só das IAs?** | É o ponto fraco declarado do gabarito |
+| **Qual IA propõe as subcategorias** | De preferência uma diferente das que escreveram as justificativas, para não repetir a leitura delas |
 
 ---
 
@@ -309,6 +310,13 @@ de 99 skills. Em ordem:
 4. Medir **quanto ela acerta**, separando as 83 skills que vieram das IAs e as
    16 decididas por humanos, que são as difíceis.
 5. Com esses números, o orientador escolhe o desenho (seção 13).
+
+**Depois disso vem a subclassificação:** abrir o grupo das skills de segurança
+e descobrir que tipos existem dentro dele (revisão de código? restrição de
+agente? gestão de segredos?). As categorias **não são definidas antes**: saem
+das próprias justificativas. Uma IA propõe os agrupamentos e **os pesquisadores
+decidem** quais categorias ficam, conferindo no texto original. A etapa só
+começa quando a IA do orientador passar no teste acima.
 
 Plano detalhado: [[03 - Methodology]], etapa E-7.
 
