@@ -1,6 +1,7 @@
 ---
 tipo: decisões
 atualizado: 2026-09-13
+atualizado: 2026-09-20
 ---
 
 # Decision Log
@@ -17,6 +18,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 > trabalho. Use o índice abaixo para ver o estado sem perder o histórico.
 
 ## Índice de status (2026-09-13)
+## Índice de status (2026-09-20)
 
 **Vigentes — sustentam o desenho atual**
 
@@ -42,6 +44,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-030 | Terceira exclusão de frame: não é instrução (Codebook v2.6) | ⭐ |
 | D-031 | **Gold set**: dois anotadores independentes + reconciliação mútua | ⭐ |
 | D-032 | Subclassificação depois do gate do E-7; **LLM propõe, humanos validam** | ⭐ |
+| D-033 | **Refinamento do prompt** — revisão de FPs em casos low-confidence (EXP-017) | ⭐ |
 
 **Revisadas ou encerradas — preservadas por rastreabilidade**
 
@@ -2181,6 +2184,54 @@ efeito. Declarar no texto.
 **Consequências.** [[Taxonomy Coding Protocol]] → v1.1 (papéis por passagem e
 salvaguardas); [[Codebook]] §5; [[03 - Methodology]] (subclassificação explícita
 na ordem, depois do E-8); [[QI-2 Methodology]] §8.
+
+---
+
+---
+
+## D-033 — Refinamento do prompt de classificação (EXP-017)
+
+**Data:** 2026-09-20 · **Status:** `aceita` · **Branch:** `Q1-prompt-refinement`
+
+**Contexto.** A análise dos dados do [[EXP-014]] revelou que **51% dos casos
+`SECONDARY` aceitos por consenso de LLM** (22/43) tiveram pelo menos um modelo
+marcando `confidence=low`. Cinco casos tiveram **ambos** os modelos em
+`confidence=low`. Isso indica que o prompt v2.6 está capturando casos marginais
+de forma consistente — coerente com o `SECONDARY` deliberadamente inclusivo (R-2),
+mas levantando a questão de quantos são falsos positivos causados por ambiguidade
+no prompt versus genuinamente borderline.
+
+**Decisão.** Realizar revisão humana sistemática ([[EXP-017]]) do subconjunto
+de 24 casos de consenso com pelo menos um `confidence=low`, identificar padrões
+de falsos positivos, e propor alterações ao prompt (v2.7 se houver mudanças, D-034).
+A revisão **precede o E-7** — se o prompt for alterado, o E-7 valida o prompt novo.
+
+**Protocolo da revisão (ver [[EXP-017]] para detalhes):**
+- **Havillon** lê todos os 24 casos, prioridade para os 6 `both-low`
+- **Victor** consultado apenas nos casos marcados `bring_to_victor = true`
+- Casos confirmados por ambos como problemáticos → orientadores (com `SKILL.md` como exemplo)
+- Não há medição de κ nesta etapa — objetivo é diagnóstico do prompt, não confiabilidade
+
+**Grupos temáticos preliminares identificados na análise exploratória:**
+
+| Grupo | n | Hipótese de problema |
+|---|---|---|
+| `restricao_de_agente` | 5 | read-only e escopo capturando restrições de workflow |
+| `consentimento_para_mudanca` | 4 | "pedir aprovação antes de commitar" como controle protetivo |
+| `gestao_de_chave` | 3 | menção de API key sem instrução protetiva real |
+| `autenticacao_como_fluxo` | 3 | autenticação testada como fluxo entre outros |
+| `rate_limit` | 1 | controle sem nomear ameaça |
+| `privacidade_on_device` | 1 | on-device enquadrado como controle de segurança |
+| `other` | 7 | não categorizados na análise inicial |
+
+**O que esta decisão NÃO faz:**
+- Não altera o gold set do [[EXP-014]]
+- Não muda a definição de Security Skill (§1 do [[Codebook]])
+- Não antecipa a taxonomia QI-2 (bloqueada por D-032 até o gate do E-7)
+
+**Consequências.** [[EXP-017]] (protocolo e resultado) · [[Decision Log#D-034]]
+(alterações ao prompt, a registrar após a revisão) · `Classification Prompt.md`
+v2.7 · `MEMORY.md`.
 
 ---
 
