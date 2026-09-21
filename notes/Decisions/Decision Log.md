@@ -17,8 +17,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 > "decisões antigas" quebraria exatamente a cadeia que dá defensabilidade ao
 > trabalho. Use o índice abaixo para ver o estado sem perder o histórico.
 
-## Índice de status (2026-09-13)
-## Índice de status (2026-09-20)
+## Índice de status (2026-09-21)
 
 **Vigentes — sustentam o desenho atual**
 
@@ -38,13 +37,11 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-024 | Sequência QI-1 → gate → QI-2 → QI-3 | |
 | D-025 | **População restrita a inglês** (revisa D-012) | ⭐ |
 | D-026 | Ensemble de LLMs + adjudicação humana na discordância | |
-| D-027 | **Três classes; subclassificação posterior** (revisa D-004/D-006) | ⭐ |
 | D-028 | Evidência insuficiente = exclusão de frame (fecha D-022) | ⭐ |
-| D-029 | **Primeira classificação enxuta** (Codebook v2.5) | ⭐ |
-| D-030 | Terceira exclusão de frame: não é instrução (Codebook v2.6) | ⭐ |
 | D-031 | **Gold set**: dois anotadores independentes + reconciliação mútua | ⭐ |
 | D-032 | Subclassificação depois do gate do E-7; **LLM propõe, humanos validam** | ⭐ |
-| D-033 | **Refinamento do prompt** — revisão de FPs em casos low-confidence (EXP-017) | ⭐ |
+| D-034 | **Dois estágios binários** — dev de software? + segurança? (revisa D-027) | ⭐ |
+| D-035 | **Segurança no contexto de SDLC** — nova definição operacional | ⭐ |
 
 **Revisadas ou encerradas — preservadas por rastreabilidade**
 
@@ -52,7 +49,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 |---|---|---|
 | D-002 | Resultado do notebook 01 inválido | histórico; a lição vale |
 | D-003 | Contradições doc↔realidade: registrar | histórico |
-| D-004 · D-006 | Definição operacional / esquema de classes | **revisadas por D-027** |
+| D-004 · D-006 | Definição operacional / esquema de classes | **revisadas por D-027 → D-034** |
 | D-009 | Escopo da QI-3 | **EM ABERTO** |
 | D-010 | Dedup por similaridade | encerrada |
 | D-012 | População inclui todos os idiomas | **revisada por D-025** |
@@ -60,6 +57,10 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-019 · D-020 | Anotador único / sinal preliminar no piloto | **substituídas por D-026** |
 | D-022 | Elegibilidade da população | **fechada por D-028** |
 | D-023 | Classificador v1 do EXP-012 | PoC, fora do caminho crítico |
+| D-027 | Três classes; subclassificação posterior | **revisada por D-034** |
+| D-029 | Primeira classificação enxuta (Codebook v2.5) | **superseded por Codebook v3.0** |
+| D-030 | Terceira exclusão de frame (Codebook v2.6) | **superseded por Codebook v3.0** |
+| D-033 | Refinamento do prompt — revisão de FPs (EXP-017) | **superseded por D-034/D-035** |
 
 **Em aberto:** D-009 (escopo da QI-3) e o limiar numérico de "validação
 satisfatória" do gate de D-024.
@@ -2232,6 +2233,118 @@ A revisão **precede o E-7** — se o prompt for alterado, o E-7 valida o prompt
 **Consequências.** [[EXP-017]] (protocolo e resultado) · [[Decision Log#D-034]]
 (alterações ao prompt, a registrar após a revisão) · `Classification Prompt.md`
 v2.7 · `MEMORY.md`.
+
+---
+
+---
+
+## D-034 — Classificação em dois estágios binários (revisa D-027)
+
+**Data:** 2026-09-21 · **Status:** `aceita` · **Branch:** `Q1-prompt-refinement`
+**Revisa:** D-027 (três classes), D-029 (payload v2.5), D-030 (exclusão v2.6)
+**Supersede:** D-033 (refinamento de FPs — diagnóstico concluído, protocolo descontinuado)
+
+**Contexto.** Os orientadores revisaram o progresso do EXP-014 e do EXP-017
+(revisão de falsos positivos em casos low-confidence) e pediram uma mudança de
+abordagem. O diagnóstico do EXP-017 revelou que 51% dos casos SECONDARY tinham
+pelo menos um modelo com `confidence=low`, e que os padrões de falso positivo
+derivavam fundamentalmente de uma definição de segurança que era ampla demais
+para o objetivo da pesquisa. A solução proposta pelos orientadores é mais
+cirúrgica: restringir a pergunta a **skills de desenvolvimento de software** e
+avaliar segurança **nesse contexto específico**.
+
+**Decisão.** Substituir o esquema de três classes (PRIMARY/SECONDARY/NONE) por
+**dois estágios binários sequenciais**, executados no mesmo prompt:
+
+1. **Estágio 1 — É skill de desenvolvimento de software?** (sim/não)
+   Inclui todo o SDLC: requisitos, frontend, backend, banco de dados,
+   infraestrutura, DevOps, CI/CD, observabilidade, segurança, testes,
+   arquitetura, documentação técnica. Exclui: skills puramente de
+   orquestração de agente sem produção de software, marketing, design
+   gráfico, pesquisa acadêmica, gestão financeira/RH.
+
+2. **Estágio 2 — Existe segurança nessa skill?** (sim/não)
+   Segurança no contexto de desenvolvimento de software. Definição
+   operacional em [[Decision Log#D-035]].
+
+**Reformulação da QI-1.** A pergunta de pesquisa passa a ser:
+*"Entre as Agent Skills voltadas ao desenvolvimento de software, qual a
+prevalência de considerações de segurança?"*
+
+**O que muda:**
+- [[Codebook]] v2.6 → v3.0 (dois estágios, nova definição)
+- [[Classification Prompt]] v2.6 → v3.0 (prompt unificado de dois estágios)
+- Gold set do [[EXP-014]] invalidado (esquema diferente)
+- Nova amostra necessária (não reutilizar EXP-013 — evita viés de memória)
+- Exemplos do prompt vindos de **fora da amostra** (corrige data leakage
+  identificado: 6 dos 7 exemplos do prompt v2.6 estavam na amostra de 100)
+
+**O que NÃO muda:**
+- D-001 (unidade de análise), D-025 (população inglês), D-026 (ensemble de LLMs)
+- O script de amostragem (`build_llm_ensemble_sample.py`) é reutilizável
+- O trabalho diagnóstico do EXP-017 permanece válido como insumo qualitativo
+
+**Consequências.** [[Codebook]] v3.0 · [[Classification Prompt]] v3.0 ·
+novo experimento de classificação · [[MEMORY.md]].
+
+---
+
+## D-035 — Segurança no contexto de SDLC (nova definição operacional)
+
+**Data:** 2026-09-21 · **Status:** `aceita` · **Branch:** `Q1-prompt-refinement`
+**Complementa:** D-034
+
+**Contexto.** O esquema anterior (D-027) definia segurança de forma deliberadamente
+inclusiva: qualquer consideração de segurança contava (R-2, `inclusion_floor`),
+incluindo guardrails de agente, restrições de escopo e menções a API keys. O
+diagnóstico do EXP-017 mostrou que isso capturava muitos casos marginais onde
+os modelos tinham dúvida. Os orientadores decidiram restringir a definição para
+**segurança no contexto de desenvolvimento de software**.
+
+**Decisão.** A nova definição operacional de "existe segurança" (Estágio 2 de
+D-034) é:
+
+**CONTA como segurança (→ sim):**
+- Proteção contra prompt injection
+- Defesa contra malware
+- Critérios e considerações de segurança ao escrever código
+- Testes de segurança (SAST, DAST, pentest, fuzzing)
+- Referências a arquivos de segurança no repositório (ex: "leia `SECURITY.md`")
+- Gestão de segredos: não commitar `.env`, variáveis de ambiente, secret vaults
+- Rate limiting como proteção contra abuso
+- Desenvolver ou gerenciar autenticação segura no backend (OAuth 2.0, PKCE, JWT seguro)
+- Skills de teste que incluem testar auth
+- Validação de input contra injection
+- OWASP, CVE, análise de vulnerabilidade
+- Menção a pipeline de segurança no CI/CD
+
+**NÃO CONTA como segurança (→ não):**
+- Tutorial de como se autenticar num sistema (usar auth, não construir auth segura)
+- Guardrails de agente que não se relacionam com o software em si (read-only,
+  "não commite sem aprovação", escopo de ferramenta — são restrições de workflow)
+- Mera menção de que existe autenticação sem instrução protetiva
+- Limite de gasto financeiro
+- Segurança clínica, validade científica, safety ≠ security
+- GRC puramente organizacional sem objeto computacional
+
+**Distinção chave — autenticação:**
+- ✅ "Implemente OAuth 2.0 com PKCE e refresh tokens rotativos" → segurança
+- ✅ "Teste as rotas autenticadas contra bypass" → segurança
+- ❌ "Para se autenticar, faça POST em /auth com sua API key" → não é segurança
+- O corte é: **construir/testar auth de forma segura** vs. **usar auth existente**
+
+**Distinção chave — guardrails de agente:**
+- ✅ Skill de backend que menciona guardrails → **entra** (é desenvolvimento)
+- ❌ Skill **só** de orquestração/guardrails sem produzir software → não entra
+  no Estágio 1, portanto não chega ao Estágio 2
+
+**Referências indiretas:**
+- Basta um ponteiro (ex: "consulte `SECURITY.md`"). A informação de que a skill
+  aponta para conteúdo de segurança externo é registrada para análise posterior:
+  quantas skills embutem segurança vs. quantas delegam a arquivos externos.
+
+**Consequências.** [[Codebook]] v3.0 (§3, §4) · [[Classification Prompt]] v3.0
+(seção `<security_definition>`) · substitui o `inclusion_floor` do prompt v2.6.
 
 ---
 
