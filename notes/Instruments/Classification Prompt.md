@@ -19,8 +19,12 @@ arquivo permanece no histórico por rastreabilidade.
 > 3. **Exemplos vindos de fora da amostra** — corrige o data leakage
 >    identificado na v2.6 (6 dos 7 exemplos estavam na amostra de 100).
 > 4. Output simplificado: dois campos binários + evidence + confidence + note.
-> 5. Não há distinção entre segurança como foco principal ou secundário —
->    a classificação é binária: há ou não há segurança.
+> 5. **Idioma**: O prompt fed na API (o bloco XML) foi inteiramente traduzido
+>    para o inglês. Como o dataset está em inglês e o paper visa a trilha MSR,
+>    isso alinha a língua do raciocínio e facilita o artefato de replicação.
+> 6. Regras redundantes foram deletadas (antigas R-1 e R-2) e a regra de
+>    fechamento instrui explicitamente o rebaixamento da *confidence* em casos
+>    ambíguos (ao invés de forçar a classificação).
 
 ---
 
@@ -28,175 +32,171 @@ arquivo permanece no histórico por rastreabilidade.
 
 ```xml
 <role>
-Você é um classificador cuidadoso e literal. Sua única tarefa é aplicar o
-instrumento de classificação abaixo a um lote de arquivos de skill, e
-escrever a saída no formato exigido em <output_format> — nenhum texto fora
-do formato pedido, nenhum preâmbulo, nenhuma explicação fora dos campos do
-próprio schema.
+You are a careful and literal classifier. Your only task is to apply the
+classification instrument below to a batch of skill files, and write the
+output in the exact format required in <output_format> — no text outside the
+requested format, no preamble, no explanation outside the schema fields.
 
-Não use nenhum conhecimento externo sobre o repositório, autor ou
-popularidade da skill — julgue apenas o texto de cada arquivo.
+Do not use any external knowledge about the repository, author, or skill
+popularity — judge only the text of each file provided.
 </role>
 
 <task>
-No diretório <cases_dir>results/llm_cases/</cases_dir> há um arquivo
-`.md` por caso, cada um com este formato:
+In the directory <cases_dir>results/llm_cases/</cases_dir> there is one
+`.md` file per case, each following this format:
 
   case_id: LLM001
-  name: <nome da skill ou vazio>
-  description: <descrição ou vazio>
+  name: <skill name or empty>
+  description: <description or empty>
   ---
 
-  <corpo completo do SKILL.md>
+  <full body of the SKILL.md>
 
-Para CADA arquivo do diretório, classifique a skill segundo o instrumento
-abaixo, aplicando os dois estágios na ordem indicada. Processe TODOS os
-arquivos, um a um, em ordem alfabética (LLM001, LLM002, ...) — não pule
-nenhum, não amostre, não resuma vários casos juntos. Trate cada caso como
-totalmente independente: a classificação de um caso não deve influenciar a
-de outro.
+For EACH file in the directory, classify the skill according to the
+instrument below, applying the two stages in order. Process ALL files,
+one by one, in alphabetical order (LLM001, LLM002, ...) — do not skip any,
+do not sample, do not summarize multiple cases together. Treat each case as
+completely independent: the classification of one case must not influence
+another.
 
-**Restrição de acesso:** leia apenas os arquivos dentro de
-`results/llm_cases/`. Não leia, liste nem acesse nenhum outro
-arquivo ou diretório deste repositório.
+**Access Restriction:** read ONLY the files inside `results/llm_cases/`.
+Do not read, list, or access any other file or directory in this repository.
 
-Ao final de cada caso, responda apenas com o objeto JSON de <output_format>.
+At the end of each case, respond only with the JSON object defined in
+<output_format>.
 </task>
 
 <stage_1>
-ESTÁGIO 1 — É skill de desenvolvimento de software? (sim/não)
+STAGE 1 — Is it a software development skill? (yes/no)
 
-Entende-se por "desenvolvimento de software" todo o ciclo de vida (SDLC):
-requisitos, frontend, backend, banco de dados, infraestrutura, DevOps,
-CI/CD, observabilidade, segurança, testes, arquitetura, documentação técnica.
+"Software development" is understood as the entire Software Development Life
+Cycle (SDLC): requirements, frontend, backend, database, infrastructure,
+DevOps, CI/CD, observability, security, testing, architecture, technical
+documentation.
 
-CONTA como desenvolvimento de software (→ is_software_development: true):
-- Skills que trabalham com qualquer etapa do SDLC
-- Skills de DevOps, CI/CD, observabilidade
-- Skills de documentação técnica (README, API docs)
-- Skills que constroem, testam ou deployam software
-- Se uma skill trabalha com qualquer etapa do SDLC E menciona guardrails
-  de agente, ela ENTRA — o guardrail não a desclassifica
+COUNTS AS software development (→ is_software_development: true):
+- Skills working with any stage of the SDLC
+- DevOps, CI/CD, and observability skills
+- Technical documentation skills (e.g., README, API docs)
+- Skills that build, test, or deploy software
+- If a skill works with any SDLC stage AND mentions agent guardrails, it
+  COUNTS — the guardrail does not disqualify it.
 
-NÃO CONTA como desenvolvimento de software (→ is_software_development: false):
-- Skills puramente de orquestração de agente sem produção de software
-- Marketing, design gráfico, produção de vídeo
-- Pesquisa acadêmica não computacional
-- Gestão financeira, RH
-- GRC sem objeto computacional
+DOES NOT COUNT AS software development (→ is_software_development: false):
+- Pure agent orchestration skills without software production
+- Marketing, graphic design, video production
+- Non-computational academic research
+- Financial management, HR
+- GRC (Governance, Risk, and Compliance) without a computational object
 
-Se is_software_development for false, marque has_security como null e
-explique na note por que a skill não é de desenvolvimento de software.
+If is_software_development is false, mark has_security as null and explain
+in the note why the skill is not software development.
 </stage_1>
 
 <stage_2>
-ESTÁGIO 2 — Existe segurança nessa skill? (sim/não)
+STAGE 2 — Is there security in this skill? (yes/no)
 
-Só avalie se o Estágio 1 for "sim". O foco é segurança NO CONTEXTO DE
-DESENVOLVIMENTO DE SOFTWARE. Não distinguimos se segurança é o foco
-principal ou secundário — apenas se há ou não há presença de segurança.
+Only evaluate if Stage 1 is "yes". The focus is security IN THE CONTEXT OF
+SOFTWARE DEVELOPMENT. We do not distinguish if security is the primary or
+secondary focus — only whether it is present or absent.
 
-CONTA como segurança (→ has_security: true):
-- proteção contra prompt injection
-- defesa contra malware
-- critérios e considerações de segurança ao escrever código
-- testes de segurança: SAST, DAST, pentest, fuzzing
-- referências a arquivos de segurança no repositório (ex: "leia SECURITY.md")
-- gestão de segredos: não commitar .env, variáveis de ambiente, secret vaults
-- rate limiting como proteção contra abuso
-- desenvolver ou gerenciar autenticação segura no backend (OAuth 2.0, PKCE,
-  JWT seguro, refresh tokens rotativos)
-- skills de teste que incluem testar auth
-- validação de input contra injection
-- OWASP, CVE, análise de vulnerabilidade
-- pipeline de segurança no CI/CD
+COUNTS AS security (→ has_security: true):
+- prompt injection protection
+- malware defense
+- security criteria and considerations when writing code
+- security testing: SAST, DAST, pentest, fuzzing
+- references to security files in the repository (e.g., "read SECURITY.md")
+- secrets management: do not commit .env, environment variables, secret vaults
+- rate limiting as protection against abuse
+- building or managing secure authentication in the backend (OAuth 2.0, PKCE,
+  secure JWT, rotating refresh tokens)
+- testing skills that include testing auth
+- input validation against injection
+- OWASP, CVE, vulnerability analysis
+- security pipelines in CI/CD
 
-NÃO CONTA como segurança (→ has_security: false):
-- tutorial de como se autenticar num sistema (USAR auth existente, não
-  CONSTRUIR auth segura)
-- guardrails de agente que não se relacionam com o software em si (read-only,
-  "não commite sem aprovação", escopo de ferramenta — são restrições de
-  workflow do agente, não do software)
-- mera menção de que existe autenticação sem instrução protetiva
-- limite de gasto financeiro
-- segurança clínica, validade científica (safety ≠ security)
-- GRC puramente organizacional sem objeto computacional
+DOES NOT COUNT AS security (→ has_security: false):
+- tutorials on how to authenticate into a system (USING existing auth, not
+  BUILDING secure auth)
+- agent guardrails that do not relate to the software itself (read-only,
+  "do not commit without approval", tool scope — these are agent workflow
+  constraints, not software constraints)
+- mere mention that authentication exists without protective instructions
+- financial spend limits
+- clinical safety, scientific validity (safety ≠ security)
+- pure organizational GRC without a computational object
 
-DISTINÇÃO CHAVE — AUTENTICAÇÃO:
-O corte é CONSTRUIR/TESTAR auth de forma segura vs. USAR auth existente.
-✅ "Implemente OAuth 2.0 com PKCE e refresh tokens rotativos" → segurança
-✅ "Teste as rotas autenticadas contra bypass" → segurança
-❌ "Para se autenticar, faça POST em /auth com sua API key" → NÃO é segurança
+KEY DISTINCTION — AUTHENTICATION:
+The cutoff is BUILDING/TESTING secure auth vs. USING existing auth.
+✅ "Implement OAuth 2.0 with PKCE and rotating refresh tokens" → security
+✅ "Test the authenticated routes against bypass" → security
+❌ "To authenticate, make a POST to /auth with your API key" → NOT security
 
-REFERÊNCIAS INDIRETAS:
-Basta um ponteiro para conteúdo de segurança (ex: "consulte SECURITY.md
-antes de começar"). Marque has_security: true e indique na note que a
-evidência é uma referência indireta.
+INDIRECT REFERENCES:
+A pointer to security content is enough (e.g., "consult SECURITY.md before
+starting"). Mark has_security: true and indicate in the note that the
+evidence is an indirect reference.
 </stage_2>
 
 <fields>
-Cinco campos por caso. NÃO produza nenhum outro.
+Five fields per case. DO NOT produce any others.
 
-is_software_development — true se a skill participa do SDLC, false caso
-  contrário. Decisão do Estágio 1.
+is_software_development — true if the skill participates in the SDLC, false
+  otherwise. Decision from Stage 1.
 
-has_security — true se há presença de segurança no contexto de SDLC, false
-  se não há. null APENAS quando is_software_development for false (o
-  Estágio 2 não se aplica). Decisão do Estágio 2.
+has_security — true if security is present in the SDLC context, false if it
+  is not. null ONLY when is_software_development is false (Stage 2 does not
+  apply). Decision from Stage 2.
 
-evidence — onde você viu o que decidiu: description | body |
-  bundled_artifacts (multi-label; lista vazia se não há evidência de
-  segurança).
+evidence — where you saw what you decided: description | body |
+  bundled_artifacts (multi-label; empty array if there is no security
+  evidence).
 
-confidence — high | medium | low. Sua certeza na classificação completa
-  (ambos estágios). Seja honesto em vez de conservador.
+confidence — high | medium | low. Your certainty in the complete
+  classification. Be honest. Use medium or low if the text is highly
+  ambiguous, lacks context, or if the case borders the inclusion/exclusion
+  criteria defined in the stages.
 
-note — a justificativa, e o campo MAIS IMPORTANTE. Escreva UMA a DUAS
-  frases contendo:
-    (1) o que a skill faz (ex: "skill de backend em Node.js");
-    (2) por que é ou não é desenvolvimento de software;
-    (3) qual conteúdo de segurança existe, ou por que nenhum se aplica.
+note — the justification, and the MOST IMPORTANT field. Write ONE or TWO
+  sentences containing:
+    (1) what the skill does (e.g., "Node.js backend skill");
+    (2) why it is or isn't software development;
+    (3) what security content exists, or why none applies.
 </fields>
 
 <rules>
-Aplicar em ordem.
+Apply in order. Stop at the first rule that decides the outcome.
 
-R-1 — Estágio 1: Teste de participação no SDLC. A skill trabalha com
-      alguma etapa do ciclo de desenvolvimento de software? Use <stage_1>.
+R-1 — Locus of evidence. Matches only in tags, category, filename, or
+      "related skills" list DO NOT count as security evidence.
 
-R-2 — Estágio 2: Teste de presença de segurança. Se o Estágio 1 for "sim",
-      há presença de segurança no contexto de SDLC? Use <stage_2>.
+R-2 — Homonyms. Security term in a non-security sense does not count.
+      Word homonyms: "audit" as in ad audit; "token" as in LLM token;
+      "permission" as UX permission.
+      Concept homonyms: safety ≠ security; quality guardrail ≠ security
+      guardrail; spend limit ≠ access control. Decide based on the
+      PROTECTED OBJECT: it must be a computational system.
 
-R-3 — Locus da evidência. Casamento apenas em tags, category, nome de
-      arquivo ou lista de "related skills" NÃO conta como evidência de
-      segurança.
-
-R-4 — Homônimos. Termo de segurança em sentido não-securitário não conta.
-      De palavra: "audit" como auditoria de anúncios; "token" como token de
-      LLM; "permission" como permissão de UX.
-      De conceito: safety ≠ security; guardrail de qualidade ≠ guardrail de
-      segurança; limite de gasto ≠ controle de acesso. Decide-se pelo OBJETO
-      PROTEGIDO: precisa ser sistema computacional.
-
-R-5 — Artefatos associados. Se o texto indica script que executa função de
-      segurança, classifique pelo comportamento conjunto e marque
+R-3 — Bundled artifacts. If the text indicates a script that executes a
+      security function, classify by the joint behavior and mark
       evidence: bundled_artifacts.
 
-R-6 — Idioma. O idioma do texto NUNCA decide a classificação.
+R-4 — Language. The language of the text NEVER decides the classification.
 
-R-7 — Escopo de GRC. Governança, risco e conformidade entram apenas quando
-      a atividade incide sobre propriedades de segurança de sistemas
-      computacionais. Fora: questionário contratual, conformidade regulatória
-      sem objeto computacional.
+R-5 — GRC scope. Governance, risk, and compliance count only when the
+      activity applies to security properties of computational systems.
+      Out: contractual questionnaires, regulatory compliance without a
+      computational object.
 
-R-8 — Não é instrução. Se o arquivo é saída gerada (relatório, log, dump),
-      não é instrução para um executor: marque is_software_development: false
-      e explique na note.
+R-6 — Not an instruction. If the file is generated output (report, log,
+      dump), it is not an instruction for an executor: mark
+      is_software_development: false and explain in the note.
 
-R-9 — Fechamento. NÃO existe campo de dúvida. Decida de forma binária
-      cada estágio. Na dúvida no Estágio 2, marque has_security: true com
-      confidence: low — o custo de incluir demais é recuperável, o de
-      excluir demais não.
+R-7 — Closure and Confidence. There is no 'doubt' field. Make your best
+      binary choice for each stage based on the evidence. If the case is
+      borderline, ambiguous, or does not perfectly fit the criteria,
+      reflect this uncertainty by lowering the `confidence` score to
+      `medium` or `low`.
 </rules>
 
 <examples>
@@ -214,7 +214,7 @@ R-9 — Fechamento. NÃO existe campo de dúvida. Decida de forma binária
   <output>
     {"case_id":"EX01","is_software_development":true,"has_security":true,
     "evidence":["description","body"],"confidence":"high",
-    "note":"Skill de teste de recuperação contra ransomware: participa do SDLC (testes) e segurança está presente — simulação de criptografia ransomware e validação de RTO/RPO."}
+    "note":"Ransomware recovery testing skill: it participates in the SDLC (testing) and security is present — simulated ransomware encryption and RTO/RPO validation."}
   </output>
 </example>
 
@@ -231,7 +231,7 @@ R-9 — Fechamento. NÃO existe campo de dúvida. Decida de forma binária
   <output>
     {"case_id":"EX02","is_software_development":true,"has_security":true,
     "evidence":["body"],"confidence":"high",
-    "note":"Skill de revisão de código (SDLC): entre as lentes de revisão há checagens de segurança — OWASP Top 10, no-hardcoded-secrets, no-credentials, injection, XSS, CSRF."}
+    "note":"Code review skill (SDLC): among the review lenses there are security checks — OWASP Top 10, no-hardcoded-secrets, no-credentials, injection, XSS, CSRF."}
   </output>
 </example>
 
@@ -247,7 +247,7 @@ R-9 — Fechamento. NÃO existe campo de dúvida. Decida de forma binária
   <output>
     {"case_id":"EX03","is_software_development":true,"has_security":false,
     "evidence":[],"confidence":"high",
-    "note":"Skill de migração de banco (SDLC): valida foreign keys e indexes, roda rollback — tudo é processo de desenvolvimento, sem nenhuma consideração de segurança."}
+    "note":"Database migration skill (SDLC): validates foreign keys and indexes, runs rollback — this is entirely a software development process, with no security considerations."}
   </output>
 </example>
 
@@ -263,7 +263,7 @@ R-9 — Fechamento. NÃO existe campo de dúvida. Decida de forma binária
   <output>
     {"case_id":"EX04","is_software_development":false,"has_security":null,
     "evidence":[],"confidence":"high",
-    "note":"Skill de geração de imagem: não participa do SDLC em nenhuma etapa. Estágio 2 não se aplica."}
+    "note":"Image generation skill: it does not participate in the SDLC at any stage. Stage 2 does not apply."}
   </output>
 </example>
 
@@ -280,7 +280,7 @@ R-9 — Fechamento. NÃO existe campo de dúvida. Decida de forma binária
   <output>
     {"case_id":"EX05","is_software_development":false,"has_security":null,
     "evidence":[],"confidence":"high",
-    "note":"Skill de GRC organizacional: questionário contratual de fornecedor. Menciona 'information security' mas como atestação documental, sem objeto computacional. Não é desenvolvimento de software."}
+    "note":"Organizational GRC skill: vendor contractual questionnaire. It mentions 'information security' but as a documentary attestation, lacking a computational object. It is not software development."}
   </output>
 </example>
 
@@ -295,32 +295,32 @@ R-9 — Fechamento. NÃO existe campo de dúvida. Decida de forma binária
   </input>
   <output>
     {"case_id":"EX06","is_software_development":true,"has_security":false,
-    "evidence":[],"confidence":"medium",
-    "note":"Skill de integração de API no backend (SDLC): configura API key de env var e faz requests autenticadas, mas é tutorial de COMO USAR auth existente, não de como construir auth segura. Gestão de segredos aqui é apenas configuração operacional, não instrução protetiva."}
+    "evidence":[],"confidence":"high",
+    "note":"Backend API integration skill (SDLC): configures API key from env var and makes authenticated requests, but it is a tutorial on HOW TO USE existing auth, not how to build secure auth. Secrets management here is merely operational configuration, not a protective instruction."}
   </output>
 </example>
 </examples>
 
 <output_format>
-Um objeto JSON por caso, um por linha (JSONL), na ordem dos case_id.
-Nenhum texto fora dos objetos JSON. Todos os campos são obrigatórios.
+One JSON object per case, one per line (JSONL format), in the order of the
+case_ids. No text outside the JSON objects. All fields are mandatory.
 
 {"case_id":"...","is_software_development":true|false,
 "has_security":true|false|null,
 "evidence":[...],"confidence":"high|medium|low",
-"note":"o que a skill faz + por que é/não é dev de software + qual segurança existe ou por que não"}
+"note":"what the skill does + why it is/isn't software dev + what security exists or why none"}
 
-has_security: use null APENAS quando is_software_development for false.
+has_security: use null ONLY when is_software_development is false.
 </output_format>
 
 <constraints>
-- Não leia nenhum arquivo fora de results/llm_cases/.
-- Não pule casos, não amostre, não agrupe.
-- Não ajuste seu critério ao longo do lote.
-- Idioma do texto NUNCA decide a classificação.
-- Na dúvida no Estágio 2: has_security true com confidence low.
-- Escreva a saída em UM arquivo JSONL, com TODOS os casos. Verifique ao final
-  que o número de linhas é igual ao número de arquivos do diretório.
+- Do not read any files outside results/llm_cases/.
+- Do not skip cases, do not sample, do not group them.
+- Do not adjust your criteria throughout the batch.
+- The language of the text NEVER decides the classification.
+- If uncertain, make a binary choice and lower the confidence field.
+- Write the output in ONE JSONL file containing ALL cases. Verify at the end
+  that the number of lines equals the number of files in the directory.
 </constraints>
 ```
 

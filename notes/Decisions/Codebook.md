@@ -129,14 +129,13 @@ O modelo de dados para a anotação utiliza campos simplificados:
 
 Aplicar em ordem; parar na primeira que decidir.
 
-**R-1 — Teste do Estágio 1:** A skill participa do ciclo de desenvolvimento de software (SDLC)?
-**R-2 — Teste do Estágio 2:** Há presença de segurança no contexto de SDLC da skill?
-**R-3 — Locus da evidência:** O casamento de termos de segurança apenas em tags, categorias ou nomes de arquivo não conta como segurança válida.
-**R-4 — Homônimos:** Termos de segurança com duplo sentido (ex: audit ≠ security audit, token ≠ auth token) devem ser filtrados conforme a intenção.
-**R-5 — Artefatos associados:** Artefatos englobados (`bundled_artifacts`) que operam funções de segurança contam para as classificações de segurança se forem instrução.
-**R-6 — Idioma:** O idioma nunca decide a classificação; termos de segurança em inglês dentro de outro idioma ainda são evidência.
-**R-7 — Escopo de GRC:** Governança, Risco e Conformidade entra na classificação desde que inclua inspeção ou ação sobre um sistema computacional.
-**R-8 — Fechamento:** Não há mais classes de incerteza (ex-`AMBIGUOUS`). Decida de forma binária os estágios e marque exclusão de frame caso impossível.
+**R-1 — Locus da evidência:** O casamento de termos de segurança apenas em tags, categorias ou nomes de arquivo não conta como segurança válida.
+**R-2 — Homônimos:** Termos de segurança com duplo sentido (ex: audit ≠ security audit, token ≠ auth token) devem ser filtrados conforme a intenção.
+**R-3 — Artefatos associados:** Artefatos englobados (`bundled_artifacts`) que operam funções de segurança contam para as classificações se o arquivo for uma instrução.
+**R-4 — Idioma:** O idioma nunca decide a classificação; termos de segurança em inglês dentro de outro idioma ainda são evidência.
+**R-5 — Escopo de GRC:** Governança, Risco e Conformidade entra na classificação desde que inclua inspeção ou ação sobre um sistema computacional.
+**R-6 — Não é instrução:** Se o arquivo for saída gerada (dump, relatório, log), marque `is_software_development: false` (será excluído no frame posteriormente).
+**R-7 — Fechamento e Confiança:** Não há campo de dúvida. Decida de forma binária cada estágio baseado na melhor evidência. Se o caso for limítrofe, ambíguo ou não se encaixar perfeitamente nos critérios, reflita essa incerteza rebaixando o campo `confidence` para `medium` ou `low`.
 
 ---
 
