@@ -129,14 +129,17 @@ O modelo de dados para a anotação utiliza campos simplificados:
 
 Aplicar em ordem; parar na primeira que decidir.
 
-**R-1 — Locus da evidência:** O casamento de termos de segurança apenas em tags, categorias ou nomes de arquivo não conta como segurança válida.
-**R-2 — Homônimos:** Termos de segurança com duplo sentido (ex: audit ≠ security audit, token ≠ auth token) devem ser filtrados conforme a intenção.
-**R-3 — Artefatos associados:** Artefatos englobados (`bundled_artifacts`) que operam funções de segurança contam para as classificações se o arquivo for uma instrução.
-**R-4 — Idioma:** O idioma nunca decide a classificação; termos de segurança em inglês dentro de outro idioma ainda são evidência.
-**R-5 — Escopo de GRC:** Governança, Risco e Conformidade entra na classificação desde que inclua inspeção ou ação sobre um sistema computacional.
-**R-6 — Não é instrução:** Se o arquivo for saída gerada (dump, relatório, log), marque `is_software_development: false` (será excluído no frame posteriormente).
-**R-7 — Fechamento e Confiança:** Não há campo de dúvida. Decida de forma binária cada estágio baseado na melhor evidência. Se o caso for limítrofe, ambíguo ou não se encaixar perfeitamente nos critérios, reflita essa incerteza rebaixando o campo `confidence` para `medium` ou `low`.
-
+**R-1 — Teste do Estágio 1 (Participação no SDLC):** A skill atua em qualquer etapa do ciclo de vida de desenvolvimento de software? Se sim, `is_software_development: true`. Se não (orquestração pura, texto, vídeo, GRC corporativo), `is_software_development: false` e a avaliação se encerra.
+**R-2 — Teste do Estágio 2 (Presença de Segurança):** Se R-1 for verdadeiro, o texto traz alguma consideração de segurança voltada a sistemas computacionais? A pergunta é apenas sobre **presença** (sim/não), independentemente se é o foco principal. Se sim, `has_security: true`.
+**R-3 — Locus da evidência:** Casamento de termos de segurança apenas em tags, categorias, nome do arquivo ou listas genéricas ("related skills") não conta como conteúdo de segurança.
+**R-4 — Homônimos:** Termos de segurança com duplo sentido (ex: audit ≠ security audit, token ≠ auth token, permission = UX permission) devem ser filtrados conforme a intenção; safety ≠ security.
+**R-5 — Artefatos associados:** Se `has_scripts = 1` e o script opera funções de segurança englobadas (`bundled_artifacts`), classifique pelo comportamento conjunto se o arquivo principal for uma instrução.
+**R-6 — Objeto protegido:** A segurança pode incidir sobre o código produzido, a infraestrutura, o agente/harness ou a própria skill — desde que o alvo seja um objeto computacional.
+**R-7 — Idioma:** O idioma original nunca decide a classificação; termos técnicos de segurança em inglês dentro de outro idioma são evidência válida.
+**R-8 — Escopo de GRC:** Governança, Risco e Conformidade entra na classificação apenas se houver inspeção ou ação sobre propriedades de segurança de sistemas computacionais.
+**R-9 — Não é instrução (Saída Gerada):** Se o arquivo for nitidamente um log, dump ou relatório gerado e não uma instrução prospectiva, marque `is_software_development: false` e anote para exclusão de frame posterior.
+**R-10 — Fechamento e Confiança:** Não há classe de dúvida (ex-`AMBIGUOUS`). Faça a sua melhor escolha binária em R-1 e R-2 baseada na evidência. Se o caso for limítrofe ou ambíguo, rebaixe o campo `confidence` para `medium` ou `low`.
+**R-11 — Cegamento:** O anotador humano não vê o sinal preliminar de triagem ou a saída da LLM antes ou durante a sua anotação.
 ---
 
 ## 6. Exclusões de frame
