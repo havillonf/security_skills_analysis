@@ -168,7 +168,7 @@ Os coeficientes a reportar para ambas as decisões binárias continuam a ser:
 ## 8. Limites conhecidos
 
 - **Sem medição atual:** Confiabilidade da nova abordagem binária ainda não aferida empiricamente;
-- **Limiares de inclusão (Estágio 2):** Ao ser meramente identificador da presença de uma preocupação, a super-inclusão herdada do antigo `SECONDARY` exigirá separação através de open-coding futuro;
+- **Limiares de inclusão (Estágio 2):** Ao ser identificador binário da presença de segurança, a super-inclusão poderá exigir separação posterior através de open-coding;
 - **Referências indiretas:** Quando há apenas a menção "consulte SECURITY.md", tem-se uma marcação de segurança (sim) sem saber a categoria exata desta proteção até um mapeamento qualitativo aprofundado;
 - **Ambiguidades em Autenticação e Configuração:** Distinguir a construção/proteção da autenticação do uso puro de chaves API poderá exigir jurisprudência robusta em casos limítrofes.
 
