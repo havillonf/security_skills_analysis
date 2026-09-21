@@ -1,0 +1,9 @@
+{
+  "n_target": 100,
+  "n_accepted": 100,
+  "n_rejected_for_language": 16,
+  "final_batch_size": 400,
+  "population_frame": "dedup_primary = 1 AND content IS NOT NULL (status quo, D-022 EM ABERTO)",
+  "language_filter": "lingua, por paragrafo (>= 40 caracteres, confianca >= 0.6), corrige a lacuna de escrita latina registrada em Decision Log D-025",
+  "caveat": "amostra aleatória simples, NÃO estratificada por sinal preliminar (Decision Log D-026) — pode conter poucos casos na fronteira SECONDARY/MENTION"
+}
