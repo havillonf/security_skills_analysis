@@ -22,9 +22,9 @@ arquivo permanece no histórico por rastreabilidade.
 > 5. **Idioma**: O prompt fed na API (o bloco XML) foi inteiramente traduzido
 >    para o inglês. Como o dataset está em inglês e o paper visa a trilha MSR,
 >    isso alinha a língua do raciocínio e facilita o artefato de replicação.
-> 6. Regras redundantes foram deletadas (antigas R-1 e R-2) e a regra de
->    fechamento instrui explicitamente o rebaixamento da *confidence* em casos
->    ambíguos (ao invés de forçar a classificação).
+> 6. As regras R-1 a R-10 foram harmonizadas com o Codebook v3.0, com a
+>    regra de fechamento instruindo explicitamente o rebaixamento da
+>    *confidence* em casos ambíguos (ao invés de forçar a classificação).
 
 ---
 
@@ -42,7 +42,7 @@ popularity — judge only the text of each file provided.
 </role>
 
 <task>
-In the directory <cases_dir>results/llm_cases/</cases_dir> there is one
+In the directory <cases_dir>results/EXP-018_llm_cases/</cases_dir> there is one
 `.md` file per case, each following this format:
 
   case_id: LLM001
@@ -59,7 +59,7 @@ do not sample, do not summarize multiple cases together. Treat each case as
 completely independent: the classification of one case must not influence
 another.
 
-**Access Restriction:** read ONLY the files inside `results/llm_cases/`.
+**Access Restriction:** read ONLY the files inside `results/EXP-018_llm_cases/`.
 Do not read, list, or access any other file or directory in this repository.
 
 At the end of each case, respond only with the JSON object defined in
@@ -167,36 +167,51 @@ note — the justification, and the MOST IMPORTANT field. Write ONE or TWO
 <rules>
 Apply in order. Stop at the first rule that decides the outcome.
 
-R-1 — Locus of evidence. Matches only in tags, category, filename, or
+R-1 — Stage 1 Test: SDLC Participation. Does the skill participate in
+      any stage of the software development lifecycle? If yes,
+      is_software_development: true. If no (pure agent orchestration,
+      marketing, non-computational research, HR/finance),
+      is_software_development: false and evaluation ends. Use <stage_1>.
+
+R-2 — Stage 2 Test: Security Presence. If R-1 is true, does the skill
+      contain security considerations within the SDLC context? The question
+      is solely about PRESENCE (yes/no), regardless of whether security is
+      the primary focus. If yes, has_security: true. Use <stage_2>.
+
+R-3 — Locus of evidence. Matches only in tags, category, filename, or
       "related skills" list DO NOT count as security evidence.
 
-R-2 — Homonyms. Security term in a non-security sense does not count.
+R-4 — Homonyms. Security term in a non-security sense does not count.
       Word homonyms: "audit" as in ad audit; "token" as in LLM token;
       "permission" as UX permission.
       Concept homonyms: safety ≠ security; quality guardrail ≠ security
       guardrail; spend limit ≠ access control. Decide based on the
       PROTECTED OBJECT: it must be a computational system.
 
-R-3 — Bundled artifacts. If the text indicates a script that executes a
+R-5 — Bundled artifacts. If the text indicates a script that executes a
       security function, classify by the joint behavior and mark
       evidence: bundled_artifacts.
 
-R-4 — Language. The language of the text NEVER decides the classification.
+R-6 — Protected object. Security may apply to the generated code,
+      infrastructure, agent/harness, or the skill itself — provided the
+      target is a computational system.
 
-R-5 — GRC scope. Governance, risk, and compliance count only when the
+R-7 — Language. The language of the text NEVER decides the classification.
+
+R-8 — GRC scope. Governance, risk, and compliance count only when the
       activity applies to security properties of computational systems.
       Out: contractual questionnaires, regulatory compliance without a
       computational object.
 
-R-6 — Not an instruction. If the file is generated output (report, log,
+R-9 — Not an instruction. If the file is generated output (report, log,
       dump), it is not an instruction for an executor: mark
       is_software_development: false and explain in the note.
 
-R-7 — Closure and Confidence. There is no 'doubt' field. Make your best
-      binary choice for each stage based on the evidence. If the case is
-      borderline, ambiguous, or does not perfectly fit the criteria,
-      reflect this uncertainty by lowering the `confidence` score to
-      `medium` or `low`.
+R-10 — Closure and Confidence. There is no 'doubt' field. Make your best
+       binary choice for each stage based on the evidence. If the case is
+       borderline, ambiguous, or does not perfectly fit the criteria,
+       reflect this uncertainty by lowering the `confidence` score to
+       `medium` or `low`.
 </rules>
 
 <examples>
@@ -314,7 +329,7 @@ has_security: use null ONLY when is_software_development is false.
 </output_format>
 
 <constraints>
-- Do not read any files outside results/llm_cases/.
+- Do not read any files outside results/EXP-018_llm_cases/.
 - Do not skip cases, do not sample, do not group them.
 - Do not adjust your criteria throughout the batch.
 - The language of the text NEVER decides the classification.
