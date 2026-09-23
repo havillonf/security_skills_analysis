@@ -109,3 +109,7 @@ models/*.joblib
 # EXP-018: arquivos individuais da amostra gerada para o Codebook v3.0
 results/EXP-018_llm_cases/
 results/EXP-018_llm_sample_rejected.csv
+
+# EXP-019: arquivos individuais da amostra manual para o Codebook v3.1
+results/EXP-019_cases/
+results/EXP-019_rejected.csv

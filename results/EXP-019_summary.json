@@ -1,0 +1,12 @@
+{
+  "experiment": "EXP-019",
+  "n_target_buffer": 600,
+  "n_accepted_eligible": 600,
+  "n_rejected_total": 104,
+  "n_rejected_too_short": 7,
+  "n_rejected_language": 97,
+  "batch_size_needed": 1200,
+  "quota_target_sdlc": 385,
+  "calibration_cases": "Primeiros 20 a 40 casos (CASE001 a CASE040)",
+  "protocol": "Anotar ordenadamente a partir de CASE001. Se is_software_development=false, descartar e seguir para o próximo até acumular 385 casos com is_software_development=true."
+}
