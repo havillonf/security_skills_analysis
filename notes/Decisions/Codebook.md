@@ -1,9 +1,9 @@
 ---
 tipo: codebook
-version: 3.0
+version: 3.1
 data: 2026-09-21
-substitui: v2.6 (2026-09-05)
-decisoes: D-034, D-035
+substitui: v3.0 (2026-09-21)
+decisoes: D-034, D-035, D-036, D-037, D-038
 status: em construção — aguardando validação em nova amostra
 ---
 
@@ -44,6 +44,8 @@ Instrumento canônico de anotação. Definição, classes e dimensões fornecida
 > Substitui a abordagem de três classes (PRIMARY/SECONDARY/NONE) por uma
 > classificação em duas etapas: (1) participação no ciclo de desenvolvimento
 > de software e (2) presença de segurança neste contexto.
+>
+> **v3.1** ([[Decision Log#D-036]], [[Decision Log#D-037]], [[Decision Log#D-038]]): Estabelece que a anotação será 100% manual para 385 casos de SDLC (substituindo classificação primária por LLM). Formaliza a amostragem com reposição (descarte de não-SDLC) e calibração de $\kappa \ge 0.8$ nos primeiros 20-40 casos.
 
 ---
 
@@ -51,7 +53,7 @@ Instrumento canônico de anotação. Definição, classes e dimensões fornecida
 
 - **QI-1 reformulada:** "Entre as Agent Skills voltadas ao desenvolvimento de software, qual a prevalência de considerações de segurança?"
 - **Unidade de análise:** O conteúdo distinto (`dedup_primary = 1`), conforme [[Decision Log#D-001]].
-- **População:** Restrita a skills 100% em inglês ([[Decision Log#D-025]]).
+- **População Elegível:** Restrita a skills 100% em inglês ([[Decision Log#D-025]]) e com tamanho mínimo suficiente para avaliação (`length(description) + body_chars >= 200`). O dataset base para a amostragem considera apenas a intersecção desses filtros.
 
 ---
 
@@ -150,21 +152,23 @@ Aplicadas no frame e não como classificação, removendo a skill da análise:
 - **Sem evidência classificável:** Contagem de caracteres combinada muito baixa (`length(description) + body_chars < 200`).
 - **Evidência truncada com dúvida:** Script truncado/faltante cujo texto remanescente seja insatisfatório para julgar os estágios (necessário reportar com limites de Manski).
 - **Não é arquivo de instrução:** O arquivo não atua como instrução (`not_an_instruction_artifact`); por exemplo, é uma saída de dump ou log.
+- **Filtro de População (Não-SDLC):** Conforme D-037, skills que falham no Estágio 1 (`is_software_development = false`) são registradas para o cálculo da taxa de descarte geral, mas **removidas e repostas** na contagem da amostra principal, garantindo que o dataset final de $n=385$ seja 100% composto por skills de SDLC.
 
 ---
 
 ## 7. Confiabilidade
 
-> [!warning] Medição pendente
-> Esta versão (v3.0) ainda **não teve confiabilidade medida**, já que muda o esquema para classificação binária de duas etapas, invalidando as métricas anteriores da v2.4/v2.6.
+> [!info] Procedimento de Calibração Manual (D-036)
+> A anotação do *ground truth* (que compõe a amostra final de $n=385$ skills de SDLC) é feita 100% por humanos. O protocolo exige:
+> 1. Anotação independente dos primeiros **20 a 40 casos**.
+> 2. Reconciliação e cálculo de **Cohen's $\kappa$**, visando um limiar $\kappa \ge 0.8$.
+> 3. Após calibração, prosseguir com a anotação do restante até obter 385 casos válidos de SDLC, onde deve ser atingida a **saturação teórica** para a RQ2 (Open Coding).
 
-Os coeficientes a reportar para ambas as decisões binárias continuam a ser:
+Os coeficientes a reportar para as decisões binárias (e qualitativas) continuam a ser:
 1. Concordância bruta ($p_o$)
-2. **Cohen's $\kappa$** (ou Fleiss para $>2$ avaliadores)
+2. **Cohen's $\kappa$** (para 2 avaliadores independentes)
 3. **Krippendorff's $\alpha$**
 4. **Gwet's AC1** (essencial como resguardo a paradoxos de kappa em distribuições desbalanceadas)
-
-É necessário apresentar limites de confiança por *bootstrap* e testar discordância sistemática via teste de McNemar na nova amostra.
 
 ---
 
