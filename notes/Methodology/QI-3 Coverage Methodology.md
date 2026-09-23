@@ -3,44 +3,63 @@ tipo: metodologia
 questao: QI-3
 data: 2026-08-22
 status: proposta; bloqueada por QI-2
+atualizado: 2026-09-23
+status: Proposta formalizada; sequenciada após a saturação da QI-2 (D-024)
 ---
 
 # QI-3 — Metodologia de cobertura
+# QI-3 — Metodologia de Cobertura e Análise de Lacunas (Gap Analysis)
 
 > **QI-3. Que lacunas existem — o que as skills de segurança não cobrem?**
+> **QI-3 (Gap Analysis / Conformidade). Quais lacunas existem entre as preocupações de segurança manifestadas nas skills e os frameworks consagrados de segurança de software (OWASP Top 10 e OWASP Top 10 for LLM)?**
 
 > [!warning] Bloqueada por desenho
 > A QI-3 **não pode começar** antes de a taxonomia empírica da
 > [[QI-2 Methodology|QI-2]] estar razoavelmente estabilizada. Antecipar o crosswalk
 > contamina a QI-2 com categorias externas e produz circularidade.
+> [!warning] Sequenciamento Metodológico — Bloqueada por Desenho
+> A QI-3 **não pode começar** antes de a taxonomia empírica da [[QI-2 Methodology|QI-2]] atingir estabilização e saturação teórica. Realizar o *crosswalk* antes contaminaria a análise qualitativa da QI-2 com categorias externas, induzindo circularidade.
 >
 > Desde [[Decision Log#D-024]] (2026-08-27), isso é parte de uma cadeia
 > formal e sequenciada: **QI-1 → validação do classificador → QI-2 → QI-3**.
 > Como QI-2 já depende do classificador de QI-1 estar validado, a QI-3 herda
 > essa dependência **transitivamente** — não começa antes de QI-2 estabilizar
 > e QI-2 não começa antes do gate de E-7.
+> A sequência inegociável da pesquisa é: **QI-1 (Prevalência) → QI-2 (Taxonomia Empírica Bottom-Up) → QI-3 (Gap Analysis Top-Down)**.
 
 ---
 
 ## 1. Por que é metodologicamente diferente da QI-2
+## 1. Direção Metodológica: Bottom-Up vs. Top-Down
 
 | | QI-2 | QI-3 |
+| Dimensão | QI-2 (Tipologia) | QI-3 (Gap Analysis) |
 |---|---|---|
 | Direção | bottom-up | top-down |
 | Pergunta | o que existe nos dados? | o que se esperaria encontrar e não encontramos? |
 | Fonte das categorias | os próprios dados | referenciais externos |
 | Risco principal | deriva do codebook | circularidade e falsa lacuna |
+| **Direção** | Bottom-up (indutiva) | Top-down (dedutiva / comparativa) |
+| **Pergunta** | O que existe nos dados do ecossistema? | O que se esperaria encontrar com base nos frameworks e não encontramos? |
+| **Fonte das categorias** | As próprias skills observadas | Referenciais consolidados de mercado |
+| **Risco metodológico** | Deriva de conceitos | Encaixe forçado e falsa lacuna |
 
 As duas etapas **não se misturam**. QI-2 termina antes de QI-3 começar.
 
 ---
 
 ## 2. Referencial externo
+## 2. Referenciais Externos Adotados
 
 Escolha **justificada**, não exaustiva. Não usar todos os frameworks disponíveis por
 completude.
+Para avaliar a completude das preocupações de segurança em software no contexto de agentes, adotam-se dois referenciais canônicos da OWASP:
 
 Candidatos a avaliar quando a QI-2 estabilizar:
+| Framework | Escopo no Estudo | O que Permite Observar |
+|---|---|---|
+| **OWASP Top 10 (Web/Software Tradicional)** | Componentes convencionais de software (APIs, banco, autenticação, controle de acesso) | Presença ou negligência de falhas clássicas (Broken Access Control, Injection, Cryptographic Failures) |
+| **OWASP Top 10 for LLM Applications** | Camada agêntica e interfaces com modelos de IA | Proteção contra ameaças emergentes específicas (Prompt Injection, Insecure Output Handling, Sensitive Information Disclosure) |
 
 | Framework | A que tipo de skill se aplica | O que permite observar | Limitação |
 |---|---|---|---|
@@ -64,21 +83,27 @@ Não inventar referência.
 ---
 
 ## 3. Aplicabilidade antes de cobertura
+## 3. Escopo de Aplicabilidade antes da Cobertura
 
 > [!danger] Nunca use todas as Security Skills como denominador
 > Calcular lacuna sobre a população inteira produz "lacuna" artificial: prompt
 > injection não é esperado numa skill que não interage com LLM; SQL injection não é
 > esperado numa skill que nunca toca banco relacional.
+> [!danger] Risco de Falsa Lacuna: Denominador Incorreto
+> Calcular a lacuna de um risco sobre a totalidade das skills gera conclusões artificiais: por exemplo, *Prompt Injection* não é aplicável a uma skill que apenas manipula consultas SQL tradicionais sem uso de LLMs; *SQL Injection* não é aplicável a uma skill estritamente de estilização CSS.
 
 O denominador correto é condicional:
+O cálculo de cobertura para cada preocupação $P$ deve ser estritamente condicional:
 
 ```text
         skills que cobrem a preocupação P
 ────────────────────────────────────────────────
    skills às quais P é aplicável (escopo de P)
 ```
+$$\text{Taxa de Cobertura}(P) = \frac{\text{Skills que tratam } P}{\text{Skills às quais } P \text{ é tecnicamente aplicável}}$$
 
 e **não**:
+O escopo de aplicabilidade de $P$ é derivado dos atributos técnicos e do objetivo funcional anotados na QI-1 e na QI-2.
 
 ```text
         skills que cobrem a preocupação P
@@ -109,8 +134,10 @@ cálculo — ver [[Decision Log#D-009]].
 ---
 
 ## 4. Níveis de cobertura
+## 4. Procedimento de Crosswalk (Mapeamento de/para)
 
 Binário `covered`/`not covered` é insuficiente. Escala proposta:
+Uma vez concluída a taxonomia da QI-2, realiza-se o mapeamento bidirecional:
 
 | Nível | Leitura |
 |---|---|
@@ -193,9 +220,23 @@ foram descartadas, o resultado é "não observada", não "ausente".
               ▼
  cobertura forte / moderada / limitada /
  não observada / incerta / não aplicável
+    Taxonomia Empírica (QI-2)                  Frameworks (OWASP)
+   ┌────────────────────────┐                ┌───────────────────────┐
+   │ Códigos e Dimensões    │◄──────────────►│ OWASP Top 10          │
+   │ Emergentes dos Dados   │   Crosswalk    │ OWASP for LLM         │
+   └────────────────────────┘                └───────────────────────┘
+               │                                         │
+               ▼                                         ▼
+   Categorias Empíricas Sem                  Requisitos de Segurança Sem
+   Equivalente Externo:                      Correspondência Empírica:
+   -> Especificidades de Agent Skills        -> LACUNAS REAIS DE MERCADO (GAP)
 ```
 
 Contribuições **potenciais** — hipóteses, não conclusões:
+### Regras de Mapeamento:
+1. **Não forçar equivalências:** Relações podem ser $1:1$, $1:N$, $N:1$ ou **sem correspondência**. Forçar categorias externas sem aderência semântica mascara os achados.
+2. **Achados Positivos Próprios:** Categorias identificadas na QI-2 que não constam na OWASP evidenciam salvaguardas nativas de agentes ainda não padronizadas.
+3. **Lacunas Reais:** Riscos críticos da OWASP com aplicabilidade clara na amostra, mas sem menção de proteção nas skills, constituem as lacunas principais reportadas na pesquisa.
 
 - a distância entre **segurança mencionada** e **segurança operacionalizada**;
 - preocupações reconhecidas por frameworks externos com pouca ou nenhuma
@@ -208,10 +249,14 @@ Nenhuma dessas pode ser assumida antes da análise.
 ---
 
 ## 8. Estado atual
+## 5. Linguagem Científica para Relato de Lacunas
 
 ⬜ Não iniciada, por desenho. Depende de [[QI-2 Methodology|QI-2]] estabilizada,
 que por sua vez depende do gate de validação do classificador de QI-1
 ([[Decision Log#D-024]]).
+Conforme preceito empírico, a ausência de registro nas skills examinadas **não é prova de inexistência absoluta**.
+- Evitar afirmações absolutistas: *"As skills de agentes não protegem contra X"*.
+- Utilizar formulações defensáveis: *"Não foi observada menção ou implementação de defesas para X entre as skills nas quais o risco era diretamente aplicável"*.
 
 O único insumo já produzido é o sinal preliminar da §2 (ransomware recovery e ICS/OT
 sem correspondência no OWASP Top 10), a partir de 48 casos de descoberta.
@@ -220,3 +265,4 @@ sem correspondência no OWASP Top 10), a partir de 48 casos de descoberta.
 
 [[01 - Research Question]] · [[QI-2 Methodology]] · [[Security Taxonomy]] ·
 [[Codebook]] · [[EXP-002]] · [[03 - Methodology]] · [[Decision Log]]
+[[01 - Research Question]] · [[QI-1 Methodology]] · [[QI-2 Methodology]] · [[Codebook]] · [[Security Taxonomy]] · [[Decision Log]]

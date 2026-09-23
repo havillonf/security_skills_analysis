@@ -3,15 +3,19 @@ tipo: metodologia
 questao: QI-2
 data: 2026-08-22
 status: proposta; open coding iniciado
+atualizado: 2026-09-23
+status: Alinhada com D-036 e D-038: Open coding manual sobre os casos de segurança dos 385 de SDLC; LLMs (Claude/Qwen) como assistentes qualitativos
 ---
 
 # QI-2 — Metodologia
 
 > **QI-2. Que tipos de preocupação de segurança as skills expressam, e como se
 > distribuem?**
+> **QI-2 (Tipologia). Quais categorias e dimensões de segurança são contempladas nessas skills e como elas se distribuem?**
 
 Abordagem **bottom-up**. A taxonomia emerge dos dados via análise temática, não de
 framework externo.
+Abordagem **bottom-up (indutiva)**. A taxonomia emerge dos dados via análise temática e *open coding*, e não a partir de frameworks externos pré-concebidos.
 
 > [!danger] Regra inegociável
 > **Nunca use OWASP, MITRE ou qualquer referencial externo para construir a
@@ -19,6 +23,9 @@ framework externo.
 > fomos procurar — e esconderia padrões próprios do ecossistema de Agent Skills.
 > Frameworks externos entram **apenas depois** da taxonomia estabilizada, para
 > crosswalk e [[QI-3 Coverage Methodology|QI-3]].
+> [!danger] Regra inegociável — Evitar Circularidade
+> **Nunca use OWASP, MITRE ou qualquer referencial externo para construir a taxonomia empírica da QI-2.** 
+> Isso criaria circularidade — encontraríamos apenas o que fomos buscar — e esconderia padrões próprios do ecossistema de Agent Skills. Frameworks externos entram **apenas depois** da taxonomia estabilizada, no âmbito da [[QI-3 Coverage Methodology|QI-3 (Gap Analysis)]].
 
 > [!important] Gate — [[Decision Log#D-024]] (2026-08-27)
 > QI-2 só é executada **depois** de o classificador de triagem de QI-1 passar
@@ -35,6 +42,7 @@ framework externo.
 ---
 
 ## 1. Pipeline
+## 1. Conjunto de Entrada e Amostragem
 
 ```text
 skills candidatas (candidate retrieval)
@@ -57,16 +65,21 @@ validação (gold set, concordância)
         ↓
 classificação em escala
 ```
+O universo de análise da QI-2 deriva diretamente da anotação humana da QI-1:
 
 Cada iteração registra: códigos novos, códigos fundidos, códigos abandonados, casos
 fronteiriços e sobreposições. O histórico de mudanças fica em [[Security Taxonomy]].
+1. **População Primária da QI-2:** Todas as skills classificadas com `has_security = true` no Estágio 2 da amostra de 385 casos de SDLC ([[Decision Log#D-036]]).
+2. **Contingência para Baixa Incidência (Two-Phase Sampling):** Se a incidência de segurança dentro dos 385 casos for muito reduzida (ex: $< 50$ casos), uma amostra intencional complementar será extraída do pool filtrado pela heurística de segurança, assegurando volume empírico suficiente para saturação qualitativa.
 
 ---
 
 ## 2. Candidate retrieval
+## 2. Processo de Open Coding e Saturação Teórica
 
 Keyword matching serve **exclusivamente** para reduzir 1.877.981 representantes a um
 pool revisável. Não classifica nada.
+O procedimento analítico segue a grounded theory adaptada para engenharia de software empírica:
 
 Implementado em `scripts/build_candidate_frame.py` (60 termos, recall-orientado).
 
@@ -146,20 +159,43 @@ permitirem, separar:
 ```text
 Concern: SQL Injection | Function: DETECT + TEST | Capability: dynamic_analysis + exploitation
 Concern: SQL Injection | Function: PREVENT       | Capability: source_code_analysis
+Skills de Segurança (Estágio 2 = true)
+        │
+        ▼
+Leitura Detalhada e Identificação de Evidências
+        │
+        ▼ (Apoio de LLMs: Claude / Qwen propõem códigos)
+Extração de Códigos Conceituais Iniciais
+        │
+        ▼ (Pesquisadores validam, fundem e agrupam)
+Agrupamento em Categorias e Dimensões
+        │
+        ▼ (Iteração contínua ao longo dos 385 casos)
+Busca por Saturação Teórica (Nenhuma nova categoria emerge)
+        │
+        ▼
+Taxonomia de Segurança Estabilizada
 ```
 
 Mesmo concern, comportamentos completamente diferentes. Colapsar as três numa
 categoria só destrói a distinção central da pesquisa.
+### 2.1 Critério de Saturação Teórica (D-036)
+A análise deve atingir **saturação teórica** antes do término da leitura dos 385 casos: a leitura dos casos finais deve apenas instanciar códigos e categorias já mapeados anteriormente, sem o surgimento de conceitos novos.
 
 Valores e definições: [[Codebook]] §5 e §6.
 
 ---
 
 ## 5. População e denominadores
+## 3. Papel das Ferramentas de IA (LLMs como Assistentes)
 
 > [!important] Não deixe `MENTION` dominar a distribuição
 > Reportar uma distribuição única sobre "tudo que menciona segurança" faz a resposta
 > ser carregada por menção incidental.
+Conforme [[Decision Log#D-038]]:
+- Modelos de linguagem (Claude e Qwen local) atuam exclusivamente como **assistentes de codificação aberta**.
+- Podem ser instruídos a ler o texto e sugerir entidades (*e.g.*, *"menciona JWT"* ou *"protege contra command injection"*).
+- **A decisão final é estritamente humana:** O agrupamento conceitual, a taxonomia, as regras de inclusão/exclusão de categorias e a verificação de coerência permanecem sob responsabilidade intelectual dos pesquisadores.
 
 Toda distribuição da QI-2 é reportada em **camadas explícitas**:
 
@@ -182,8 +218,10 @@ ocorrência reportada em paralelo como difusão.
 ---
 
 ## 6. Validação
+## 4. Dimensões Analíticas de Segurança
 
 Nada da QI-2 é resultado científico antes disto.
+Para evitar o colapso de conceitos em rótulos genéricos, a análise qualitativa busca mapear, sempre que a evidência permitir:
 
 1. Codebook escrito antes da anotação — [[Codebook]] v2.3 ✅
 2. Amostra anotada manualmente.
@@ -195,6 +233,11 @@ Nada da QI-2 é resultado científico antes disto.
 7. **Gold set** versionado em `results/`.
 8. Validação de qualquer classificação automática contra o gold set: precisão,
    recall, F1 **por classe** e para a dicotomia, com IC, mais matriz de confusão.
+| Dimensão | Pergunta Norteada | Exemplo Empírico |
+|---|---|---|
+| **Security Concern** | Sobre qual preocupação, ameaça ou vulnerabilidade a skill atua? | Prompt Injection, Exposição de Segredos, SQLi, Abuso de Recursos |
+| **Security Function** | O que a skill faz em relação à preocupação? | Prevenir, Detectar, Testar, Mitigar, Auditar |
+| **Operational Capability** | Como essa segurança é operacionalizada no artefato? | Análise estática (SAST), Validação de regex, Uso de variáveis de ambiente, Rate limit |
 
 > [!danger] LLM não é ground truth
 > Claude pode assistir triagem, sugerir códigos e pré-classificar em escala. Nada
@@ -205,6 +248,7 @@ Nada da QI-2 é resultado científico antes disto.
 ---
 
 ## 7. Ameaças à validade específicas da QI-2
+## 5. Validação e Confiabilidade
 
 - **Multilinguismo.** Confirmado empiricamente: a amostra de 48 trouxe francês,
   chinês, russo e coreano ([[EXP-002]]). Retrieval e codebook em inglês perdem essas
@@ -225,6 +269,9 @@ Nada da QI-2 é resultado científico antes disto.
   ambiguidade conceitual; registrar pares que coocorrem sistematicamente.
 - **Frequência ≠ importância.** Uma skill copiada 5.000 vezes não representa
   preocupação mais importante, e sim mais difundida.
+1. **Rastreabilidade de Evidências:** Cada código gerado deve conter o trecho textual literal (citação) que o originou no `SKILL.md`.
+2. **Reconciliação:** Os códigos propostos são revisados conjuntamente entre os pesquisadores para consolidação da árvore taxonômica.
+3. **Distribuição Empírica:** Uma vez fixadas as categorias, cada skill do conjunto de segurança recebe sua categorização final para reportar as frequências relativas na RQ2.
 
 ---
 
@@ -252,3 +299,4 @@ seu conjunto de entrada depende.**
 [[01 - Research Question]] · [[Codebook]] · [[Security Taxonomy]] ·
 [[QI-3 Coverage Methodology]] · [[EXP-002]] · [[03 - Methodology]] ·
 [[Decision Log]]
+[[01 - Research Question]] · [[Codebook]] · [[Security Taxonomy]] · [[QI-1 Methodology]] · [[QI-3 Coverage Methodology]] · [[Decision Log]]
