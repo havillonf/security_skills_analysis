@@ -36,12 +36,14 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-021 | Cegamento da anotação | |
 | D-024 | Sequência QI-1 → gate → QI-2 → QI-3 | |
 | D-025 | **População restrita a inglês** (revisa D-012) | ⭐ |
-| D-026 | Ensemble de LLMs + adjudicação humana na discordância | |
 | D-028 | Evidência insuficiente = exclusão de frame (fecha D-022) | ⭐ |
 | D-031 | **Gold set**: dois anotadores independentes + reconciliação mútua | ⭐ |
 | D-032 | Subclassificação depois do gate do E-7; **LLM propõe, humanos validam** | ⭐ |
 | D-034 | **Dois estágios binários** — dev de software? + segurança? (revisa D-027) | ⭐ |
 | D-035 | **Segurança no contexto de SDLC** — nova definição operacional | ⭐ |
+| D-036 | **385 casos anotados manualmente** — GT e Amostra unificados (substitui D-026) | ⭐ |
+| D-037 | **Amostragem com reposição** — p/ garantir 385 SDLC e taxa de descarte | ⭐ |
+| D-038 | **Heurística + LLM Assistant** — filtro rápido e apoio em open coding | ⭐ |
 
 **Revisadas ou encerradas — preservadas por rastreabilidade**
 
@@ -57,6 +59,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-019 · D-020 | Anotador único / sinal preliminar no piloto | **substituídas por D-026** |
 | D-022 | Elegibilidade da população | **fechada por D-028** |
 | D-023 | Classificador v1 do EXP-012 | PoC, fora do caminho crítico |
+| D-026 | Ensemble de LLMs para classificação principal | **substituída por D-036** |
 | D-027 | Três classes; subclassificação posterior | **revisada por D-034** |
 | D-029 | Primeira classificação enxuta (Codebook v2.5) | **superseded por Codebook v3.0** |
 | D-030 | Terceira exclusão de frame (Codebook v2.6) | **superseded por Codebook v3.0** |
@@ -2354,3 +2357,53 @@ D-034) é:
 [[03 - Methodology]] · [[Codebook]] · [[QI-2 Methodology]] ·
 [[QI-3 Coverage Methodology]] · [[Security Taxonomy]] ·
 [[Classification and Sampling Precedents]]
+
+---
+
+## D-036 — Amostra final de 385 casos anotados manualmente (Substitui D-026)
+
+**Data:** 2026-09-23 · **Status:** `aceita` (orientador) · **Branch:** `Q1-prompt-refinement`
+**Substitui:** D-026 (Ensemble de LLMs para classificação principal)
+
+**Contexto.** Inicialmente (D-026), planejou-se que LLMs classificariam a amostra principal e os humanos apenas adjudicariam divergências. Após discussão com o orientador, decidiu-se reforçar o rigor da pesquisa (ground truth), unificando a amostra de prevalência e o gold standard de calibração.
+
+**Decisão.** O dataset final para responder à RQ1 e RQ2 consistirá em **385 casos de skills de SDLC, anotados 100% manualmente** pelos pesquisadores. 
+O protocolo de anotação humana será:
+1. Anotar independentemente os primeiros 20 a 40 casos.
+2. Reconciliar divergências e calcular o $\kappa$ de Cohen (alvo: $\ge 0.8$).
+3. Uma vez calibrados, dividir ou continuar a anotação do restante até fechar os 385 casos válidos de SDLC.
+4. A saturação teórica para o *open coding* da RQ2 deverá ser alcançada dentro desta amostra manual.
+
+**Consequências.** O Ground Truth e a amostra da RQ1 se tornam o mesmo artefato. Maior peso metodológico (human-labeled), porém maior esforço braçal. LLMs deixam de ser a ferramenta primária para a RQ1.
+
+---
+
+## D-037 — Amostragem com reposição para garantir 385 casos de SDLC (Estágio 1) e rastreio da taxa de descarte
+
+**Data:** 2026-09-23 · **Status:** `aceita` (orientador) · **Branch:** `Q1-prompt-refinement`
+**Complementa:** D-036
+
+**Contexto.** A restrição metodológica exige que a amostra de $n=385$ seja *exclusivamente* composta por skills de desenvolvimento de software (SDLC, Estágio 1 do Codebook v3.0). Ao realizar um sorteio aleatório na população inteira, uma parcela significativa não será SDLC.
+
+**Decisão.** A amostragem será feita **com reposição condicional**:
+1. Extrai-se um lote aleatório grande (ex: 700+ skills).
+2. O filtro de SDLC (seja heurístico na triagem e confirmado pelo humano, ou diretamente pelo humano) é aplicado.
+3. Skills não-SDLC são **descartadas** da contagem dos 385, puxando-se a próxima skill válida da fila até o "balde" atingir exatamente 385.
+4. **Obrigatório:** A *taxa de descarte* (quantas skills não-SDLC foram sorteadas para se conseguir 385 válidas) deverá ser rigorosamente registrada. Isso permitirá inferir a prevalência geral do SDLC na população original de 1,5M de skills.
+
+**Consequências.** Garante a validade estatística para a subpopulação da pesquisa. A prevalência de segurança reportada responderá "Qual a prevalência de segurança *dentro do SDLC*".
+
+---
+
+## D-038 — Papel rebaixado de LLMs na RQ1 e foco heurístico/qualitativo
+
+**Data:** 2026-09-23 · **Status:** `aceita` (orientador) · **Branch:** `Q1-prompt-refinement`
+**Revisa parcialmente:** D-032
+
+**Contexto.** Frente à decisão de que humanos rotularão os 385 casos finais (D-036), a aplicação extensiva de LLMs (4 modelos) como classificadores perdeu o sentido prático e orçamentário.
+
+**Decisão.** 
+1. **Heurística como Pré-filtro (RQ1):** Utilizaremos heurísticas (Regex/Keywords) para pré-filtrar o lote sorteado, a fim de enriquecer a densidade de casos SDLC antes do humano lê-los, poupando tempo de descarte. As heurísticas (se atingirem bom F1-Score contra as anotações humanas) também poderão ser usadas descritivamente sobre os 1,5M de casos.
+2. **LLMs como Assistentes de Open Coding (RQ2):** Ferramentas de IA generativa (Claude e Qwen, local/gratuito) atuarão apenas como extratores e proponentes de códigos qualitativos para as skills de segurança. A taxonomia final e a validação do agrupamento seguem estritamente sob supervisão intelectual humana, visando a saturação teórica exigida.
+
+**Consequências.** Elimina a necessidade de APIs pagas e o esforço de adjudicação de múltiplos LLMs para classificação. Consolida a heurística como solução de escala.
