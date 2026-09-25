@@ -1,44 +1,44 @@
 case_id,name,body_chars,is_software_development,has_security,evidence,confidence,note
-CASE001,pr-version-bump,9524,,,,,
-CASE002,,2868,,,,,
-CASE003,blog-post-translate,5793,,,,,
-CASE004,agents-v2-py,9875,,,,,
-CASE005,molclaw-evobind-tool,3954,,,,,
-CASE006,devexpress-winforms-layout,17799,,,,,
-CASE007,claude-mem-export-and-maintenance,2535,,,,,
-CASE008,,3331,,,,,
-CASE009,get-project-configuration,7564,,,,,
-CASE010,implement,5875,,,,,
-CASE011,review-pr,4058,,,,,
-CASE012,medication-reconciliation,6452,,,,,
-CASE013,component-testing,1841,,,,,
-CASE014,session-triage,11730,,,,,
-CASE015,eng-tdd,2664,,,,,
-CASE016,,3010,,,,,
-CASE017,churn-prevention,21826,,,,,
-CASE018,error-rosetta,12564,,,,,
-CASE019,,3891,,,,,
-CASE020,human-centered-design-fundamentals,14783,,,,,
-CASE021,,15846,,,,,
-CASE022,pr-plan,60811,,,,,
-CASE023,codex-usage-api,10737,,,,,
-CASE024,ops-status-report,2761,,,,,
-CASE025,writing-oprs,5408,,,,,
-CASE026,,8522,,,,,
-CASE027,deploywatch,3430,,,,,
-CASE028,npm-set-2fa,1581,,,,,
-CASE029,pancakeswap-v3-plugin,27967,,,,,
-CASE030,bio-restriction-mapping,6385,,,,,
-CASE031,security-audit,2682,,,,,
-CASE032,theme-factory,3282,,,,,
-CASE033,,3186,,,,,
-CASE034,doc-to-md,16262,,,,,
-CASE035,update-skills,2449,,,,,
-CASE036,,1783,,,,,
-CASE037,go-create-usecase,1873,,,,,
-CASE038,,31793,,,,,
-CASE039,optimize-luau,25653,,,,,
-CASE040,gstack-plan-ceo-review,3626,,,,,
+CASE001,pr-version-bump,9524,TRUE,FALSE,body,high,Skill para agente trabalhar com branches e preparar Pull Requests. Sem considerações de segurança
+CASE002,,2868,FALSE,,description; body,high,"Trabalhos artísticos, não tem SDLC"
+CASE003,blog-post-translate,5793,FALSE,,description; body,high,"Workflow de tradução de posts, não tem SDLC"
+CASE004,agents-v2-py,9875,TRUE,TRUE,description; body,high,Criação de imagens de agentes. Possui considerações de gestão de secrets
+CASE005,molclaw-evobind-tool,3954,FALSE,,description; body,high,"Projeção de peptídeos utilizando ferramentas de software, não tem SDLC"
+CASE006,devexpress-winforms-layout,17799,TRUE,TRUE,body,high,"Instruções para utilizar ferramenta de criação de designs, possui restrição contra prompt injection"
+CASE007,claude-mem-export-and-maintenance,2535,FALSE,,description; body,high,"Gerenciamento de memória do agente, não tem SDLC"
+CASE008,,3331,FALSE,,body,high,"Instruções para utilizar ferramenta de Rede Neural, não tem SDLC"
+CASE009,get-project-configuration,7564,TRUE,FALSE,description; body,medium,Recupera configurações de projeto e convenções de desenvolvimento. Sem considerações de segurança
+CASE010,implement,5875,TRUE,FALSE,body,medium,Planejamento e implementação TDD. Sem considerações de segurança
+CASE011,review-pr,4058,TRUE,FALSE,body,high,Atividades de code review. Sem considerações de segurança
+CASE012,medication-reconciliation,6452,FALSE,,description; body,high,Descreve como utilizar um software médico. Possui considerações de segurança mas não é de desenvolvimento
+CASE013,component-testing,1841,TRUE,FALSE,description; body,high,Testes de componentes React. Sem considerações de segurança
+CASE014,session-triage,11730,FALSE,,description; body,high,"Investigação e proposição de consertos de problemas com a sessão do agente ou com falhas de ações agênticas, não tem SDLC"
+CASE015,eng-tdd,2664,TRUE,FALSE,description; body,high,Implementação TDD. Sem considerações de segurança
+CASE016,,3010,TRUE,FALSE,description; body,high,Criação de cenários de teste.Sem considerações de segurança
+CASE017,churn-prevention,21826,FALSE,,description; body,high,Análise de retenção de clientes via fluxo de cancelamento. Não é SDLC
+CASE018,error-rosetta,12564,TRUE,FALSE,body,high,"Descrição de erros na execução de programas, para ajudar o desenvolvedor no debug. Sem considerações de segurança"
+CASE019,,3891,FALSE,,description; body,high,Redução de custos. Não é SDLC
+CASE020,human-centered-design-fundamentals,14783,TRUE,FALSE,body,high,"Workflow de design, pode ser usado para sistemas, interfaces e outros. Sem considerações de segurança"
+CASE021,,15846,TRUE,FALSE,description; body,high,Auxiliar de Pull Request. Sem considerações de segurança
+CASE022,pr-plan,60811,TRUE,FALSE,description; body,high,Cria corpo de Pull Request. Sem considerações de segurança
+CASE023,codex-usage-api,10737,FALSE,,description; body,high,Análise de uso do Codex. Não tem SDLC
+CASE024,ops-status-report,2761,FALSE,,body,high,Análise de dados e report de indicatores. Não tem SDLC
+CASE025,writing-oprs,5408,TRUE,FALSE,description; body,high,Documentação de Requisitos. Sem considerações de segurança.
+CASE026,,8522,TRUE,FALSE,description; body,medium,Orquestração de agentes e e gerenciamento de repositórios. Sem considerações de segurança
+CASE027,deploywatch,3430,TRUE,FALSE,description; body,high,Monitoramento e debug de pipeline. Sem considerações de segurança
+CASE028,npm-set-2fa,1581,FALSE,,description; body,high,Automação de habilitar/desabilitar 2FA no npm. Não tem SDLC
+CASE029,pancakeswap-v3-plugin,27967,FALSE,,description; body,high,Gerenciamento de tokens e liquidez em criptomoedas. Não tem SDLC
+CASE030,bio-restriction-mapping,6385,FALSE,,description; body,high,"Instruções de como criar mapas de restrição para mostrar posições de cortes de enzima. Finalidade é usar software para domínio de biologia, não criar software."
+CASE031,security-audit,2682,TRUE,TRUE,body,low,"Identifica, reporta e sugere correções de problemas de segurança em ações. Possui um subagente. Preocupações de segredos e injections"
+CASE032,theme-factory,3282,TRUE,FALSE,body,high,Estilização de artefatos (pode ser utilizado em páginas web). Sem considerações de segurança
+CASE033,,3186,FALSE,,description; body,high,Pesquisa científica sobre astronomia. Não tem SDLC
+CASE034,doc-to-md,16262,FALSE,,description; body,high,Conversor de artefatos de pesquisa científica. Não tem SDLC
+CASE035,update-skills,2449,FALSE,,description; body,high,Gerenciamento de skills do Claude. Não tem SDLC
+CASE036,,1783,TRUE,FALSE,description; body,high,Especificação de TDD. Sem considerações de segurança
+CASE037,go-create-usecase,1873,TRUE,FALSE,description; body,high,"Cria scaffoldings, implementa e testa. Sem considerações de segurança"
+CASE038,,31793,TRUE,FALSE,description; body,high,"Gerencia, cria e edita ResourceTypes. Sem considerações de segurança"
+CASE039,optimize-luau,25653,TRUE,FALSE,description; body,high,Otimiza scripts para Roblox. Sem considerações de segurança
+CASE040,gstack-plan-ceo-review,3626,FALSE,,description; body,high,Estratégias de review de produtos. Não tem SDLC
 CASE041,deaccumulate,4648,,,,,
 CASE042,pricing-strategy,590,,,,,
 CASE043,check-pr,3422,,,,,
