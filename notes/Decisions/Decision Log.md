@@ -2446,3 +2446,10 @@ O protocolo de anotação humana será:
 - As planilhas de anotação dos 40 casos (havillon e victor) são preservadas como evidência do processo de desenvolvimento do instrumento, mas não entram no cálculo final de prevalência.
 - A calibração reinicia do CASE041 com regras refinadas.
 - A taxa de descarte de não-SDLC observada no piloto (~40%) será usada como estimativa para avaliar a suficiência da fila de 600 casos.
+
+**Acréscimos (2026-09-29, mesma sessão, pré-calibração):**
+
+5. **R-1b — Ciência de dados e MLOps:** Scripts de ciência de dados contam como SDLC apenas se instruírem estruturação, versionamento, testes ou integração de componentes executáveis de software. Scripts estritamente exploratórios e isolados → `is_sdlc: false`.
+6. **Definição formal de artefato computacional:** Restringido a linguagens de programação formais, esquemas declarativos de infra tradicional e configs de banco/APIs. Meta-artefatos de IA em linguagem natural (prompts, personas, configurações de orquestração de agentes em YAML/JSON descritivo) são classificados como meta-agente (`is_sdlc: false`), exceto quando acompanhados de código de aplicação que os integra.
+7. **R-14a — Ponteiros normativos vs. R-3:** Ponteiros para arquivos normativos reconhecidos pela indústria (`SECURITY.md`, `.trivyignore`, políticas SAST) contam como `has_security: true` — é exceção controlada à R-3, fundamentada no papel funcional normativo padronizado desses arquivos no ecossistema de software.
+8. **R-14b — Prompt injection vs. alinhamento/safety:** Instruções contra prompt injection contam como segurança quando mitigam ameaças com impacto no sistema hospedeiro, APIs conectadas ou dados sensíveis (indirect prompt injection). Restrições que apenas sustentam persona, tom de voz ou moderação de conteúdo social são alinhamento/safety comportamental → `has_security: false`.
