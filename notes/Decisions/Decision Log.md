@@ -2413,7 +2413,7 @@ O protocolo de anotação humana será:
 
 ## D-039 — Refinamento do Codebook pós-piloto e descarte dos 40 casos de desenvolvimento
 
-**Data:** 2026-09-29 · **Status:** `aceita (H, 2026-09-29) · aguarda confirmação de V` · **Branch:** `Q1-prompt-refinement`
+**Data:** 2026-09-29 · **Status:** `aceita (H+V, 2026-09-29)` · **Branch:** `Q1-prompt-refinement`
 **Revisa:** D-034, D-035, D-036 (parcialmente)
 
 **Contexto.** A anotação independente dos primeiros 40 casos (CASE001–CASE040) do EXP-019 revelou 16 divergências entre os dois anotadores. A análise qualitativa das divergências identificou dois eixos sistemáticos de desacordo:
@@ -2439,7 +2439,7 @@ O protocolo de anotação humana será:
    - **Calibração (CASE041–CASE060/080):** Anotação independente e cega com Codebook v3.2. Cálculo de κ com meta ≥ 0.80. Se não atingir, nova reconciliação e ajuste.
    - **Produção (após calibração):** Anotação do restante até completar n=385 SDLC válidos.
 
-4. **Fila de casos:** Mantida em 600 candidatos. Se necessário, será estendida futuramente.
+4. **Fila de casos:** Os 560 candidatos restantes (CASE041–CASE600) são insuficientes (~308 SDLC esperados com a taxa do piloto, ~0,55). A fila deve ser estendida para ≥ ~700 candidatos a partir do CASE041 antes da Fase 2 (ver Codebook §8).
 
 **Consequências.**
 - O Codebook sobe para v3.2; o Guia do Anotador é atualizado para refletir as novas regras e fases.
