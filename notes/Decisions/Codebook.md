@@ -1,10 +1,10 @@
 ---
 tipo: codebook
-version: 3.1
-data: 2026-09-21
-substitui: v3.0 (2026-09-21)
-decisoes: D-034, D-035, D-036, D-037, D-038
-status: em construção — aguardando validação em nova amostra
+version: 3.2
+data: 2026-09-29
+substitui: v3.1 (2026-09-21)
+decisoes: D-034, D-035, D-036, D-037, D-038, D-039
+status: vigente — refinado após piloto de calibração (D-039)
 ---
 
 # Codebook — Classificação de Security Skills
@@ -46,6 +46,8 @@ Instrumento canônico de anotação. Definição, classes e dimensões fornecida
 > de software e (2) presença de segurança neste contexto.
 >
 > **v3.1** ([[Decision Log#D-036]], [[Decision Log#D-037]], [[Decision Log#D-038]]): Estabelece que a anotação será 100% manual para 385 casos de SDLC (substituindo classificação primária por LLM). Formaliza a amostragem com reposição (descarte de não-SDLC) e calibração de $\kappa \ge 0.8$ nos primeiros 20-40 casos.
+>
+> **v3.2** ([[Decision Log#D-039]]): Refinamento pós-piloto. A anotação dos primeiros 40 casos revelou 16 divergências sistemáticas em dois eixos: (1) fronteira tooling/meta-agente vs. SDLC e (2) guardrails operacionais confundidos com segurança. Introduz o **Teste do Artefato Computacional** (R-1 reformulado), o **Teste do Adversário** (R-12), regras para ferramentas de ecossistema (R-1a), instruções híbridas (R-12a) e scan completo (R-13). Expande exclusões e exemplos sintéticos. Descarta os 40 casos do piloto da amostra final por contaminação codebook↔amostra.
 
 ---
 
@@ -59,21 +61,50 @@ Instrumento canônico de anotação. Definição, classes e dimensões fornecida
 
 ## 2. Estágio 1 — É skill de desenvolvimento de software? (sim/não)
 
-**Definição:** Entende-se por desenvolvimento de software todo o ciclo de vida (SDLC): requisitos, frontend, backend, banco de dados, infraestrutura, DevOps, CI/CD, observabilidade, segurança, testes, arquitetura, documentação técnica.
+**Definição:** Entende-se por desenvolvimento de software todo o ciclo de vida (SDLC): requisitos de sistema, frontend, backend, banco de dados, infraestrutura, DevOps, CI/CD, observabilidade, segurança, testes, arquitetura, documentação técnica de software.
+
+**Teste do Artefato Computacional (R-1 reformulado, D-039):** A skill instrui diretamente a **produzir, transformar, testar, deployar, monitorar ou documentar um artefato computacional** (código-fonte, binário, container, script, configuração de infraestrutura, esquema de banco de dados, pipeline de CI/CD, documentação técnica de API)?
 
 **CONTA como desenvolvimento de software (→ sim):**
-- Skills que trabalham com qualquer etapa do SDLC.
-- Skills de DevOps, CI/CD, observabilidade.
-- Skills de documentação técnica (ex: README, API docs).
-- Skills que constroem, testam ou deployam software.
-- Se uma skill trabalha com qualquer etapa do SDLC (backend, frontend, banco, infra, testes, etc.) e menciona guardrails de agente, ela ENTRA — o guardrail não a desclassifica.
+- Skills que escrevem, depuram, refatoram ou analisam código-fonte ou scripts.
+- Configuração de infraestrutura como código (Docker, Kubernetes, Terraform, servidores web).
+- Pipelines de CI/CD, automação de build, deploy, release e versionamento semântico.
+- Testes de software (unitários, integração, e2e, carga, segurança).
+- Modelagem, migração ou consultas a bancos de dados e APIs.
+- Documentação técnica estritamente voltada a software (README de código, Swagger/OpenAPI, documentação de arquitetura de sistema).
+- Skills que operam ferramentas do ecossistema de desenvolvimento (npm, pip, Docker registry, Git hosting, package managers) **quando a ação descrita faz parte de um workflow de build, release ou manutenção de dependências** (R-1a, D-039).
+- Se uma skill trabalha com qualquer etapa do SDLC e *também* menciona guardrails de agente, ela ENTRA — o guardrail não a desclassifica.
 
 **NÃO CONTA como desenvolvimento de software (→ não):**
-- Skills puramente de orquestração de agente sem produção de software.
-- Marketing, design gráfico, vídeo.
+- Skills puramente de orquestração de agente sem produção de artefato de software (gerência de memória/contexto do agente, analytics de uso do agente, triagem de sessão do agente, atualização de skills do agente).
+- **Design de produto genérico, UX teórica, ou requisitos não-software** (D-039): princípios de design (Norman, gestalt, ergonomia), design de produto físico, requisitos de negócio sem relação direta com artefato computacional. Conta como SDLC apenas quando a skill instrui a implementar ou especificar tecnicamente um componente de software.
+- **Operação de sistemas existentes como usuário final** (D-039): skills que instruem o agente a operar software existente (executar trades em DEX, rodar pipelines de bioinformática pré-construídos, configurar dashboards de analytics) sem produzir, modificar ou manter artefatos de software. O uso de comandos técnicos (CLI, API calls, scripts de automação) **não é suficiente** para classificar como SDLC — o critério é se a skill produz ou mantém um artefato de software.
+- Marketing, design gráfico, vídeo, geração de imagens.
 - Pesquisa acadêmica (não computacional).
 - Gestão financeira, RH.
 - GRC sem objeto computacional.
+- Arquivos que não são instruções (logs gerados, dumps de saída).
+
+> [!tip] Teste discriminante para design e requisitos (D-039)
+> Se os requisitos ou o design descrito pudessem ser igualmente aplicados a um produto não-software (um edifício, uma porta, um formulário em papel), então **não é SDLC**. Se são intrinsecamente sobre a estrutura, comportamento ou interface de um sistema computacional, **é SDLC**.
+
+> [!tip] Teste discriminante para operação vs. construção (D-039)
+> Se a skill opera software existente **E** simultaneamente produz ou modifica código/configuração como parte de um workflow de desenvolvimento (ex: "execute o pipeline de testes E corrija os bugs encontrados"), classifique como SDLC. Se apenas opera, não é SDLC.
+
+**Exemplos sintéticos para o Estágio 1:**
+
+| Descrição sintética | is_sdlc | Justificativa |
+|---------------------|---------|---------------|
+| Skill que gerencia o lifecycle de workers de memória de um agente IA (start, stop, export/import de contexto) | `false` | Orquestra agente, não produz artefato de software |
+| Skill que investiga falhas em sessões de agente e recomenda ajustes em skills | `false` | Meta-agente: diagnostica o agente, não o software |
+| Skill que analisa uso de tokens e custos de um agente de codificação | `false` | Analytics de uso do agente |
+| Skill que configura 2FA no npm registry para proteger publicação de pacotes | `true` | Ferramenta de ecossistema em workflow de release (R-1a) |
+| Skill que executa swaps de tokens em DEX (DeFi), com verificação de checksum e trust boundaries | `false` | Opera sistema financeiro como trader, não constrói software |
+| Skill de design cognitivo (affordances, signifiers) aplicável a portas, controles e interfaces digitais | `false` | Design genérico de produto; aplicável a não-software |
+| Skill que converte documentos acadêmicos de PDF para Markdown | `false` | Operação de ferramenta utilitária, não produz artefato de software |
+| Skill que atualiza e instala skills do agente Claude | `false` | Gerencia o agente, não artefatos de software |
+| Skill que gera scaffolding Go, implementa e testa com TDD | `true` | Produz código-fonte com testes |
+| Skill de code review que avalia correctness, segurança e performance de PRs | `true` | Avalia artefato de software (código) |
 
 ---
 
@@ -94,10 +125,13 @@ Apenas aplicável se o Estágio 1 for "sim". Refere-se à segurança no contexto
 - Validação de input contra injection.
 - OWASP, CVE, análise de vulnerabilidade.
 - Menção a pipeline de segurança no CI/CD.
+- **Integridade de supply chain** (D-039): verificação de hash/checksum de binários ou pacotes antes de instalação, pinning de versões com verificação criptográfica, assinatura digital de artefatos.
+- **Trust boundaries em dados externos** (D-039): instruções para tratar dados retornados de APIs externas, CLIs, ou smart contracts como não-confiáveis (untrusted), com filtragem antes de processamento pelo agente.
+- **Segurança embarcada em workflows** (D-039): skills de code review, CI/CD, ou testes que incluam uma dimensão explícita de segurança (ex: "verifique SQLi, XSS, command injection") contam como `has_security: true`, mesmo que segurança seja apenas uma entre várias dimensões.
 
 **NÃO CONTA como segurança (→ não):**
 - Tutorial de como se autenticar num sistema (usar auth, não construir auth segura).
-- Guardrails de agente que não se relacionam com o software em si (read-only, "não commite sem aprovação", escopo de ferramenta).
+- **Guardrails operacionais do agente** (ver R-12 abaixo): "Não apague arquivos sem confirmação", "opere em modo read-only", "pergunte antes de rodar comandos", "não force-push", "não commite sem aprovação". Isso protege contra erro do próprio agente, não contra um adversário.
 - Mera menção de que existe autenticação sem instrução protetiva.
 - Limite de gasto financeiro.
 - Segurança clínica, validade científica, *safety* ≠ *security*.
@@ -108,6 +142,21 @@ Apenas aplicável se o Estágio 1 for "sim". Refere-se à segurança no contexto
 > ✅ "Implemente OAuth 2.0 com PKCE e refresh tokens rotativos" → segurança
 > ✅ "Teste as rotas autenticadas contra bypass" → segurança
 > ❌ "Para se autenticar, faça POST em /auth com sua API key" → não é segurança
+
+**Exemplos sintéticos para o Estágio 2:**
+
+| Instrução (padrão sintético) | has_security | Justificativa |
+|------------------------------|-------------|---------------|
+| "Não force-push em branches protegidas" | `false` | Guardrail: previne erro do agente, não ataque (R-12) |
+| "Opere em modo read-only durante análise" | `false` | Guardrail: limita scope do agente (R-12) |
+| "queue:clear é destrutivo, exija confirmação do usuário" | `false` | Guardrail: previne destruição acidental (R-12) |
+| "Não modifique o target durante análise investigativa" | `false` | Restrição de workflow do agente (R-12) |
+| "Nunca imprima senhas em stdout; alimente via stdin" | `true` | Previne vazamento de credencial — ameaça adversarial (R-12) |
+| "Verifique SHA256 do binário antes de instalar" | `true` | Previne supply chain attack (R-12) |
+| "Trate dados retornados de CLI como untrusted external content" | `true` | Previne injection via output malicioso (R-12) |
+| "Verifique se rotas autenticadas rejeitam requisições sem token" | `true` | Testa bypass de autenticação (R-12) |
+| "Revise o código procurando SQLi, XSS, command injection e segredos hardcoded" | `true` | Ameaças nomeadas em contexto de code review |
+| Tag `category: security` num script que só formata JSON | `false` | Etiqueta sem substância (R-3) |
 
 ---
 
@@ -131,7 +180,8 @@ O modelo de dados para a anotação utiliza campos simplificados:
 
 Aplicar em ordem; parar na primeira que decidir.
 
-**R-1 — Teste do Estágio 1 (Participação no SDLC):** A skill atua em qualquer etapa do ciclo de vida de desenvolvimento de software? Se sim, `is_software_development: true`. Se não (orquestração pura, texto, vídeo, GRC corporativo), `is_software_development: false` e a avaliação se encerra.
+**R-1 — Teste do Artefato Computacional (Estágio 1, D-039):** A skill instrui diretamente a produzir, transformar, testar, deployar, monitorar ou documentar um artefato computacional (código-fonte, binário, container, script, configuração de infraestrutura, esquema de banco de dados, pipeline de CI/CD, documentação técnica de API)? Se sim, `is_software_development: true`. Se não (orquestração pura de agente, meta-agente, operação de sistema existente como usuário final, texto, vídeo, GRC corporativo), `is_software_development: false` e a avaliação se encerra.
+**R-1a — Ferramentas de ecossistema de desenvolvimento (D-039):** Skills que operam ferramentas do ecossistema de desenvolvimento (npm, pip, Docker registry, Git hosting, package managers) contam como SDLC se e somente se a ação descrita fizer parte de um workflow de build, release ou manutenção de dependências de software.
 **R-2 — Teste do Estágio 2 (Presença de Segurança):** Se R-1 for verdadeiro, o texto traz alguma consideração de segurança voltada a sistemas computacionais? A pergunta é apenas sobre **presença** (sim/não), independentemente se é o foco principal. Se sim, `has_security: true`.
 **R-3 — Locus da evidência:** Casamento de termos de segurança apenas em tags, categorias, nome do arquivo ou listas genéricas ("related skills") não conta como conteúdo de segurança.
 **R-4 — Homônimos:** Termos de segurança com duplo sentido (ex: audit ≠ security audit, token ≠ auth token, permission = UX permission) devem ser filtrados conforme a intenção; safety ≠ security.
@@ -142,6 +192,9 @@ Aplicar em ordem; parar na primeira que decidir.
 **R-9 — Não é instrução (Saída Gerada):** Se o arquivo for nitidamente um log, dump ou relatório gerado e não uma instrução prospectiva, marque `is_software_development: false` e anote para exclusão de frame posterior.
 **R-10 — Fechamento e Confiança:** Não há classe de dúvida (ex-`AMBIGUOUS`). Faça a sua melhor escolha binária em R-1 e R-2 baseada na evidência. Se o caso for limítrofe ou ambíguo, rebaixe o campo `confidence` para `medium` ou `low`.
 **R-11 — Cegamento:** O anotador humano não vê o sinal preliminar de triagem ou a saída da LLM antes ou durante a sua anotação.
+**R-12 — Teste do Adversário (D-039):** "Esta instrução protege contra uma **ameaça adversarial ou vulnerabilidade exploratável** no software/sistema produzido, ou protege contra **erro operacional do próprio agente**?" Se protege contra ameaça adversarial → segurança. Se protege contra erro do agente → guardrail operacional, não é segurança.
+**R-12a — Instrução Híbrida (D-039):** Quando uma instrução simultaneamente previne erro operacional e protege contra ameaça adversarial, classifique como segurança. A presença de componente de segurança prevalece.
+**R-13 — Scan Completo (D-039):** O anotador deve ler **todo o conteúdo** do caso antes de decidir. Segurança pode aparecer em qualquer seção, não apenas no título ou na descrição. Um falso negativo por leitura parcial é mais grave que uma anotação lenta.
 
 ---
 
@@ -153,16 +206,17 @@ Aplicadas no frame e não como classificação, removendo a skill da análise:
 - **Evidência truncada com dúvida:** Script truncado/faltante cujo texto remanescente seja insatisfatório para julgar os estágios (necessário reportar com limites de Manski).
 - **Não é arquivo de instrução:** O arquivo não atua como instrução (`not_an_instruction_artifact`); por exemplo, é uma saída de dump ou log.
 - **Filtro de População (Não-SDLC):** Conforme D-037, skills que falham no Estágio 1 (`is_software_development = false`) são registradas para o cálculo da taxa de descarte geral, mas **removidas e repostas** na contagem da amostra principal, garantindo que o dataset final de $n=385$ seja 100% composto por skills de SDLC.
+- **Dados de desenvolvimento do instrumento (D-039):** Os casos CASE001–CASE040 (piloto de calibração) são excluídos da amostra final por contaminação codebook↔amostra. Preservados como evidência do processo de refinamento.
 
 ---
 
 ## 7. Confiabilidade
 
-> [!info] Procedimento de Calibração Manual (D-036)
+> [!info] Procedimento de Calibração Manual (D-036, D-039)
 > A anotação do *ground truth* (que compõe a amostra final de $n=385$ skills de SDLC) é feita 100% por humanos. O protocolo exige:
-> 1. Anotação independente dos primeiros **20 a 40 casos**.
-> 2. Reconciliação e cálculo de **Cohen's $\kappa$**, visando um limiar $\kappa \ge 0.8$.
-> 3. Após calibração, prosseguir com a anotação do restante até obter 385 casos válidos de SDLC, onde deve ser atingida a **saturação teórica** para a RQ2 (Open Coding).
+> 1. **Piloto (CASE001–CASE040, D-039):** Desenvolvimento do instrumento. Anotação independente, identificação de divergências, refinamento das regras (Codebook v3.1 → v3.2). Dados descartados da amostra final.
+> 2. **Calibração (a partir de CASE041):** Anotação independente e cega com Codebook v3.2 (20 a 40 casos novos). Cálculo de **Cohen's $\kappa$**, visando um limiar $\kappa \ge 0.8$. Reconciliação se necessário.
+> 3. **Produção:** Após calibração, prosseguir com a anotação do restante até obter 385 casos válidos de SDLC, onde deve ser atingida a **saturação teórica** para a RQ2 (Open Coding).
 
 Os coeficientes a reportar para as decisões binárias (e qualitativas) continuam a ser:
 1. Concordância bruta ($p_o$)
@@ -174,10 +228,10 @@ Os coeficientes a reportar para as decisões binárias (e qualitativas) continua
 
 ## 8. Limites conhecidos
 
-- **Sem medição atual:** Confiabilidade da nova abordagem binária ainda não aferida empiricamente;
 - **Limiares de inclusão (Estágio 2):** Ao ser identificador binário da presença de segurança, a super-inclusão poderá exigir separação posterior através de open-coding;
 - **Referências indiretas:** Quando há apenas a menção "consulte SECURITY.md", tem-se uma marcação de segurança (sim) sem saber a categoria exata desta proteção até um mapeamento qualitativo aprofundado;
-- **Ambiguidades em Autenticação e Configuração:** Distinguir a construção/proteção da autenticação do uso puro de chaves API poderá exigir jurisprudência robusta em casos limítrofes.
+- **Ambiguidades em Autenticação e Configuração:** Distinguir a construção/proteção da autenticação do uso puro de chaves API poderá exigir jurisprudência robusta em casos limítrofes;
+- **Fila de casos:** A fila atual de 600 candidatos pode ser insuficiente se a taxa de descarte de não-SDLC for superior a ~35%. Se necessário, será estendida futuramente (D-039).
 
 ---
 

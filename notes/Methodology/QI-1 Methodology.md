@@ -2,8 +2,8 @@
 tipo: metodologia
 questao: QI-1
 data: 2026-08-22
-atualizado: 2026-09-23
-status: Amostra manual de 385 casos de SDLC adotada (D-036); amostragem com reposição e descarte (D-037); dois estágios binários (D-034/D-035); heurística como pré-filtro (D-038)
+atualizado: 2026-09-29
+status: Amostra manual de 385 casos de SDLC adotada (D-036); amostragem com reposição e descarte (D-037); dois estágios binários (D-034/D-035); heurística como pré-filtro (D-038); Codebook v3.2 refinado pós-piloto (D-039)
 ---
 
 # QI-1 — Metodologia
@@ -12,11 +12,11 @@ status: Amostra manual de 385 casos de SDLC adotada (D-036); amostragem com repo
 
 Questão central desde 2026-08-22 ([[Decision Log#D-011]]), reformulada em 2026-09-21 para foco em SDLC ([[Decision Log#D-034]], [[Decision Log#D-035]]).
 
-A classificação opera em **dois estágios binários** ([[Codebook]] v3.1):
-1. **Estágio 1 (SDLC):** A skill atua no ciclo de vida de software? (`is_software_development`: `true`/`false`)
-2. **Estágio 2 (Segurança em SDLC):** A skill traz salvaguardas, verificações ou preocupações de segurança no contexto de software? (`has_security`: `true`/`false`)
+A classificação opera em **dois estágios binários** ([[Codebook]] v3.2):
+1. **Estágio 1 (SDLC):** A skill instrui a produzir, transformar, testar, deployar, monitorar ou documentar um artefato computacional? — **Teste do Artefato Computacional** (`is_software_development`: `true`/`false`)
+2. **Estágio 2 (Segurança em SDLC):** A skill traz salvaguardas contra ameaças adversariais ou vulnerabilidades exploratáveis? — **Teste do Adversário** (`has_security`: `true`/`false`)
 
-> [!important] População restrita a inglês e elegibilidade — [[Decision Log#D-025]] e [[Codebook]] v3.1
+> [!important] População restrita a inglês e elegibilidade — [[Decision Log#D-025]] e [[Codebook]] v3.2
 > A população-alvo é estritamente de skills 100% em inglês, deduplicadas por hash (`dedup_primary = 1`) e com texto suficiente para classificação (`length(description) + body_chars >= 200`).
 
 ---
@@ -70,10 +70,9 @@ Como o objetivo de pesquisa restringe o escopo a skills de desenvolvimento de so
 
 A anotação é integralmente humana, realizada pelos pesquisadores, garantindo validade de *ground truth*:
 
-1. **Calibração Inicial (D-036):** Os primeiros **20 a 40 casos** são anotados de forma cega e independente por dois pesquisadores.
-2. **Cálculo de Concordância:** Mede-se o **Cohen's $\kappa$** interavaliador para os dois estágios. O limiar mínimo aceitável é $\kappa \ge 0,80$.
-3. **Reconciliação:** Divergências são discutidas e reconciliadas, documentando no Codebook eventuais esclarecimentos jurisprudenciais.
-4. **Execução Final:** Após calibração satisfatória, a anotação prossegue (dividida entre pesquisadores ou mantida em consenso) até completar as **385 skills de SDLC**.
+1. **Fase 0 — Piloto (CASE001–CASE040, D-039):** Anotação independente com Codebook v3.1. Divergências analisadas, regras refinadas (v3.1 → v3.2). Dados **descartados da amostra final** por contaminação codebook↔amostra.
+2. **Fase 1 — Calibração (a partir de CASE041, D-039):** 20 a 40 novos casos anotados de forma cega e independente com Codebook v3.2. Cálculo de **Cohen's $\kappa$** com meta $\kappa \ge 0,80$. Reconciliação se necessário.
+3. **Fase 2 — Produção:** Após calibração satisfatória, a anotação prossegue até completar as **385 skills de SDLC**.
 
 ---
 
@@ -86,7 +85,7 @@ A anotação é integralmente humana, realizada pelos pesquisadores, garantindo 
 
 ## 6. Exclusões de Quadro
 
-Conforme [[Codebook]] v3.1:
+Conforme [[Codebook]] v3.2:
 - `length(description) + body_chars < 200`: Removido mecanicamente no pré-processamento.
 - `not_an_instruction_artifact`: Arquivos que são logs, saídas geradas ou dumps são descartados.
 - `truncated_undecidable`: Casos truncados cuja evidência seja insuficiente para julgar são reportados com limites de Manski.
@@ -121,4 +120,4 @@ Descarte Registrado (D-037)       Balde de SDLC (n=385)
 
 ## Ligações
 
-[[01 - Research Question]] · [[Codebook]] · [[Decision Log]] · [[QI-2 Methodology]] · [[QI-3 Coverage Methodology]]
+[[01 - Research Question]] · [[Codebook]] · [[Decision Log]] · [[Decision Log#D-039]] · [[QI-2 Methodology]] · [[QI-3 Coverage Methodology]]

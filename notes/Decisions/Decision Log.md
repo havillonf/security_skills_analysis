@@ -17,7 +17,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 > "decisões antigas" quebraria exatamente a cadeia que dá defensabilidade ao
 > trabalho. Use o índice abaixo para ver o estado sem perder o histórico.
 
-## Índice de status (2026-09-21)
+## Índice de status (2026-09-29)
 
 **Vigentes — sustentam o desenho atual**
 
@@ -44,6 +44,7 @@ Status: `proposta` (aguarda pesquisador) · `aceita` · `revisada` · `rejeitada
 | D-036 | **385 casos anotados manualmente** — GT e Amostra unificados (substitui D-026) | ⭐ |
 | D-037 | **Amostragem com reposição** — p/ garantir 385 SDLC e taxa de descarte | ⭐ |
 | D-038 | **Heurística + LLM Assistant** — filtro rápido e apoio em open coding | ⭐ |
+| D-039 | **Codebook v3.2** — Refinamento pós-piloto; descarte dos 40 casos; Teste do Artefato + Teste do Adversário | ⭐ |
 
 **Revisadas ou encerradas — preservadas por rastreabilidade**
 
@@ -2407,3 +2408,40 @@ O protocolo de anotação humana será:
 2. **LLMs como Assistentes de Open Coding (RQ2):** Ferramentas de IA generativa (Claude e Qwen, local/gratuito) atuarão apenas como extratores e proponentes de códigos qualitativos para as skills de segurança. A taxonomia final e a validação do agrupamento seguem estritamente sob supervisão intelectual humana, visando a saturação teórica exigida.
 
 **Consequências.** Elimina a necessidade de APIs pagas e o esforço de adjudicação de múltiplos LLMs para classificação. Consolida a heurística como solução de escala.
+
+---
+
+## D-039 — Refinamento do Codebook pós-piloto e descarte dos 40 casos de desenvolvimento
+
+**Data:** 2026-09-29 · **Status:** `aceita` · **Branch:** `Q1-prompt-refinement`
+**Revisa:** D-034, D-035, D-036 (parcialmente)
+
+**Contexto.** A anotação independente dos primeiros 40 casos (CASE001–CASE040) do EXP-019 revelou 16 divergências entre os dois anotadores. A análise qualitativa das divergências identificou dois eixos sistemáticos de desacordo:
+
+1. **Estágio 1 (SDLC):** Ambiguidade na fronteira entre "tooling/meta-agente" e desenvolvimento de software. A cláusula "desde que atuem sobre a construção ou execução de software" (Guia §3) não é operacionalizável — 11 das 16 divergências incidiram sobre este ponto.
+2. **Estágio 2 (Segurança):** Viés sistemático de um anotador em classificar guardrails operacionais do agente (ex: "não force-push", "modo read-only") como segurança. A regra existente era correta mas insuficientemente detalhada e exemplificada.
+
+**Decisão.**
+
+1. **Codebook v3.2** — Refinamento das regras de classificação:
+   - **R-1 reformulado (Teste do Artefato Computacional):** A skill instrui diretamente a produzir, transformar, testar, deployar, monitorar ou documentar um artefato computacional? Substitui a cláusula condicional vaga por um teste observável.
+   - **R-1a (Ferramentas de ecossistema):** Skills que operam ferramentas do ecossistema de desenvolvimento (npm, pip, Docker registry, Git hosting) contam como SDLC se e somente se a ação descrita fizer parte de um workflow de build, release ou manutenção de dependências.
+   - **R-12 (Teste do Adversário):** Formaliza a distinção guardrail operacional vs. segurança: a instrução protege contra ameaça adversarial/vulnerabilidade exploratável, ou contra erro operacional do próprio agente? Inclui tabela de 8 exemplos resolvidos e regra para instruções híbridas.
+   - **R-13 (Scan completo):** O anotador deve ler todo o conteúdo do caso antes de decidir, para evitar falsos negativos por leitura parcial (ex: segurança embarcada em seção tardia de um workflow de code review).
+   - Exclusões adicionais em §2 e §3: design de produto genérico, operação de sistemas existentes como usuário final.
+   - Exemplos sintéticos construídos a partir de padrões observados (sem referência direta aos casos do piloto).
+
+2. **Descarte dos 40 casos do piloto:** Os casos CASE001–CASE040 são reclassificados como **dados de desenvolvimento do instrumento** (*codebook development pilot*), não como parte da amostra final. Fundamento metodológico: as regras do Codebook v3.2 foram refinadas *a partir* das divergências nesses casos; incluí-los na amostra final criaria contaminação codebook↔amostra (overfitting do instrumento aos dados). Referências: Krippendorff (2018), Lombard et al. (2002).
+
+3. **Novo protocolo de fases:**
+   - **Piloto (CASE001–CASE040):** Desenvolvimento do instrumento. Dados descartados da amostra final.
+   - **Calibração (CASE041–CASE060/080):** Anotação independente e cega com Codebook v3.2. Cálculo de κ com meta ≥ 0.80. Se não atingir, nova reconciliação e ajuste.
+   - **Produção (após calibração):** Anotação do restante até completar n=385 SDLC válidos.
+
+4. **Fila de casos:** Mantida em 600 candidatos. Se necessário, será estendida futuramente.
+
+**Consequências.**
+- O Codebook sobe para v3.2; o Guia do Anotador é atualizado para refletir as novas regras e fases.
+- As planilhas de anotação dos 40 casos (havillon e victor) são preservadas como evidência do processo de desenvolvimento do instrumento, mas não entram no cálculo final de prevalência.
+- A calibração reinicia do CASE041 com regras refinadas.
+- A taxa de descarte de não-SDLC observada no piloto (~40%) será usada como estimativa para avaliar a suficiência da fila de 600 casos.
