@@ -104,7 +104,7 @@ Se **não** → `is_software_development: false`.
 | Design cognitivo (affordances, signifiers) para portas e interfaces | `false` | Design genérico; aplicável a não-software |
 | Converte PDFs acadêmicos para Markdown | `false` | Operação utilitária |
 | Gera scaffolding Go, implementa e testa com TDD | `true` | Produz código-fonte |
-| Code review avaliando correctness, segurança e performance | `true` | Avalia artefato de software |
+| Code review verificando correctness, performance e injection/segredos | `true` | Avalia artefato de software |
 
 ---
 
@@ -139,7 +139,7 @@ A pergunta avalia a **presença** de salvaguardas, verificações ou preocupaç�
 - **Ponteiros de Segurança:** Menções formais como *"consulte o arquivo SECURITY.md do repositório"* ou verificação de assinatura digital.
 - **Integridade de supply chain (D-039):** Verificação de hash/checksum de binários ou pacotes antes de instalação, pinning de versões com verificação criptográfica.
 - **Trust boundaries (D-039):** Instruções para tratar dados de APIs externas, CLIs ou smart contracts como untrusted, com filtragem antes de processamento.
-- **Segurança embarcada em workflows (D-039):** Skills de code review, CI/CD ou testes que incluam uma dimensão explícita de segurança (ex: "verifique SQLi, XSS, command injection"), mesmo que segurança seja apenas uma entre várias dimensões.
+- **Segurança embarcada em workflows (D-039):** Skills de code review, CI/CD ou testes que incluam uma dimensão explícita de segurança (ex: "verifique SQLi, XSS, command injection"), mesmo que segurança seja apenas uma entre várias dimensões. A dimensão precisa ser uma **instrução acionável** — dizer contra o quê proteger ou o que verificar/validar/testar. A palavra "segurança"/"security" isolada num checklist, sem ameaça nem verificação, é mera menção (R-3) → `false`.
 
 ### ❌ NÃO CONTA como Segurança (`has_security: false`):
 - **Uso trivial de autenticação:** Instruir o agente a passar uma API key ou fazer POST em `/login` para consumir uma API (isso é uso, não construção ou proteção).
@@ -166,6 +166,7 @@ A pergunta avalia a **presença** de salvaguardas, verificações ou preocupaç�
 | "Verifique SHA256 do binário antes de instalar" | `true` | Supply chain attack |
 | "Trate dados de CLI como untrusted content" | `true` | Injection via output malicioso |
 | "Revise se há SQLi, XSS, command injection" | `true` | Ameaças nomeadas |
+| "Revise: correctness, performance, security" (só isso) | `false` | Termo solto, sem ameaça nem verificação (R-3) |
 
 > [!important] R-13 — Leia TUDO antes de decidir
 > Segurança pode aparecer em **qualquer seção** do texto, não apenas no título ou na descrição. Leia o conteúdo inteiro antes de classificar. Um falso negativo por leitura parcial é mais grave que uma anotação lenta.

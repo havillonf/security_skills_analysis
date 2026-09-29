@@ -2413,7 +2413,7 @@ O protocolo de anotação humana será:
 
 ## D-039 — Refinamento do Codebook pós-piloto e descarte dos 40 casos de desenvolvimento
 
-**Data:** 2026-09-29 · **Status:** `aceita` · **Branch:** `Q1-prompt-refinement`
+**Data:** 2026-09-29 · **Status:** `aceita (H, 2026-09-29) · aguarda confirmação de V` · **Branch:** `Q1-prompt-refinement`
 **Revisa:** D-034, D-035, D-036 (parcialmente)
 
 **Contexto.** A anotação independente dos primeiros 40 casos (CASE001–CASE040) do EXP-019 revelou 16 divergências entre os dois anotadores. A análise qualitativa das divergências identificou dois eixos sistemáticos de desacordo:
@@ -2428,6 +2428,7 @@ O protocolo de anotação humana será:
    - **R-1a (Ferramentas de ecossistema):** Skills que operam ferramentas do ecossistema de desenvolvimento (npm, pip, Docker registry, Git hosting) contam como SDLC se e somente se a ação descrita fizer parte de um workflow de build, release ou manutenção de dependências.
    - **R-12 (Teste do Adversário):** Formaliza a distinção guardrail operacional vs. segurança: a instrução protege contra ameaça adversarial/vulnerabilidade exploratável, ou contra erro operacional do próprio agente? Inclui tabela de 8 exemplos resolvidos e regra para instruções híbridas.
    - **R-13 (Scan completo):** O anotador deve ler todo o conteúdo do caso antes de decidir, para evitar falsos negativos por leitura parcial (ex: segurança embarcada em seção tardia de um workflow de code review).
+   - **Segurança embarcada exige instrução acionável** (acordo H+V, 2026-09-29): a palavra "security" solta num checklist é mera menção (R-3); é preciso dizer contra o quê proteger ou o que verificar. Lista de ameaças nomeadas sem verbo (ex: "OWASP Top 10") continua `true` no Estágio 2; a distinção de profundidade fica para a segunda classificação (QI-2).
    - Exclusões adicionais em §2 e §3: design de produto genérico, operação de sistemas existentes como usuário final.
    - Exemplos sintéticos construídos a partir de padrões observados (sem referência direta aos casos do piloto).
 

@@ -4,7 +4,7 @@ version: 3.2
 data: 2026-09-29
 substitui: v3.1 (2026-09-21)
 decisoes: D-034, D-035, D-036, D-037, D-038, D-039
-status: vigente — refinado após piloto de calibração (D-039)
+status: vigente para calibração — pendente κ ≥ 0,80 (D-039)
 ---
 
 # Codebook — Classificação de Security Skills
@@ -104,7 +104,7 @@ Instrumento canônico de anotação. Definição, classes e dimensões fornecida
 | Skill que converte documentos acadêmicos de PDF para Markdown | `false` | Operação de ferramenta utilitária, não produz artefato de software |
 | Skill que atualiza e instala skills do agente Claude | `false` | Gerencia o agente, não artefatos de software |
 | Skill que gera scaffolding Go, implementa e testa com TDD | `true` | Produz código-fonte com testes |
-| Skill de code review que avalia correctness, segurança e performance de PRs | `true` | Avalia artefato de software (código) |
+| Skill de code review que verifica correctness, performance e injection/segredos em PRs | `true` | Avalia artefato de software (código) |
 
 ---
 
@@ -123,11 +123,11 @@ Apenas aplicável se o Estágio 1 for "sim". Refere-se à segurança no contexto
 - Desenvolver ou gerenciar autenticação segura no backend (OAuth 2.0, PKCE, JWT seguro).
 - Skills de teste que incluem testar auth.
 - Validação de input contra injection.
-- OWASP, CVE, análise de vulnerabilidade.
+- OWASP, CVE, análise de vulnerabilidade. Lista de ameaças nomeadas sem verbo (ex: "Security: OWASP Top 10") conta como `true` aqui; a profundidade dessa segurança é separada na segunda classificação (open coding, QI-2).
 - Menção a pipeline de segurança no CI/CD.
 - **Integridade de supply chain** (D-039): verificação de hash/checksum de binários ou pacotes antes de instalação, pinning de versões com verificação criptográfica, assinatura digital de artefatos.
 - **Trust boundaries em dados externos** (D-039): instruções para tratar dados retornados de APIs externas, CLIs, ou smart contracts como não-confiáveis (untrusted), com filtragem antes de processamento pelo agente.
-- **Segurança embarcada em workflows** (D-039): skills de code review, CI/CD, ou testes que incluam uma dimensão explícita de segurança (ex: "verifique SQLi, XSS, command injection") contam como `has_security: true`, mesmo que segurança seja apenas uma entre várias dimensões.
+- **Segurança embarcada em workflows** (D-039): skills de code review, CI/CD, ou testes que incluam uma dimensão explícita de segurança (ex: "verifique SQLi, XSS, command injection") contam como `has_security: true`, mesmo que segurança seja apenas uma entre várias dimensões. A dimensão precisa ser uma **instrução acionável** — dizer contra o quê proteger ou o que verificar/validar/testar. A palavra "segurança"/"security" isolada num checklist, sem ameaça nem verificação, é mera menção (R-3) → `false`.
 
 **NÃO CONTA como segurança (→ não):**
 - Tutorial de como se autenticar num sistema (usar auth, não construir auth segura).
@@ -156,6 +156,7 @@ Apenas aplicável se o Estágio 1 for "sim". Refere-se à segurança no contexto
 | "Trate dados retornados de CLI como untrusted external content" | `true` | Previne injection via output malicioso (R-12) |
 | "Verifique se rotas autenticadas rejeitam requisições sem token" | `true` | Testa bypass de autenticação (R-12) |
 | "Revise o código procurando SQLi, XSS, command injection e segredos hardcoded" | `true` | Ameaças nomeadas em contexto de code review |
+| "Revise: correctness, performance, security, legibilidade" (sem mais nada sobre segurança) | `false` | Termo solto, sem ameaça nem verificação (R-3) |
 | Tag `category: security` num script que só formata JSON | `false` | Etiqueta sem substância (R-3) |
 
 ---
@@ -182,7 +183,7 @@ Aplicar em ordem; parar na primeira que decidir.
 
 **R-1 — Teste do Artefato Computacional (Estágio 1, D-039):** A skill instrui diretamente a produzir, transformar, testar, deployar, monitorar ou documentar um artefato computacional (código-fonte, binário, container, script, configuração de infraestrutura, esquema de banco de dados, pipeline de CI/CD, documentação técnica de API)? Se sim, `is_software_development: true`. Se não (orquestração pura de agente, meta-agente, operação de sistema existente como usuário final, texto, vídeo, GRC corporativo), `is_software_development: false` e a avaliação se encerra.
 **R-1a — Ferramentas de ecossistema de desenvolvimento (D-039):** Skills que operam ferramentas do ecossistema de desenvolvimento (npm, pip, Docker registry, Git hosting, package managers) contam como SDLC se e somente se a ação descrita fizer parte de um workflow de build, release ou manutenção de dependências de software.
-**R-2 — Teste do Estágio 2 (Presença de Segurança):** Se R-1 for verdadeiro, o texto traz alguma consideração de segurança voltada a sistemas computacionais? A pergunta é apenas sobre **presença** (sim/não), independentemente se é o foco principal. Se sim, `has_security: true`.
+**R-2 — Teste do Estágio 2 (Presença de Segurança):** Se R-1 for verdadeiro, leia **todo** o conteúdo (R-13) e, para cada candidata a instrução de segurança voltada a sistemas computacionais, aplique o Teste do Adversário (R-12/R-12a). A pergunta é apenas sobre **presença** (sim/não), independentemente se é o foco principal. Se ao menos uma passar, `has_security: true`.
 **R-3 — Locus da evidência:** Casamento de termos de segurança apenas em tags, categorias, nome do arquivo ou listas genéricas ("related skills") não conta como conteúdo de segurança.
 **R-4 — Homônimos:** Termos de segurança com duplo sentido (ex: audit ≠ security audit, token ≠ auth token, permission = UX permission) devem ser filtrados conforme a intenção; safety ≠ security.
 **R-5 — Artefatos associados:** Se `has_scripts = 1` e o script opera funções de segurança englobadas (`bundled_artifacts`), classifique pelo comportamento conjunto se o arquivo principal for uma instrução.
@@ -192,9 +193,9 @@ Aplicar em ordem; parar na primeira que decidir.
 **R-9 — Não é instrução (Saída Gerada):** Se o arquivo for nitidamente um log, dump ou relatório gerado e não uma instrução prospectiva, marque `is_software_development: false` e anote para exclusão de frame posterior.
 **R-10 — Fechamento e Confiança:** Não há classe de dúvida (ex-`AMBIGUOUS`). Faça a sua melhor escolha binária em R-1 e R-2 baseada na evidência. Se o caso for limítrofe ou ambíguo, rebaixe o campo `confidence` para `medium` ou `low`.
 **R-11 — Cegamento:** O anotador humano não vê o sinal preliminar de triagem ou a saída da LLM antes ou durante a sua anotação.
-**R-12 — Teste do Adversário (D-039):** "Esta instrução protege contra uma **ameaça adversarial ou vulnerabilidade exploratável** no software/sistema produzido, ou protege contra **erro operacional do próprio agente**?" Se protege contra ameaça adversarial → segurança. Se protege contra erro do agente → guardrail operacional, não é segurança.
+**R-12 — Teste do Adversário (D-039, aplicado dentro da R-2):** "Esta instrução protege contra uma **ameaça adversarial ou vulnerabilidade exploratável** no software/sistema produzido, ou protege contra **erro operacional do próprio agente**?" Se protege contra ameaça adversarial → segurança. Se protege contra erro do agente → guardrail operacional, não é segurança.
 **R-12a — Instrução Híbrida (D-039):** Quando uma instrução simultaneamente previne erro operacional e protege contra ameaça adversarial, classifique como segurança. A presença de componente de segurança prevalece.
-**R-13 — Scan Completo (D-039):** O anotador deve ler **todo o conteúdo** do caso antes de decidir. Segurança pode aparecer em qualquer seção, não apenas no título ou na descrição. Um falso negativo por leitura parcial é mais grave que uma anotação lenta.
+**R-13 — Scan Completo (D-039, aplicado dentro da R-2):** O anotador deve ler **todo o conteúdo** do caso antes de decidir. Segurança pode aparecer em qualquer seção, não apenas no título ou na descrição. Um falso negativo por leitura parcial é mais grave que uma anotação lenta.
 
 ---
 
@@ -215,7 +216,7 @@ Aplicadas no frame e não como classificação, removendo a skill da análise:
 > [!info] Procedimento de Calibração Manual (D-036, D-039)
 > A anotação do *ground truth* (que compõe a amostra final de $n=385$ skills de SDLC) é feita 100% por humanos. O protocolo exige:
 > 1. **Piloto (CASE001–CASE040, D-039):** Desenvolvimento do instrumento. Anotação independente, identificação de divergências, refinamento das regras (Codebook v3.1 → v3.2). Dados descartados da amostra final.
-> 2. **Calibração (a partir de CASE041):** Anotação independente e cega com Codebook v3.2 (20 a 40 casos novos). Cálculo de **Cohen's $\kappa$**, visando um limiar $\kappa \ge 0.8$. Reconciliação se necessário.
+> 2. **Calibração (a partir de CASE041):** Anotação independente e cega com Codebook v3.2 (20 a 40 casos novos). Cálculo de **Cohen's $\kappa$**, visando um limiar $\kappa \ge 0.8$. Reconciliação se necessário. Se κ < 0,80 e as regras forem alteradas, os casos desta rodada também passam a ser dados de desenvolvimento do instrumento (mesma lógica da D-039); a nova calibração começa no primeiro caso ainda não visto.
 > 3. **Produção:** Após calibração, prosseguir com a anotação do restante até obter 385 casos válidos de SDLC, onde deve ser atingida a **saturação teórica** para a RQ2 (Open Coding).
 
 Os coeficientes a reportar para as decisões binárias (e qualitativas) continuam a ser:
@@ -231,7 +232,7 @@ Os coeficientes a reportar para as decisões binárias (e qualitativas) continua
 - **Limiares de inclusão (Estágio 2):** Ao ser identificador binário da presença de segurança, a super-inclusão poderá exigir separação posterior através de open-coding;
 - **Referências indiretas:** Quando há apenas a menção "consulte SECURITY.md", tem-se uma marcação de segurança (sim) sem saber a categoria exata desta proteção até um mapeamento qualitativo aprofundado;
 - **Ambiguidades em Autenticação e Configuração:** Distinguir a construção/proteção da autenticação do uso puro de chaves API poderá exigir jurisprudência robusta em casos limítrofes;
-- **Fila de casos:** A fila atual de 600 candidatos pode ser insuficiente se a taxa de descarte de não-SDLC for superior a ~35%. Se necessário, será estendida futuramente (D-039).
+- **Fila de casos:** Após o piloto restam 560 candidatos (CASE041–CASE600). Com a taxa de SDLC do piloto (22/40 no anotador H; ~0,55), a expectativa é de ~308 SDLC, abaixo da cota de 385. A fila **deve ser estendida antes da Fase 2** para ≥ ~700 candidatos a partir do CASE041, recalculando com a taxa observada na calibração. A ordem por hash é mantida (os novos casos seguem o CASE600) (D-039).
 
 ---
 
