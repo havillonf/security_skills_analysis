@@ -39,26 +39,26 @@ CASE037,go-create-usecase,1873,TRUE,FALSE,description; body,high,"Cria scaffoldi
 CASE038,,31793,TRUE,FALSE,description; body,high,"Gerencia, cria e edita ResourceTypes. Sem considerações de segurança"
 CASE039,optimize-luau,25653,TRUE,FALSE,description; body,high,Otimiza scripts para Roblox. Sem considerações de segurança
 CASE040,gstack-plan-ceo-review,3626,FALSE,,description; body,high,Estratégias de review de produtos. Não tem SDLC
-CASE041,deaccumulate,4648,,,,,
-CASE042,pricing-strategy,590,,,,,
-CASE043,check-pr,3422,,,,,
-CASE044,mvp-scoping,3231,,,,,
-CASE045,,1289,,,,,
-CASE046,twitter-x-growth-tools,5907,,,,,
-CASE047,bmad-agent-compass-wds-designer,316,,,,,
-CASE048,aidlc-market-research,1651,,,,,
-CASE049,marketing,11399,,,,,
-CASE050,react,1891,,,,,
-CASE051,improve-codebase-architecture,6464,,,,,
-CASE052,elon-musk,6505,,,,,
-CASE053,gsd-profile-user,1620,,,,,
-CASE054,solid-hunter-go,15846,,,,,
-CASE055,school-graduation-ppt,9865,,,,,
-CASE056,browse,2248,,,,,
-CASE057,ccx,20063,,,,,
-CASE058,charm-logging,4854,,,,,
-CASE059,miccai,6117,,,,,
-CASE060,embedded,2247,,,,,
+CASE041,deaccumulate,4648,FALSE,,description; body,high,Uso de código já escrito em domínio de Data Science. Não tem SDLC
+CASE042,pricing-strategy,590,FALSE,,description; body,high,Estratégia de preço para IA ou SaaS. Não tem SDLC
+CASE043,check-pr,3422,TRUE,FALSE,body,high,Revisão e correção de problemas em Pull Request. Sem descrição de considerações de segurança concretas
+CASE044,mvp-scoping,3231,FALSE,,body,high,Elaboração de escopo de MVP. Não tem SDLC
+CASE045,,1289,TRUE,FALSE,body,high,Skill para arquitetura e IaC. Sem considerações de segurança
+CASE046,twitter-x-growth-tools,5907,FALSE,,description; body,high,Automação para contas do Twitter/X. Ñão tem SDLC
+CASE047,bmad-agent-compass-wds-designer,316,FALSE,,body,high,Apenas redireciona para outra skill de UX/design. Não tem SDLC 
+CASE048,aidlc-market-research,1651,FALSE,,description; body,high,Automação para marketing. Não tem SDLC
+CASE049,marketing,11399,FALSE,,body,high,Automação para marketing. Não tem SDLC
+CASE050,react,1891,TRUE,FALSE,description; body,high,Skill cuja persona é um sênior front-end developer. Sem considerações de segurança
+CASE051,improve-codebase-architecture,6464,TRUE,FALSE,description; body,high,Melhorias de arquitetura na base de código. Sem considerações de segurança
+CASE052,elon-musk,6505,FALSE,,description; body,high,Skill cuja persona é o Elon Musk. Não tem SDLC
+CASE053,gsd-profile-user,1620,FALSE,,description; body,high,Cria perfil de comportamento para desenvolvedores para respostas personalizadas de agente. Não tem SDLC
+CASE054,solid-hunter-go,15846,TRUE,FALSE,description; body,high,"Auditoria de código Go, buscando inconformidades com os padrões SOLID. Sem considerações de segurança"
+CASE055,school-graduation-ppt,9865,FALSE,,description; body,high,Geração de sides em coreano. Não tem SDLC
+CASE056,browse,2248,FALSE,,description; body,high,Descobrimento de assuntos para suporte na criação de posts para redes sociais. Não tem SDLC
+CASE057,ccx,20063,TRUE,FALSE,body,high,"Inspeciona e modifica a codebase, analisa commits e faz ações git. Sem considerações de segurança"
+CASE058,charm-logging,4854,TRUE,FALSE,body,high,Gerencia e evolui o logging da aplicação. Sem considerações de segurança
+CASE059,miccai,6117,FALSE,,description; body,high,Instruções para escrita de paper seguindo o padrão de uma conferência. Não tem SDLC
+CASE060,embedded,2247,TRUE,FALSE,body,high,Instruções para desenvolvimento de microcontroladores em Rust. Sem considerações de segurança
 CASE061,duckdb-c-extension-vendoring-and-shims,3391,,,,,
 CASE062,purchasing-reports,2841,,,,,
 CASE063,gtkb-spec-intake,1603,,,,,
